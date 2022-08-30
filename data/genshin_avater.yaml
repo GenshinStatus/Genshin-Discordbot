@@ -1,0 +1,405 @@
+﻿10000001:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000002:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Ayaka
+  sideIconName: UI_AvatarIcon_Side_Ayaka
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000003:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000005:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_PlayerBoy
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000006:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Lisa
+  sideIconName: UI_AvatarIcon_Side_Lisa
+  weaponType: WEAPON_CATALYST
+10000007:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_PlayerGirl
+  sideIconName: UI_AvatarIcon_Side_PlayerGirl
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000014:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Barbara
+  sideIconName: UI_AvatarIcon_Side_Barbara
+  weaponType: WEAPON_CATALYST
+10000015:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Kaeya
+  sideIconName: UI_AvatarIcon_Side_Kaeya
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000016:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Diluc
+  sideIconName: UI_AvatarIcon_Side_Diluc
+  weaponType: WEAPON_CLAYMORE
+10000020:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Razor
+  sideIconName: UI_AvatarIcon_Side_Razor
+  weaponType: WEAPON_CLAYMORE
+10000021:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Ambor
+  sideIconName: UI_AvatarIcon_Side_Ambor
+  weaponType: WEAPON_BOW
+10000022:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Venti
+  sideIconName: UI_AvatarIcon_Side_Venti
+  weaponType: WEAPON_BOW
+10000023:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Xiangling
+  sideIconName: UI_AvatarIcon_Side_Xiangling
+  weaponType: WEAPON_POLE
+10000024:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Beidou
+  sideIconName: UI_AvatarIcon_Side_Beidou
+  weaponType: WEAPON_CLAYMORE
+10000025:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Xingqiu
+  sideIconName: UI_AvatarIcon_Side_Xingqiu
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000026:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Xiao
+  sideIconName: UI_AvatarIcon_Side_Xiao
+  weaponType: WEAPON_POLE
+10000027:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Ningguang
+  sideIconName: UI_AvatarIcon_Side_Ningguang
+  weaponType: WEAPON_CATALYST
+10000029:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Klee
+  sideIconName: UI_AvatarIcon_Side_Klee
+  weaponType: WEAPON_CATALYST
+10000030:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Zhongli
+  sideIconName: UI_AvatarIcon_Side_Zhongli
+  weaponType: WEAPON_POLE
+10000031:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Fischl
+  sideIconName: UI_AvatarIcon_Side_Fischl
+  weaponType: WEAPON_BOW
+10000032:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Bennett
+  sideIconName: UI_AvatarIcon_Side_Bennett
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000033:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Tartaglia
+  sideIconName: UI_AvatarIcon_Side_Tartaglia
+  weaponType: WEAPON_BOW
+10000034:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Noel
+  sideIconName: UI_AvatarIcon_Side_Noel
+  weaponType: WEAPON_CLAYMORE
+10000035:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Qiqi
+  sideIconName: UI_AvatarIcon_Side_Qiqi
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000036:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Chongyun
+  sideIconName: UI_AvatarIcon_Side_Chongyun
+  weaponType: WEAPON_CLAYMORE
+10000037:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Ganyu
+  sideIconName: UI_AvatarIcon_Side_Ganyu
+  weaponType: WEAPON_BOW
+10000038:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Albedo
+  sideIconName: UI_AvatarIcon_Side_Albedo
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000039:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Diona
+  sideIconName: UI_AvatarIcon_Side_Diona
+  weaponType: WEAPON_BOW
+10000041:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Mona
+  sideIconName: UI_AvatarIcon_Side_Mona
+  weaponType: WEAPON_CATALYST
+10000042:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Keqing
+  sideIconName: UI_AvatarIcon_Side_Keqing
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000043:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Sucrose
+  sideIconName: UI_AvatarIcon_Side_Sucrose
+  weaponType: WEAPON_CATALYST
+10000044:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Xinyan
+  sideIconName: UI_AvatarIcon_Side_Xinyan
+  weaponType: WEAPON_CLAYMORE
+10000045:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Rosaria
+  sideIconName: UI_AvatarIcon_Side_Rosaria
+  weaponType: WEAPON_POLE
+10000046:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Hutao
+  sideIconName: UI_AvatarIcon_Side_Hutao
+  weaponType: WEAPON_POLE
+10000047:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Kazuha
+  sideIconName: UI_AvatarIcon_Side_Kazuha
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000048:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Feiyan
+  sideIconName: UI_AvatarIcon_Side_Feiyan
+  weaponType: WEAPON_CATALYST
+10000049:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Yoimiya
+  sideIconName: UI_AvatarIcon_Side_Yoimiya
+  weaponType: WEAPON_BOW
+10000050:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Tohma
+  sideIconName: UI_AvatarIcon_Side_Tohma
+  weaponType: WEAPON_POLE
+10000051:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Eula
+  sideIconName: UI_AvatarIcon_Side_Eula
+  weaponType: WEAPON_CLAYMORE
+10000052:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Shougun
+  sideIconName: UI_AvatarIcon_Side_Shougun
+  weaponType: WEAPON_POLE
+10000053:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Sayu
+  sideIconName: UI_AvatarIcon_Side_Sayu
+  weaponType: WEAPON_CLAYMORE
+10000054:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kokomi
+  sideIconName: UI_AvatarIcon_Side_Kokomi
+  weaponType: WEAPON_CATALYST
+10000055:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Gorou
+  sideIconName: UI_AvatarIcon_Side_Gorou
+  weaponType: WEAPON_BOW
+10000056:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Sara
+  sideIconName: UI_AvatarIcon_Side_Sara
+  weaponType: WEAPON_BOW
+10000057:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Itto
+  sideIconName: UI_AvatarIcon_Side_Itto
+  weaponType: WEAPON_CLAYMORE
+10000058:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Yae
+  sideIconName: UI_AvatarIcon_Side_Yae
+  weaponType: WEAPON_CATALYST
+10000059:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Heizo
+  sideIconName: UI_AvatarIcon_Side_Heizo
+  weaponType: WEAPON_CATALYST
+10000060:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Yelan
+  sideIconName: UI_AvatarIcon_Side_Yelan
+  weaponType: WEAPON_BOW
+10000062:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Aloy
+  sideIconName: UI_AvatarIcon_Side_Aloy
+  weaponType: WEAPON_BOW
+10000063:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Shenhe
+  sideIconName: UI_AvatarIcon_Side_Shenhe
+  weaponType: WEAPON_POLE
+10000064:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Yunjin
+  sideIconName: UI_AvatarIcon_Side_Yunjin
+  weaponType: WEAPON_POLE
+10000065:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Shinobu
+  sideIconName: UI_AvatarIcon_Side_Shinobu
+  weaponType: WEAPON_SWORD_ONE_HAND
+10000066:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Ayato
+  sideIconName: UI_AvatarIcon_Side_Ayato
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000008:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Side_Ambor
+  sideIconName: UI_AvatarIcon_Side_Ambor
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000009:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Side_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000010:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Side_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000011:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Side_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000013:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Side_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000017:
+  bodyType: BODY_MALE
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000018:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000019:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000025:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_Razor
+  sideIconName: UI_AvatarIcon_Side_Razor
+  weaponType: WEAPON_BOW
+11000026:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_CATALYST
+11000027:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000028:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Ayaka
+  sideIconName: UI_AvatarIcon_Side_Ayaka
+  weaponType: WEAPON_POLE
+11000030:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_CLAYMORE
+11000031:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000032:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000033:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000034:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000035:
+  bodyType: BODY_LADY
+  iconName: UI_AvatarIcon_Xiangling
+  sideIconName: UI_AvatarIcon_Side_Xiangling
+  weaponType: WEAPON_POLE
+11000036:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000037:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_PlayerBoy
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+  weaponType: WEAPON_BOW
+11000038:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000039:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_Kate
+  sideIconName: UI_AvatarIcon_Side_Kate
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000040:
+  bodyType: BODY_GIRL
+  iconName: UI_AvatarIcon_PlayerGirl
+  sideIconName: UI_AvatarIcon_Side_PlayerGirl
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000041:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_PlayerBoy
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000042:
+  bodyType: BODY_BOY
+  iconName: UI_AvatarIcon_PlayerBoy
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000043:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_CLAYMORE
+11000044:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_SWORD_ONE_HAND
+11000045:
+  bodyType: BODY_LOLI
+  iconName: UI_AvatarIcon_Qin
+  sideIconName: UI_AvatarIcon_Side_Qin
+  weaponType: WEAPON_BOW

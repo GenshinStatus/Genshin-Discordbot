@@ -1,0 +1,232 @@
+﻿'10000002':
+  Element: Ice
+  NameId: '1006042610'
+  sideIconName: UI_AvatarIcon_Side_Ayaka
+'10000003':
+  Element: Wind
+  NameId: '3221566250'
+  sideIconName: UI_AvatarIcon_Side_Qin
+'10000005':
+  Element: Wind
+  NameId: '1533656818'
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+10000005-504:
+  Element: Wind
+  NameId: '1533656818'
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+10000005-506:
+  Element: Rock
+  NameId: '1533656818'
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+10000005-507:
+  Element: Electric
+  NameId: '1533656818'
+  sideIconName: UI_AvatarIcon_Side_PlayerBoy
+'10000006':
+  Element: Electric
+  NameId: '3344622722'
+  sideIconName: UI_AvatarIcon_Side_Lisa
+'10000007':
+  Element: Wind
+  NameId: '3816664530'
+  sideIconName: UI_AvatarIcon_Side_PlayerGirl
+10000007-704:
+  Element: Wind
+  NameId: '3816664530'
+  sideIconName: UI_AvatarIcon_Side_PlayerGirl
+10000007-706:
+  Element: Rock
+  NameId: '3816664530'
+  sideIconName: UI_AvatarIcon_Side_PlayerGirl
+10000007-707:
+  Element: Electric
+  NameId: '3816664530'
+  sideIconName: UI_AvatarIcon_Side_PlayerGirl
+'10000014':
+  Element: Water
+  NameId: '3775299170'
+  sideIconName: UI_AvatarIcon_Side_Barbara
+'10000015':
+  Element: Ice
+  NameId: '4119663210'
+  sideIconName: UI_AvatarIcon_Side_Kaeya
+'10000016':
+  Element: Fire
+  NameId: '3608180322'
+  sideIconName: UI_AvatarIcon_Side_Diluc
+'10000020':
+  Element: Electric
+  NameId: '4160147242'
+  sideIconName: UI_AvatarIcon_Side_Razor
+'10000021':
+  Element: Fire
+  NameId: '1966438658'
+  sideIconName: UI_AvatarIcon_Side_Ambor
+'10000022':
+  Element: Wind
+  NameId: '2466140362'
+  sideIconName: UI_AvatarIcon_Side_Venti
+'10000023':
+  Element: Fire
+  NameId: '1130996346'
+  sideIconName: UI_AvatarIcon_Side_Xiangling
+'10000024':
+  Element: Electric
+  NameId: '2646367730'
+  sideIconName: UI_AvatarIcon_Side_Beidou
+'10000025':
+  Element: Water
+  NameId: '4197635682'
+  sideIconName: UI_AvatarIcon_Side_Xingqiu
+'10000026':
+  Element: Wind
+  NameId: '1021947690'
+  sideIconName: UI_AvatarIcon_Side_Xiao
+'10000027':
+  Element: Rock
+  NameId: '4127888970'
+  sideIconName: UI_AvatarIcon_Side_Ningguang
+'10000029':
+  Element: Fire
+  NameId: '3339083250'
+  sideIconName: UI_AvatarIcon_Side_Klee
+'10000030':
+  Element: Rock
+  NameId: '3862787418'
+  sideIconName: UI_AvatarIcon_Side_Zhongli
+'10000031':
+  Element: Electric
+  NameId: '3277782506'
+  sideIconName: UI_AvatarIcon_Side_Fischl
+'10000032':
+  Element: Fire
+  NameId: '968893378'
+  sideIconName: UI_AvatarIcon_Side_Bennett
+'10000033':
+  Element: Water
+  NameId: '3847143266'
+  sideIconName: UI_AvatarIcon_Side_Tartaglia
+'10000034':
+  Element: Rock
+  NameId: '1921418842'
+  sideIconName: UI_AvatarIcon_Side_Noel
+'10000035':
+  Element: Ice
+  NameId: '168956722'
+  sideIconName: UI_AvatarIcon_Side_Qiqi
+'10000036':
+  Element: Ice
+  NameId: '2876340530'
+  sideIconName: UI_AvatarIcon_Side_Chongyun
+'10000037':
+  Element: Ice
+  NameId: '2679781122'
+  sideIconName: UI_AvatarIcon_Side_Ganyu
+'10000038':
+  Element: Rock
+  NameId: '4108620722'
+  sideIconName: UI_AvatarIcon_Side_Albedo
+'10000039':
+  Element: Ice
+  NameId: '1468367538'
+  sideIconName: UI_AvatarIcon_Side_Diona
+'10000041':
+  Element: Water
+  NameId: '1113306282'
+  sideIconName: UI_AvatarIcon_Side_Mona
+'10000042':
+  Element: Electric
+  NameId: '1864015138'
+  sideIconName: UI_AvatarIcon_Side_Keqing
+'10000043':
+  Element: Wind
+  NameId: '1053433018'
+  sideIconName: UI_AvatarIcon_Side_Sucrose
+'10000044':
+  Element: Fire
+  NameId: '4273845410'
+  sideIconName: UI_AvatarIcon_Side_Xinyan
+'10000045':
+  Element: Ice
+  NameId: '4260733330'
+  sideIconName: UI_AvatarIcon_Side_Rosaria
+'10000046':
+  Element: Fire
+  NameId: '1940919994'
+  sideIconName: UI_AvatarIcon_Side_Hutao
+'10000047':
+  Element: Wind
+  NameId: '88505754'
+  sideIconName: UI_AvatarIcon_Side_Kazuha
+'10000048':
+  Element: Fire
+  NameId: '697277554'
+  sideIconName: UI_AvatarIcon_Side_Feiyan
+'10000049':
+  Element: Fire
+  NameId: '2504399314'
+  sideIconName: UI_AvatarIcon_Side_Yoimiya
+'10000050':
+  Element: Fire
+  NameId: '3555115602'
+  sideIconName: UI_AvatarIcon_Side_Tohma
+'10000051':
+  Element: Ice
+  NameId: '3717667418'
+  sideIconName: UI_AvatarIcon_Side_Eula
+'10000052':
+  Element: Electric
+  NameId: '3024507506'
+  sideIconName: UI_AvatarIcon_Side_Shougun
+'10000053':
+  Element: Wind
+  NameId: '2388785242'
+  sideIconName: UI_AvatarIcon_Side_Sayu
+'10000054':
+  Element: Water
+  NameId: '3914045794'
+  sideIconName: UI_AvatarIcon_Side_Kokomi
+'10000055':
+  Element: Rock
+  NameId: '3400133546'
+  sideIconName: UI_AvatarIcon_Side_Gorou
+'10000056':
+  Element: Electric
+  NameId: '1483922610'
+  sideIconName: UI_AvatarIcon_Side_Sara
+'10000057':
+  Element: Rock
+  NameId: '3068316954'
+  sideIconName: UI_AvatarIcon_Side_Itto
+'10000058':
+  Element: Electric
+  NameId: '2713453234'
+  sideIconName: UI_AvatarIcon_Side_Yae
+'10000059':
+  Element: Wind
+  NameId: '646032090'
+  sideIconName: UI_AvatarIcon_Side_Heizo
+'10000060':
+  Element: Water
+  NameId: '2848374378'
+  sideIconName: UI_AvatarIcon_Side_Yelan
+'10000062':
+  Element: Ice
+  NameId: '3689108098'
+  sideIconName: UI_AvatarIcon_Side_Aloy
+'10000063':
+  Element: Ice
+  NameId: '334242634'
+  sideIconName: UI_AvatarIcon_Side_Shenhe
+'10000064':
+  Element: Rock
+  NameId: '655825874'
+  sideIconName: UI_AvatarIcon_Side_Yunjin
+'10000065':
+  Element: Electric
+  NameId: '1940821986'
+  sideIconName: UI_AvatarIcon_Side_Shinobu
+'10000066':
+  Element: Water
+  NameId: '1588620330'
+  sideIconName: UI_AvatarIcon_Side_Ayato
