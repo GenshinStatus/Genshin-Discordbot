@@ -15,8 +15,10 @@ async def on_application_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.respond(error)
         await bot.get_partial_messageable(1009731664412426240).send(error)#traceback.format_exc())
-    if isinstance(error, commands.MissingPermissions):
+    elif isinstance(error, commands.MissingPermissions):
         await ctx.respond(content="BOT管理者限定コマンドです", ephemeral=True)
+    else:
+        raise error
 
 @bot.event
 async def on_ready():

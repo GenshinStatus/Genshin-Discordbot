@@ -148,7 +148,9 @@ class GenshinCog(commands.Cog):
         print(serverId)
         name = resp['playerInfo']['nickname']
         print(name)
-        uidList[int(serverId)][uid] = {"user":ctx.author.name,"name":name}
+        if not uid in uidList:
+            uidList[serverId][uid] = dict()
+        uidList[serverId][uid] = {"user":ctx.author.name,"name":name}
         print(uidList)
         uidListYaml.save_yaml(uidList)
         await ctx.respond(content=f"UIDリストに追加しました！\nuid：{uid}\n原神ユーザー名：{name}")
@@ -159,7 +161,7 @@ class GenshinCog(commands.Cog):
             ctx: discord.ApplicationContext,
     ):
         await ctx.respond(content="アカウント情報読み込み中...", ephemeral=True)  
-        serverId = discord.Guild.id
+        serverId = ctx.guild.id
         embed = discord.Embed( 
                     title=f"UIDリスト",
                     color=0x1e90ff, 
