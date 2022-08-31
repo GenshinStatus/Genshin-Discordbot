@@ -25,5 +25,6 @@ async def on_ready():
     print(f"Bot名:{bot.user} On ready!!")
 
 bot.load_extension('cogs.genshin', store=False)
+bot.load_extension('cogs.wish', store=False)
 
 bot.run(TOKEN)
