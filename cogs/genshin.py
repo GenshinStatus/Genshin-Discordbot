@@ -19,10 +19,11 @@ uidList = uidListYaml.load_yaml()
 l: list[discord.SelectOption] = []
 
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
-    def __init__(self, label: str, uid: str, dict):
+    def __init__(self, label: str, uid: str, dict, data):
         super().__init__(style=discord.ButtonStyle.secondary, label=label)
         self.dict = dict
         self.uid = uid
+        self.data = data
 
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
@@ -33,16 +34,16 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         #ラベル（名前）からIDを割り出す
         #多分「名前：iD」ってなってるはず
         id = self.dict[self.label]
-        print(interaction.user.id)
+        print(interaction.user.name)
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
-        await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=None)
+        await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
 
 class TicTacToe(discord.ui.View):
     children: List[TicTacToeButton]
 
     def __init__(self, data, uid):
-        super().__init__(timeout=190)
+        super().__init__(timeout=None)
         names = []
         dict = {}
         #入ってきたidを名前にしてリスト化
@@ -53,7 +54,7 @@ class TicTacToe(discord.ui.View):
             dict.update({name: id})
         #名前をラベル、ついでにdictとuidも送り付ける
         for v in names:
-            self.add_item(TicTacToeButton(v,uid,dict))
+            self.add_item(TicTacToeButton(v,uid,dict,data))
 
 class GenshinCog(commands.Cog):
 

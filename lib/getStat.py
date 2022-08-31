@@ -138,6 +138,7 @@ async def get(uid,id):
             embed.add_field(inline=True,name=f'聖遺物：{equip}\n{name}\n{main}：{n["flat"]["reliquaryMainstat"]["statValue"]}\n{n["reliquary"]["level"]-1}lv\n聖遺物スコア：**{await genshinscore.score(statscore,getscore)}**\n',
                 value="\n".join(hoge)
             )
+        embed.set_footer(text="ボタンは連続リクエストを防ぐため、一定時間後に無効化されます。ご了承ください。")
         return embed
     except KeyError:
         return embed
