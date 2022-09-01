@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
@@ -23,8 +24,9 @@ async def on_application_command_error(ctx, error):
 @bot.event
 async def on_ready():
     print(f"Bot名:{bot.user} On ready!!")
-
+    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {len(bot.guilds)}サーバーで稼働中",))
 bot.load_extension('cogs.genshin', store=False)
 bot.load_extension('cogs.wish', store=False)
+bot.load_extension('cogs.genbot', store=False)
 
 bot.run(TOKEN)
