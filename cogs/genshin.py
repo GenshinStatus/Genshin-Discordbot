@@ -6,6 +6,7 @@ from discord import Option, SlashCommandGroup
 import aiohttp
 from lib.yamlutil import yaml
 import lib.getStat as getStat
+import lib.picture as getPicture
 from typing import List
 
 dataYaml = yaml(path='genshin_avater.yaml')
@@ -61,7 +62,6 @@ class GenshinCog(commands.Cog):
     def __init__(self, bot):
         print('genshin初期化')
         self.bot = bot
-        self.uid = uidListYaml.load_yaml()
 
     async def getApi(self,uid):
         url = f"https://enka.network/u/{uid}/__data.json"
@@ -114,6 +114,7 @@ class GenshinCog(commands.Cog):
         for id in resp["playerInfo"]["showAvatarInfoList"]:
             resalt.append(id["avatarId"])
         await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid))
+        await ctx.send(file=await discord.File(getPicture.getProfile(uid)))
 
     @genshin.command(name="get_private", description="【自分しか見れません】UIDからキャラ情報を取得します")
     async def genshin_get_private(
@@ -134,7 +135,7 @@ class GenshinCog(commands.Cog):
             resalt.append(id["avatarId"])
         await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid),ephemeral=True)
 
-    @genshin.command(name="uid_register", description="UIDを登録します")
+    @genshin.command(name="uid_register", description="何かと忘れがちなUIDを登録します")
     async def genshin_uid_register(
             self,
             ctx: discord.ApplicationContext,
@@ -149,14 +150,14 @@ class GenshinCog(commands.Cog):
         print(serverId)
         name = resp['playerInfo']['nickname']
         print(name)
-        if not uid in uidList:
-            uidList[serverId][uid] = dict()
+        if not serverId in uidList:
+            uidList[serverId] = dict()
         uidList[serverId][uid] = {"user":ctx.author.name,"name":name}
         print(uidList)
         uidListYaml.save_yaml(uidList)
         await ctx.respond(content=f"UIDリストに追加しました！\nuid：{uid}\n原神ユーザー名：{name}")
 
-    @genshin.command(name="uid", description="UIDを一覧で表示します")
+    @genshin.command(name="uid", description="登録されたUIDを一覧で表示します")
     async def genshin_uid(
             self,
             ctx: discord.ApplicationContext,

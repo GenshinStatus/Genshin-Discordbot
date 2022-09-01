@@ -63,6 +63,10 @@ class WishCog(commands.Cog):
     def genshingen(name):
         global words
         global jhwords
+        hoge = []
+        hoge.append(name)
+        if name in ["コレイ","ティナリ"]:
+            return words[name]["url"]
         if name in words:
             resalt = urllib.parse.quote(words[name]["zh"])
         elif name in jhwords:
@@ -139,7 +143,11 @@ class WishCog(commands.Cog):
             if r == "4":
                 # 4が入ってるだけ繰り返します。2/1の確率で恒常星4となり、結果を文字列化、キャラ名取得、画像url生成、embed生成します
                 sterresalt = random.choices(
-                    ["four_1", "four_2"], weights=[0.5, 0.5])
+                    ["four_1", "four_2", "four_3"], weights=[0.25, 0.5, 0.25])
+                #sterresalt = ["four_3"]
+                if sterresalt == ['four_3']:
+                    final_result.append(f"★★★★   星4武器")
+                    continue
                 genshinname = WishCog.genshinster("".join(sterresalt))
                 final_result.append(f"★★★★   {genshinname}")
                 continue
@@ -361,10 +369,16 @@ class WishCog(commands.Cog):
                 if r == "4":
                     # 4が入ってるだけ繰り返します。2/1の確率で恒常星4となり、結果を文字列化、キャラ名取得、画像url生成、embed生成します
                     sterresalt = random.choices(
-                        ["four_1", "four_2"], weights=[0.5, 0.5])
+                        ["four_1", "four_2", "four_3"], weights=[0.25, 0.5, 0.25])
+                    #sterresalt = ["four_3"]
+                    if sterresalt == ['four_3']:
+                        final_result.append(f"**星4武器**   ★★★★")
+                        continue
                     genshinname = WishCog.genshinster("".join(sterresalt))
-                    final_result.append(f"**{genshinname}**   ★★★★")
+                    print(genshinname)
+                    print(sterresalt)
                     await ctx.respond(embed=WishCog.embeded(f"{genshinname}    ★★★★", None, WishCog.genshingen(genshinname)))
+                    final_result.append(f"**{genshinname}**   ★★★★")
                     continue
                 elif r == "5":
                     # 5が入ってるだけ繰り返します。恒常星5のキャラ名取得、画像url生成、embed生成し、送信します。
