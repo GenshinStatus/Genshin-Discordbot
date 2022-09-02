@@ -102,9 +102,9 @@ class GenshinCog(commands.Cog):
             ctx: discord.ApplicationContext,
             uid: Option(str, required=True, description='UIDを入力してください．'),
     ):
-        await ctx.respond(content="アカウント情報読み込み中...", ephemeral=True)  
+        msg = await ctx.respond(content="アカウント情報読み込み中...", ephemeral=False)  
         embed = await GenshinCog.getApi(self,uid)
-        await ctx.respond(content="キャラ情報読み込み中...", ephemeral=True)  
+        await msg.edit_original_message(content="キャラ情報読み込み中...")  
 
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
@@ -113,8 +113,8 @@ class GenshinCog(commands.Cog):
                 resalt = []
         for id in resp["playerInfo"]["showAvatarInfoList"]:
             resalt.append(id["avatarId"])
-        await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid))
-        await ctx.send(file=await discord.File(getPicture.getProfile(uid)))
+        await msg.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid))
+        await ctx.send(file=discord.File(await getPicture.getProfile(uid)))
 
     @genshin.command(name="get_private", description="【自分しか見れません】UIDからキャラ情報を取得します")
     async def genshin_get_private(
