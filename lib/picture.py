@@ -55,18 +55,13 @@ def getCharacterPicture(name):
         resalt = None
     return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{resalt}/avatar.png"
 
-async def getProfile(uid):
-    url = f"https://enka.network/u/{uid}/__data.json"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            resp = await response.json()
-
+async def getProfile(uid,resp):
     #プロフィールアイコン取得
     hoge = data[resp['playerInfo']['profilePicture']['avatarId']]['iconName']
     temp_1 = downloadPicture(f"https://enka.network/ui/{hoge}.png")
     icon = Image.open(temp_1).copy()
     #プロフィールアイコンのリサイズ
-    icon = icon.resize(size=(160, 160), resample=Image.ANTIALIAS)
+    icon = icon.resize(size=(175, 175), resample=Image.ANTIALIAS)
     #円形用マスクを作成
     mask = Image.new("L", icon.size, 0)
     draw = ImageDraw.Draw(mask)
@@ -76,44 +71,81 @@ async def getProfile(uid):
     icon.putalpha(mask)
 
     #背景画像読み込み
-    base_img = Image.open("C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\AccountProfileBaseImage.png").convert('RGBA').copy()
+    base_img = Image.open("C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\ProfileImage.png").convert('RGBA').copy()
     #バグ対策に背景を完全透過させたものを生成
     base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
     #base_img.paste(icon, (80, 134), icon)
 
-    #プロフィールアイコンキャラ絵の名前取得
-    hoge = characterName[NameUtil[str(resp['playerInfo']['profilePicture']['avatarId'])]["NameId"]]
-    #かえってきた名前から画像を取得（RGBA）
-    temp_2 = downloadPicture(getCharacterPicture(hoge))
-    character_Picture = Image.open(temp_2).copy()
-    #画像の大きさを取得/3
-    w, h = character_Picture.size
-    w = w/3
-    h = h/3
-    #縮小
-    character_Picture = character_Picture.resize(size=(round(w), round(h)), resample=Image.ANTIALIAS)
+    #アイコン合成
     #バグ対策背景画像にアルファ合成
-    base_img_clear.paste(character_Picture)
+    base_img_clear.paste(icon, (47, 41), icon)
     #バグ対策できたんでちゃんと合成
     base_img = Image.alpha_composite(base_img, base_img_clear)
 
-    #手前の背景画像読み込み
-    Secondbase_img = Image.open("C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\AccountProfileImage.png").copy()
-    #合成
-    base_img.paste(Secondbase_img, (0, 120))
-
-    #アイコン合成
-    base_img.paste(icon, (0, 0), icon)
-
-    #文字追加
+    #ユーザー名文字追加
     player_name = resp['playerInfo']['nickname']
-    font_size = 40
+    font_size = 45
     font_color = (255, 255, 255)
-    height = 244
-    width = 380
+    height = 125
+    width = 260
     img = add_text_to_image(base_img, player_name, font_size, font_color, height, width)
+
+    #ステータスメッセージ文字追加
+    player_name = resp['playerInfo']['signature']
+    font_size = 18
+    font_color = (255, 255, 255)
+    height = 180
+    width = 260
+    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+
+    #UID文字追加
+    player_name = f"UID:{uid}"
+    font_size = 18
+    font_color = (255, 255, 255)
+    height = 80
+    width = 565
+    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+
+    #レベル文字追加
+    player_name = str(resp['playerInfo']['level'])
+    font_size = 45
+    font_color = (255, 255, 255)
+    height = 255
+    width = 50
+    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+
+    #世界レベル文字追加
+    player_name = str(resp['playerInfo']['worldLevel'])
+    font_size = 45
+    font_color = (255, 255, 255)
+    height = 335
+    width = 50
+    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+
+    #螺旋文字追加
+    player_name = f"{resp['playerInfo']['towerFloorIndex']}-{resp['playerInfo']['towerLevelIndex']}"
+    font_size = 45
+    font_color = (255, 255, 255)
+    height = 255
+    width = 295
+    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+
+    #アチーブメント文字追加
+    player_name = f"{resp['playerInfo']['finishAchievementNum']}"
+    font_size = 45
+    font_color = (255, 255, 255)
+    height = 335
+    width = 295
+    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+
+    #クレジット文字追加
+    player_name = f"原神ステータスbot"
+    font_size = 12
+    font_color = (255, 255, 255)
+    height = 380
+    width = 600
+    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
     img.save('C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\1.png')
     os.remove(temp_1)
-    os.remove(temp_2)
     return "C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\1.png"
