@@ -63,34 +63,21 @@ class GenshinCog(commands.Cog):
         print('genshin初期化')
         self.bot = bot
 
-    async def getApi(self,uid):
-        url = f"https://enka.network/u/{uid}/__data.json"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                resp = await response.json()
+    async def getApi(self,uid,resp):
         try:
             embed = discord.Embed( 
-                                title=f"{resp['playerInfo']['nickname']}の原神ステータス",
+                                title=f"{resp['playerInfo']['nickname']}",
                                 color=0x1e90ff, 
                                 description=f"uid: {uid}", 
-                                url=url 
+                                url=f"https://enka.network/u/{uid}/__data.json"
                                 )
-                                
-            hoge = data[resp['playerInfo']['profilePicture']['avatarId']]['iconName']
-            embed.set_thumbnail(url=f"https://enka.network/ui/{hoge}.png")
-            try:
-                embed.add_field(inline=False,name="ステータスメッセージ",value=resp['playerInfo']['signature'])
-            except:
-                print("hoge")
-            embed.add_field(inline=False,name="冒険ランク",value=resp['playerInfo']['level'])
-            embed.add_field(inline=False,name="世界ランク",value=resp['playerInfo']['worldLevel'])
-            embed.add_field(inline=False,name="深境螺旋",value=f"第{resp['playerInfo']['towerFloorIndex']}層 第{resp['playerInfo']['towerLevelIndex']}間")
+            embed.set_image(url=f"attachment://{uid}.png")                     
             return embed
         except:
             embed = discord.Embed( 
-                    title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{url}",
+                    title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{f'https://enka.network/u/{uid}/__data.json'}",
                     color=0x1e90ff, 
-                    url=url 
+                    url=f"https://enka.network/u/{uid}/__data.json"
                     )
             return embed
 
@@ -102,19 +89,21 @@ class GenshinCog(commands.Cog):
             ctx: discord.ApplicationContext,
             uid: Option(str, required=True, description='UIDを入力してください．'),
     ):
-        await ctx.respond(content="アカウント情報読み込み中...", ephemeral=True)  
-        embed = await GenshinCog.getApi(self,uid)
-        await ctx.respond(content="キャラ情報読み込み中...", ephemeral=True)  
-
+        msg = await ctx.respond(content="アカウント情報読み込み中...", ephemeral=False)  
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 resp = await response.json()
                 resalt = []
+        embed = await GenshinCog.getApi(self,uid,resp)
+        await msg.edit_original_message(content="キャラ情報読み込み中...")  
+
         for id in resp["playerInfo"]["showAvatarInfoList"]:
             resalt.append(id["avatarId"])
-        await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid))
-        await ctx.send(file=await discord.File(getPicture.getProfile(uid)))
+        await msg.edit_original_message(content="画像を生成中...")  
+        hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
+        await msg.edit_original_message(content="ボタンを生成中...")  
+        await msg.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
 
     @genshin.command(name="get_private", description="【自分しか見れません】UIDからキャラ情報を取得します")
     async def genshin_get_private(
@@ -123,17 +112,20 @@ class GenshinCog(commands.Cog):
             uid: Option(str, required=True, description='UIDを入力してください．'),
     ):
         await ctx.respond(content="アカウント情報読み込み中...", ephemeral=True)  
-        embed = await GenshinCog.getApi(self,uid)
-        await ctx.respond(content="キャラ情報読み込み中...", ephemeral=True)  
-
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 resp = await response.json()
                 resalt = []
+        embed = await GenshinCog.getApi(self,uid,resp)
+        await ctx.respond(content="キャラ情報読み込み中...", ephemeral=True)  
+
         for id in resp["playerInfo"]["showAvatarInfoList"]:
             resalt.append(id["avatarId"])
-        await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid),ephemeral=True)
+        await ctx.respond(content="画像を生成中...",ephemeral=True)  
+        hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
+        await ctx.respond(content="ボタンを生成中...",ephemeral=True)  
+        await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid),file=hoge,ephemeral=True)
 
     @genshin.command(name="uid_register", description="何かと忘れがちなUIDを登録します")
     async def genshin_uid_register(
