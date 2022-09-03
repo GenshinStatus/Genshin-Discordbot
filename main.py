@@ -29,5 +29,6 @@ async def on_ready():
 bot.load_extension('cogs.genshin', store=False)
 bot.load_extension('cogs.wish', store=False)
 bot.load_extension('cogs.genbot', store=False)
+bot.load_extension('cogs.uidlist', store=False)
 
 bot.run(TOKEN)
