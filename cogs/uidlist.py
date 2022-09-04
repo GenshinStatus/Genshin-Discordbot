@@ -203,11 +203,11 @@ async def getEmbed(ctx):
         return
 
     #原神ユーザー名取得
-    user = uidList[serverId][k]["name"]
+    user = uidList[serverId][hoge]["name"]
     
     embed = discord.Embed( 
                 title=f"登録情報・{user}",
-                description=f"UID:{k}",
+                description=f"UID:{hoge}",
                 color=0x1e90ff, 
                 )
     try:
@@ -218,7 +218,7 @@ async def getEmbed(ctx):
     except:
         isPablic = "未設定（非公開）です"
     embed.add_field(inline=False,name="UID公開設定",value=isPablic)
-    return embed,k
+    return embed,hoge
 
 class uidListCog(commands.Cog):
 
