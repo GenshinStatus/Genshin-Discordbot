@@ -44,7 +44,7 @@ class TicTacToe(discord.ui.View):
     children: List[TicTacToeButton]
 
     def __init__(self, data, uid):
-        super().__init__(timeout=None)
+        super().__init__(timeout=300)
         names = []
         dict = {}
         #入ってきたidを名前にしてリスト化
@@ -69,7 +69,7 @@ class UidModalButton(discord.ui.Button):
 #UIDを聞くモーダル
 class UidModal(discord.ui.Modal):
     def __init__(self,ctx):
-        super().__init__(title="UIDを入力してください。",timeout=None,)
+        super().__init__(title="UIDを入力してください。",timeout=300,)
         self.ctx = ctx
         
         self.uid = discord.ui.InputText(
@@ -107,8 +107,12 @@ class UidModal(discord.ui.Modal):
         embed = await GenshinCog.getApi(self,uid,resp)
         await ctx.send(content="キャラ情報読み込み中...",delete_after=5)  
 
-        for id in resp["playerInfo"]["showAvatarInfoList"]:
-            resalt.append(id["avatarId"])
+        try:
+            for id in resp["playerInfo"]["showAvatarInfoList"]:
+                resalt.append(id["avatarId"])
+        except:
+            await ctx.respond(content="エラー：入力されたものがUIDではありません",ephemeral=True)
+            return  
         await ctx.send(content="画像を生成中...",delete_after=5)  
         hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
         await ctx.send(content="ボタンを生成中...",delete_after=5)  
@@ -214,7 +218,7 @@ class GenshinCog(commands.Cog):
                 return
         if uid == None:
             view.add_item(UidModalButton(ctx))
-            await ctx.respond(content="UIDが登録されていません。/uidlist getから登録すると、UIDをいちいち入力する必要がないので便利です。",view=view,ephemeral=True)
+            await ctx.respond(content="UIDが登録されていません。```/uidlist control```で登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。",view=view,ephemeral=True)
             return
 
 def setup(bot):

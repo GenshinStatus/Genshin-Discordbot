@@ -18,7 +18,7 @@ class helpselectView(View):
                     description="忘れがちなUIDを保存してくれるコマンドです。"),
                 discord.SelectOption(
                     label="祈願コマンド",
-                    emoji="🛰",
+                    emoji="✨",
                     description="いわゆるガチャシミュレーターです。"),
         ])
     async def select_callback(self, select:discord.ui.Select, interaction):
@@ -28,16 +28,15 @@ class helpselectView(View):
             embed.add_field(
                 name=f"このbotのメインとなるコマンドです。",
                 value=f"\
-                    \n**・/genshinstat get**\n原神のステータスを取得します。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
-                    \n**・/genshinstat get_private**\n自分だけが確認できる状態で原神ステータスを取得します。ほかの人に見られたくない人へどうぞ。\
+                    \n**・/genshinstat get**\n自分以外が見ることができない状態で原神のステータスを取得します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
                 ")
         elif select.values[0] == "UIDリストコマンド":
             print("help - UIDリストコマンド")
             embed.add_field(
                 name=f"いちいち確認するのが面倒なUIDを管理するコマンドです。",
                 value=f"\
-                    \n**・/genshinstat uid_register**\nUIDを登録します。登録されたUIDはサーバーごとに管理されていつでも確認できます。\
-                    \n**・/genshinstat uid**\n登録されたUIDを確認します。\
+                    \n**・/uidlist get**\n登録され、公開設定が「公開」になっているUIDがここに表示されます。\
+                    \n**・/uidlist control**\n登録したUIDを管理するパネルを表示します。UIDの登録や削除、公開設定の切り替えもここからできます。\
                 ")
         elif select.values[0] == "祈願コマンド":
             print("help - 祈願コマンド")
@@ -61,8 +60,14 @@ class GenbotCog(commands.Cog):
 
     @genbot.command(name='help', description='原神ステータスbotに困ったらまずはこれ！')
     async def chelp(self, ctx):
+        embed = discord.Embed(title=f"helpコマンド：メインコマンド",color=0x1e90ff)
+        embed.add_field(
+            name=f"このbotのメインとなるコマンドです。",
+            value=f"\
+                \n**・/genshinstat get**\n自分以外が見ることができない状態で原神のステータスを取得します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
+        ")
         view = helpselectView(timeout=None)
-        await ctx.respond("確認したいコマンドのジャンルを選択してね",view=view)  # レスポンスで定義したボタンを返す
+        await ctx.respond("確認したいコマンドのジャンルを選択してね",embed=embed,view=view)  # レスポンスで定義したボタンを返す
 
 def setup(bot):
     bot.add_cog(GenbotCog(bot))

@@ -18,11 +18,11 @@ l: list[discord.SelectOption] = []
 #UIDを聞くモーダル
 class UidModal(discord.ui.Modal):
     def __init__(self,ctx):
-        super().__init__(title="あなたのUIDを入力してください。",timeout=None,)
+        super().__init__(title="あなたのUIDを入力してください。",timeout=300,)
         self.ctx = ctx
 
         self.uid = discord.ui.InputText(
-            label="UID",
+            label="UIDを半角数字で入力してください。",
             style=discord.InputTextStyle.short,
             min_length=9,
             max_length=9,
@@ -42,7 +42,7 @@ class UidModal(discord.ui.Modal):
 #公開するかどうかを聞くボタン
 class isPablicButton(View):
     def __init__(self, uid: str, ctx):
-        super().__init__(timeout=None)
+        super().__init__(timeout=300)
         self.ctx = ctx
         self.uid = uid
 
@@ -52,9 +52,12 @@ class isPablicButton(View):
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
-            await interaction.response.edit_message(f"{self.uid}はUIDではありません。",view=None)
+            await interaction.response.edit_message(content=f"{self.uid}はUIDではありません。",view=None)
+            return
         embed = await getEmbed(self.ctx)
-        await interaction.response.edit_message(content=f"{self.uid}を公開設定で登録しました！",embed=embed[0],view=None)
+        if name == "hoge":
+            await interaction.response.edit_message(content=None,embed=None,view=None)
+        await interaction.response.edit_message(content=name,embed=embed[0],view=None)
 
     @discord.ui.button(label="公開しない", style=discord.ButtonStyle.red)
     async def no_callback(self, button, interaction: discord.Interaction):
@@ -62,9 +65,12 @@ class isPablicButton(View):
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
-            await interaction.response.edit_message(f"{self.uid}はUIDではありません。",view=None)
+            await interaction.response.edit_message(content=f"{self.uid}はUIDではありません。",view=None)
+            return
         embed = await getEmbed(self.ctx)
-        await interaction.response.edit_message(content=f"{self.uid}を非公開設定で登録しました！",embed=embed[0],view=None)
+        if name == "hoge":
+            await interaction.response.edit_message(content=None,embed=None,view=None)
+        await interaction.response.edit_message(content=name,embed=embed[0],view=None)
 
 #モーダルを表示させるボタン
 class UidModalButton(discord.ui.Button):
@@ -88,7 +94,7 @@ class isDeleteButton(discord.ui.Button):
 #本当にUIDを削除するかどうか聞くボタン
 class isDeleteEnterButton(View):
     def __init__(self, uid: str, ctx):
-        super().__init__(timeout=None)
+        super().__init__(timeout=300)
         self.ctx = ctx
         self.uid = uid
 
@@ -119,6 +125,8 @@ class isPabricEnterButton(discord.ui.Button):
 
 #UIDを登録する関数
 async def uid_set(ctx,uid,isPablic):
+    uidListYaml = yaml(path='uidList.yaml')
+    uidList = uidListYaml.load_yaml()   
     url = f"https://enka.network/u/{uid}/__data.json"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -131,7 +139,8 @@ async def uid_set(ctx,uid,isPablic):
         uidList[serverId] = dict()
     try:
         if uidList[serverId][uid]["user"] != ctx.author.name:
-            return "このUIDはすでに他の人によって登録されています"
+            await ctx.send("このUIDはすでに他の人によって登録されています")
+            return "hoge"
     except:
         print(ctx.author.name)
     if isPablic == True:
@@ -141,10 +150,16 @@ async def uid_set(ctx,uid,isPablic):
     uidList[serverId][uid] = {"user":ctx.author.name,"name":name,"isPablic":isPablic}
     print(uidList)
     uidListYaml.save_yaml(uidList)
+    if isPablic == "True":
+        name = f"{uid}を公開設定で登録しました！"
+    elif isPablic == "False":
+        name = f"{uid}を非公開設定で登録しました！"
     return name
 
 #UIDを削除する関数
 async def uid_del(ctx,uid):
+    uidListYaml = yaml(path='uidList.yaml')
+    uidList = uidListYaml.load_yaml()
     serverId = ctx.guild.id
     print(serverId)
     uidList[serverId].pop(uid)
@@ -170,6 +185,8 @@ async def getEmbed(ctx):
     serverId = ctx.guild.id
     hoge = None
     view = View()
+    uidListYaml = yaml(path='uidList.yaml')
+    uidList = uidListYaml.load_yaml()
     
     # もしuserに当てはまるUIDが無ければ終了
     for k,v in uidList[serverId].items():
@@ -212,6 +229,8 @@ class uidListCog(commands.Cog):
             self,
             ctx: discord.ApplicationContext,
     ):
+        uidListYaml = yaml(path='uidList.yaml')
+        uidList = uidListYaml.load_yaml()
         serverId = ctx.guild.id
         embed = discord.Embed( 
                     title=f"UIDリスト",
@@ -227,6 +246,10 @@ class uidListCog(commands.Cog):
             embed.add_field(inline=False,name=k,value=f"Discord：{v['user']}\nユーザー名：{v['name']}")
         
         view = View()
+        for k,v in uidList[serverId].items():
+            if v["user"] == ctx.author.name:
+                await ctx.respond(embed=embed,ephemeral=True)
+                return
         button = UidModalButton(ctx)
         view.add_item(button)
         await ctx.respond(embed=embed,view=view,ephemeral=True)
