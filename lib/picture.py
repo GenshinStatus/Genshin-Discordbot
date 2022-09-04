@@ -91,12 +91,15 @@ async def getProfile(uid,resp):
     img = add_text_to_image(base_img, player_name, font_size, font_color, height, width)
 
     #ステータスメッセージ文字追加
-    player_name = resp['playerInfo']['signature']
-    font_size = 18
-    font_color = (255, 255, 255)
-    height = 180
-    width = 260
-    img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+    try:
+        player_name = resp['playerInfo']['signature']
+        font_size = 18
+        font_color = (255, 255, 255)
+        height = 180
+        width = 260
+        img = add_text_to_image(img, player_name, font_size, font_color, height, width)
+    except:
+        print("すてーたすめっせーじだよ")
 
     #UID文字追加
     player_name = f"UID:{uid}"
