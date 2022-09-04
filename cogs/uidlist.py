@@ -132,7 +132,7 @@ async def uid_set(ctx,uid,isPablic):
         async with session.get(url) as response:
             resp = await response.json()
     serverId = ctx.guild.id
-    print(serverId)
+    print(ctx.guild.name)
     name = resp['playerInfo']['nickname']
     print(name)
     if not serverId in uidList:
@@ -170,7 +170,7 @@ async def uid_del(ctx,uid):
 #UIDが公開設定かどうか調べてくれる関数
 async def uid_isPablic(ctx,uid):
     serverId = ctx.guild.id
-    print(serverId)
+    print(ctx.guild.name)
     try:
         isPablic = uidList[serverId][uid]["isPablic"]
     except:
@@ -189,9 +189,13 @@ async def getEmbed(ctx):
     uidList = uidListYaml.load_yaml()
     
     # もしuserに当てはまるUIDが無ければ終了
-    for k,v in uidList[serverId].items():
-        if v["user"] == ctx.author.name:
-            hoge = k
+    try:
+        for k,v in uidList[serverId].items():
+            if v["user"] == ctx.author.name:
+                hoge = k
+    except:
+        print(ctx.guild.name)
+        hoge = None
     if hoge == None:
         button = UidModalButton(ctx)
         view.add_item(button)
@@ -237,19 +241,25 @@ class uidListCog(commands.Cog):
                     description="UIDを登録する際に公開設定にするとここに表示されます。",
                     color=0x1e90ff, 
                     )
-        for k,v in uidList[serverId].items():
-            try:
-                if v["isPablic"] == "False":
+        try:
+            for k,v in uidList[serverId].items():
+                try:
+                    if v["isPablic"] == "False":
+                        continue
+                except:
                     continue
-            except:
-                continue
-            embed.add_field(inline=False,name=k,value=f"Discord：{v['user']}\nユーザー名：{v['name']}")
+                embed.add_field(inline=False,name=k,value=f"Discord：{v['user']}\nユーザー名：{v['name']}")
+        except:
+            print(ctx.guild.name)
         
         view = View()
-        for k,v in uidList[serverId].items():
-            if v["user"] == ctx.author.name:
-                await ctx.respond(embed=embed,ephemeral=True)
-                return
+        try:
+            for k,v in uidList[serverId].items():
+                if v["user"] == ctx.author.name:
+                    await ctx.respond(embed=embed,ephemeral=True)
+                    return
+        except:
+            print(ctx.guild.name)
         button = UidModalButton(ctx)
         view.add_item(button)
         await ctx.respond(embed=embed,view=view,ephemeral=True)

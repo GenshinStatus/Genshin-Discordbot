@@ -209,13 +209,16 @@ class GenshinCog(commands.Cog):
         uid = None
 
         # もしuserに当てはまるUIDが無ければ終了
-        for k,v in uidList[ctx.guild.id].items():
-            if v["user"] == ctx.author.name:
-                uid = k
-                view.add_item(UidButton(ctx,uid))
-                view.add_item(UidModalButton(ctx))
-                await ctx.respond(content="UIDが登録されていますが、UIDを指定しますか？",view=view,ephemeral=True)
-                return
+        try:
+            for k,v in uidList[ctx.guild.id].items():
+                if v["user"] == ctx.author.name:
+                    uid = k
+                    view.add_item(UidButton(ctx,uid))
+                    view.add_item(UidModalButton(ctx))
+                    await ctx.respond(content="UIDが登録されていますが、UIDを指定しますか？",view=view,ephemeral=True)
+                    return
+        except:
+            uid = None
         if uid == None:
             view.add_item(UidModalButton(ctx))
             await ctx.respond(content="UIDが登録されていません。```/uidlist control```で登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。",view=view,ephemeral=True)
