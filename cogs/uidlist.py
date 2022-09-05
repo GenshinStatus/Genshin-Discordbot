@@ -50,7 +50,7 @@ class isPablicButton(View):
     async def callback(self, button, interaction: discord.Interaction):
         isPablic = True
         embed = await getEmbed(self.ctx)
-        await interaction.response.edit_message(content="実行中...",embed=embed[0],view=None)
+        await interaction.response.edit_message(content="処理中です...",embed=embed[0],view=None)
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
@@ -65,7 +65,7 @@ class isPablicButton(View):
     async def no_callback(self, button, interaction: discord.Interaction):
         isPablic = False
         embed = await getEmbed(self.ctx)
-        await interaction.response.edit_message(content="処理が完了しました！",embed=embed[0],view=None)
+        await interaction.response.edit_message(content="処理中です...",embed=embed[0],view=None)
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
