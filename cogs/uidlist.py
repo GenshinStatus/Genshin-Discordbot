@@ -49,28 +49,32 @@ class isPablicButton(View):
     @discord.ui.button(label="公開する", style=discord.ButtonStyle.green)
     async def callback(self, button, interaction: discord.Interaction):
         isPablic = True
+        embed = await getEmbed(self.ctx)
+        await interaction.response.edit_message(content="実行中...",embed=embed[0],view=None)
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
-            await interaction.response.edit_message(content=f"{self.uid}はUIDではありません。",view=None)
+            await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。",view=None)
             return
         embed = await getEmbed(self.ctx)
         if name == "hoge":
-            await interaction.response.edit_message(content=None,embed=None,view=None)
-        await interaction.response.edit_message(content=name,embed=embed[0],view=None)
+            await interaction.edit_original_message(content=None,embed=None,view=None)
+        await interaction.edit_original_message(content=name,embed=embed[0],view=None)
 
     @discord.ui.button(label="公開しない", style=discord.ButtonStyle.red)
     async def no_callback(self, button, interaction: discord.Interaction):
         isPablic = False
+        embed = await getEmbed(self.ctx)
+        await interaction.response.edit_message(content="処理が完了しました！",embed=embed[0],view=None)
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
-            await interaction.response.edit_message(content=f"{self.uid}はUIDではありません。",view=None)
+            await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。",view=None)
             return
         embed = await getEmbed(self.ctx)
         if name == "hoge":
-            await interaction.response.edit_message(content=None,embed=None,view=None)
-        await interaction.response.edit_message(content=name,embed=embed[0],view=None)
+            await interaction.edit_original_message(content=None,embed=None,view=None)
+        await interaction.edit_original_message(content=name,embed=embed[0],view=None)
 
 #モーダルを表示させるボタン
 class UidModalButton(discord.ui.Button):
