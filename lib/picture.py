@@ -6,8 +6,6 @@ import urllib
 import datetime
 import os
 
-dataYaml = yaml(path='genshin_avater.yaml')
-data = dataYaml.load_yaml()
 NameUtilYaml = yaml(path='characters.yaml')
 NameUtil = NameUtilYaml.load_yaml()
 characterNameYaml = yaml(path='genshinJp.yaml')
@@ -57,7 +55,7 @@ def getCharacterPicture(name):
 
 async def getProfile(uid,resp):
     #プロフィールアイコン取得
-    hoge = data[resp['playerInfo']['profilePicture']['avatarId']]['iconName']
+    hoge = NameUtil[str(resp['playerInfo']['profilePicture']['avatarId'])]['IconName']
     temp_1 = downloadPicture(f"https://enka.network/ui/{hoge}.png")
     icon = Image.open(temp_1).copy()
     #プロフィールアイコンのリサイズ

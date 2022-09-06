@@ -9,8 +9,6 @@ import lib.getStat as getStat
 import lib.picture as getPicture
 from typing import List
 
-dataYaml = yaml(path='genshin_avater.yaml')
-data = dataYaml.load_yaml()
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
 genshinJpYaml = yaml(path='genshinJp.yaml')
