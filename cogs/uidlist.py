@@ -105,7 +105,7 @@ class isDeleteEnterButton(View):
         try:
             uid = await uid_del(self.ctx,self.uid)
         except:
-            await interaction.response.edit_message(f"{self.uid}を何らかの理由で削除できませんでした。\nよろしければ、botのプロフィールからエラーの報告をお願いします。")
+            await interaction.response.edit_message(content=f"{self.uid}を何らかの理由で削除できませんでした。\nよろしければ、botのプロフィールからエラーの報告をお願いします。",embed=None,view=None)
             raise
         self.clear_items()
         await interaction.response.edit_message(content=f"{uid}を削除しました。",embed=None,view=self)
