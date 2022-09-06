@@ -4,8 +4,6 @@ from lib.yamlutil import yaml
 import lib.scoreCalculator as genshinscore
 from typing import List
 
-dataYaml = yaml(path='genshin_avater.yaml')
-data = dataYaml.load_yaml()
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
 genshinJpYaml = yaml(path='genshinJp.yaml')

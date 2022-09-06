@@ -49,8 +49,7 @@ class isPablicButton(View):
     @discord.ui.button(label="公開する", style=discord.ButtonStyle.green)
     async def callback(self, button, interaction: discord.Interaction):
         isPablic = True
-        embed = await getEmbed(self.ctx)
-        await interaction.response.edit_message(content="実行中...",embed=embed[0],view=None)
+        await interaction.response.edit_message(content="処理中です...",view=None)
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
@@ -64,8 +63,7 @@ class isPablicButton(View):
     @discord.ui.button(label="公開しない", style=discord.ButtonStyle.red)
     async def no_callback(self, button, interaction: discord.Interaction):
         isPablic = False
-        embed = await getEmbed(self.ctx)
-        await interaction.response.edit_message(content="処理が完了しました！",embed=embed[0],view=None)
+        await interaction.response.edit_message(content="処理中です...",view=None)
         try:
             name = await uid_set(self.ctx,self.uid,isPablic)
         except KeyError:
@@ -107,7 +105,7 @@ class isDeleteEnterButton(View):
         try:
             uid = await uid_del(self.ctx,self.uid)
         except:
-            await interaction.response.edit_message(f"{self.uid}を何らかの理由で削除できませんでした。\nよろしければ、botのプロフィールからエラーの報告をお願いします。")
+            await interaction.response.edit_message(content=f"{self.uid}を何らかの理由で削除できませんでした。\nよろしければ、botのプロフィールからエラーの報告をお願いします。",embed=None,view=None)
             raise
         self.clear_items()
         await interaction.response.edit_message(content=f"{uid}を削除しました。",embed=None,view=self)
