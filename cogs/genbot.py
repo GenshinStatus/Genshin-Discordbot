@@ -3,6 +3,7 @@ from discord.ui import Select,View
 from discord.ext import commands
 from discord.commands import SlashCommandGroup
 import datetime
+from lib.yamlutil import yaml
 
 l: list[discord.SelectOption] = []
 
@@ -53,39 +54,57 @@ class helpselectView(View):
                 )
         await interaction.response.edit_message(content=None,embed=embed,view=self)
 
-#今日の秘境を確認するボタン
-class todayButton(discord.ui.Button):
-    def __init__(self, ctx):
-        super().__init__(label="今日の秘境に戻る",style=discord.ButtonStyle.green)
-        self.ctx = ctx
+class DayOfWeekUnexploredRegion:
 
-    async def callback(self, interaction: discord.Interaction):
-        today = datetime.date.today()
-        hoge = today.weekday()
-        embed = discord.Embed(title=f"本日の日替わり秘境はこちら！",color=0x1e90ff)
-        embed.set_image(url=f"attachment://hoge.png") 
-        await interaction.response.edit_message(embed=embed,file=await getDatatime(hoge),view=weekselectView())
+    EMBEDS = {}
+    SELECT_OPTIONS = []
+    FILES = {}
 
-#明日にするボタン
+    def add_data(key, day_of_week, url):
+        # embedの追加
+        embed = discord.Embed(
+            title=f"{day_of_week}の日替わり秘境はこちら", color=0x1e90ff)
+        embed.set_image(url="attachment://hoge.png")
+        DayOfWeekUnexploredRegion.EMBEDS[key] = embed
+        # optionsの追加
+        DayOfWeekUnexploredRegion.SELECT_OPTIONS.append(
+            discord.SelectOption(label=day_of_week, value=key))
+        # ファイルの追加
+        DayOfWeekUnexploredRegion.FILES[key] = discord.File(url, "image.png")
+
+
+y = yaml("weekday.yaml")
+_DATA: dict = y.load_yaml()
+
+for k, v in _DATA.items():
+    DayOfWeekUnexploredRegion.add_data(
+        key=k, day_of_week=v["day_of_week"], url=v["url"])
+
+
 class weekselectView(View):
     def __init__(self):
-        self.add_item(todayButton)
-        hoge = ["月曜日","火曜日","水曜日","木曜日","金曜日","土曜日","日曜日"]
-        global l
-        for v in range(6):
-            l.append(discord.SelectOption(label=hoge[v],value=str(v)))
+        self.weekday = datetime.date.today().weekday()
+
+    @discord.ui.button(label="今日の秘境に戻る")
+    async def today(self, _: discord.ui.Button, interaction: discord.Interaction):
+        self.weekday = datetime.date.today().weekday()
+        await interaction.response.edit_message(embed=DayOfWeekUnexploredRegion.EMBEDS[self.weekday], file=DayOfWeekUnexploredRegion.FILES[self.weekday], view=self)
+
+    @discord.ui.button(label="次の日の秘境")
+    async def nextday(self, _: discord.ui.Button, interaction: discord.Interaction):
+        self.weekday += 1
+        await interaction.response.edit_message(embed=DayOfWeekUnexploredRegion.EMBEDS[self.weekday], file=DayOfWeekUnexploredRegion.FILES[self.weekday], view=self)
 
     @discord.ui.select(
-            placeholder="確認したい曜日を選択",
-            options=l
+        placeholder="確認したい曜日を選択",
+        options=DayOfWeekUnexploredRegion.SELECT_OPTIONS
     )
-
-    async def select_callback(self, select:discord.ui.Select, interaction:discord.Interaction):
-        embed = discord.Embed(title=f"{select.values[0]}の日替わり秘境はこちら！",color=0x1e90ff)
-        embed.set_image(url=f"attachment://hoge.png") 
+    async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
+        value = select.values[0]
         view = self
-        print(f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり - {select.values[0]}")
-        await interaction.response.edit_message(embed=embed,file=await getDatatime(int(select.values[1])),view=view)
+        print(
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり - {select.values[0]}")
+        await interaction.response.edit_message(embed=DayOfWeekUnexploredRegion.EMBEDS[value], file=DayOfWeekUnexploredRegion.FILES[value], view=view)
 
 async def getDatatime(hoge):
         if hoge == 0:
