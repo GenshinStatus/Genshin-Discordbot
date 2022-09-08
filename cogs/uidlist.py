@@ -59,6 +59,7 @@ class isPablicButton(View):
         if name == "hoge":
             await interaction.edit_original_message(content=None,embed=None,view=None)
         await interaction.edit_original_message(content=name,embed=embed[0],view=None)
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
 
     @discord.ui.button(label="公開しない", style=discord.ButtonStyle.red)
     async def no_callback(self, button, interaction: discord.Interaction):
@@ -73,6 +74,7 @@ class isPablicButton(View):
         if name == "hoge":
             await interaction.edit_original_message(content=None,embed=None,view=None)
         await interaction.edit_original_message(content=name,embed=embed[0],view=None)
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 非公開")
 
 #モーダルを表示させるボタン
 class UidModalButton(discord.ui.Button):
@@ -82,6 +84,7 @@ class UidModalButton(discord.ui.Button):
     
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.send_modal(UidModal(self.ctx))
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - UIDモーダル表示")
 
 #UIDを削除するかどうか聞くボタン
 class isDeleteButton(discord.ui.Button):
@@ -92,6 +95,7 @@ class isDeleteButton(discord.ui.Button):
     
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.edit_message(content="UIDを登録すれば、各種コマンドの入力が省かれ、便利になります。\n**本当に削除しますか？**",view=isDeleteEnterButton(self.uid,self.ctx))
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 削除するかどうか")
 
 #本当にUIDを削除するかどうか聞くボタン
 class isDeleteEnterButton(View):
@@ -109,11 +113,13 @@ class isDeleteEnterButton(View):
             raise
         self.clear_items()
         await interaction.response.edit_message(content=f"{uid}を削除しました。",embed=None,view=self)
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 削除")
 
     @discord.ui.button(label="キャンセルする", style=discord.ButtonStyle.green)
     async def no_callback(self, button, interaction: discord.Interaction):
         self.clear_items()
         await interaction.response.edit_message(content="削除がキャンセルされました",view=self)
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - キャンセル")
 
 #UIDを公開するかどうか聞くボタン
 class isPabricEnterButton(discord.ui.Button):
@@ -253,18 +259,19 @@ class uidListCog(commands.Cog):
                 embed.add_field(inline=False,name=k,value=f"Discord：{v['user']}\nユーザー名：{v['name']}")
         except:
             print(ctx.guild.name)
-        
         view = View()
         try:
             for k,v in uidList[serverId].items():
                 if v["user"] == ctx.author.name:
                     await ctx.respond(embed=embed,ephemeral=True)
+                    print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidlist - 取得")
                     return
         except:
             print(ctx.guild.name)
         button = UidModalButton(ctx)
         view.add_item(button)
         await ctx.respond(embed=embed,view=view,ephemeral=True)
+        print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidlist - 未登録取得")
 
     @uidlist.command(name="control", description="登録したUIDの操作パネルを開きます。")
     async def uidlist_control(
@@ -277,6 +284,7 @@ class uidListCog(commands.Cog):
         view.add_item(isDeleteButton(ctx,uid=k))
         view.add_item(isPabricEnterButton(ctx,k))
         await ctx.respond(embed=embed[0],view=view,ephemeral=True)
+        print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
 
 def setup(bot):
     bot.add_cog(uidListCog(bot))
