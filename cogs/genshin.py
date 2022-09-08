@@ -1,7 +1,7 @@
 from http import server
 import discord
 from discord.ui import Select,View,Button
-from discord.ext import commands
+from discord.ext import commands,tasks
 from discord import Option, SlashCommandGroup
 import aiohttp
 from lib.yamlutil import yaml
@@ -33,7 +33,7 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         #ラベル（名前）からIDを割り出す
         #多分「名前：iD」ってなってるはず
         id = self.dict[self.label]
-        print(interaction.user.name)
+        print(f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nget - キャラ詳細")
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
         await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
@@ -131,44 +131,44 @@ class UidButton(discord.ui.Button):
             if uidList[ctx.guild.id][uid]["isPablic"] == "False":
                 #かつ、コマンドの送信者がそのUIDの保有者じゃなかった場合
                 if uidList[ctx.guild.id][uid]["user"] != ctx.author.name:
-                    await interaction.response.send_message(content="このUIDは表示できません。", ephemeral=True )
+                    await interaction.response.edit_message(content="このUIDは表示できません。", ephemeral=True )
                     return
         except:
             #エラーということはそのUIDがないということなので適当にプリントしてパス
             print(ctx.author.name)
 
-        await interaction.response.send_message(content="アカウント情報読み込み中...",delete_after=5)  
+        await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 resp = await response.json()
                 resalt = []
         embed = await GenshinCog.getApi(self,uid,resp)
-        await ctx.send(content="キャラ情報読み込み中...",delete_after=5)  
+        await interaction.edit_original_message(content="キャラ情報読み込み中...")  
 
         for id in resp["playerInfo"]["showAvatarInfoList"]:
             resalt.append(id["avatarId"])
-        await ctx.send(content="画像を生成中...",delete_after=5)  
+        await interaction.edit_original_message(content="画像を生成中...")  
         hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
-        await ctx.send(content="ボタンを生成中...",delete_after=5)  
-        await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge, ephemeral=True)
+        await interaction.edit_original_message(content="ボタンを生成中...")  
+        await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
 
 async def getProfile(ctx,uid,interaction):
-    await interaction.response.send_message(content="アカウント情報読み込み中...",delete_after=5)  
+    await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
     url = f"https://enka.network/u/{uid}/__data.json"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             resp = await response.json()
             resalt = []
     embed = await GenshinCog.getApi(uid,resp)
-    await ctx.send(content="キャラ情報読み込み中...",delete_after=5)  
+    await interaction.edit_original_message(content="キャラ情報読み込み中...")  
 
     for id in resp["playerInfo"]["showAvatarInfoList"]:
         resalt.append(id["avatarId"])
-    await ctx.send(content="画像を生成中...",delete_after=5)  
+    await interaction.edit_original_message(content="画像を生成中...")  
     hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
-    await ctx.send(content="ボタンを生成中...",delete_after=5)  
-    await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge, ephemeral=True)
+    await interaction.edit_original_message(content="ボタンを生成中...")  
+    await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
 
 class GenshinCog(commands.Cog):
 
@@ -205,7 +205,7 @@ class GenshinCog(commands.Cog):
         uidList = uidListYaml.load_yaml()
         view = View()
         uid = None
-
+        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nget - キャラ情報取得")
         # もしuserに当てはまるUIDが無ければ終了
         try:
             for k,v in uidList[ctx.guild.id].items():

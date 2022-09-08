@@ -1,9 +1,12 @@
 import discord
 from discord.ui import Select,View
-from discord.ext import commands
+from discord.ext import commands,tasks
 from discord.commands import SlashCommandGroup
 import datetime
 from lib.yamlutil import yaml
+import copy
+import lib.now as getTime
+import math
 
 l: list[discord.SelectOption] = []
 
@@ -24,18 +27,22 @@ class helpselectView(View):
                     label="祈願コマンド",
                     emoji="✨",
                     description="いわゆるガチャシミュレーターです。"),
+                discord.SelectOption(
+                    label="便利コマンド",
+                    emoji="🧰",
+                    description="今日の日替わり秘境など"),
         ])
     async def select_callback(self, select:discord.ui.Select, interaction):
         embed = discord.Embed(title=f"helpコマンド：{select.values[0]}",color=0x1e90ff)
         if select.values[0] == "メインコマンド":
-            print("help - メインコマンド")
+            print(f"help - メインコマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"このbotのメインとなるコマンドです。",
                 value=f"\
                     \n**・/genshinstat get**\n自分以外が見ることができない状態で原神のステータスを取得します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
                 ")
         elif select.values[0] == "UIDリストコマンド":
-            print("help - UIDリストコマンド")
+            print(f"help - UIDリストコマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"いちいち確認するのが面倒なUIDを管理するコマンドです。",
                 value=f"\
@@ -43,7 +50,7 @@ class helpselectView(View):
                     \n**・/uidlist control**\n登録したUIDを管理するパネルを表示します。UIDの登録や削除、公開設定の切り替えもここからできます。\
                 ")
         elif select.values[0] == "祈願コマンド":
-            print("help - 祈願コマンド")
+            print(f"help - 祈願コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"いわゆるガチャシミュレーターです。天井もユーザーごとにカウントされています。",
                 value=f"\
@@ -52,7 +59,45 @@ class helpselectView(View):
                     \n**・/wish get_n**\n原神のガチャを指定回数分（最大200回）連続で引きます。結果はまとめて表示します。\
                     "
                 )
+        elif select.values[0] == "便利コマンド":
+            print(f"help - 便利コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            embed.add_field(
+                name=f"botを活用する上で覚えておきたいコマンドたちです。",
+                value=f"\
+                    \n**・/genbot help**\n迷ったらこちらから確認しよう。\
+                    \n**・/genbot today**\n今日の日替わり秘境（天賦本や武器突破素材）や、デイリー更新まであと何分？を表示！\
+                    \n**・/genbot report**\nバグ・不具合報告はこちらからよろしくお願いいたします...\
+                ")
         await interaction.response.edit_message(content=None,embed=embed,view=self)
+
+class MyEmbed(discord.Embed):
+    def __init__(self, day_of_week: str, url: str):
+        super().__init__(title=f"{day_of_week}の日替わり秘境はこちら", color=0x1e90ff)
+        self.set_image(url=url)
+
+    def get_embed(self):
+        embed = copy.deepcopy(self)
+
+        now = datetime.datetime.now()
+        #明日の5時
+        min = getTime.daily - now 
+        min = min / datetime.timedelta(minutes=1)
+        resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
+        embed.add_field(inline=False,name="デイリー更新まで",value=f"```あと{resalt}```")
+        #明日の1時
+        min = getTime.hoyo - now
+        min = min / datetime.timedelta(minutes=1)
+        resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
+        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```あと{resalt}```")
+        #曜日取得
+        min = getTime.weekly - now
+        #これで来週の月曜日まであと何分になった
+        min = min / datetime.timedelta(minutes=1)
+        #これでhourは時間を24で割ったあまりになる
+        hour = min/60 % 24 
+        resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
+        embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```あと{resalt}```")
+        return embed
 
 class DayOfWeekUnexploredRegion:
     def __init__(self, file_path: str):
@@ -65,14 +110,11 @@ class DayOfWeekUnexploredRegion:
 
     def __add_data(self, key, day_of_week, url):
         # embedの追加
-        embed = discord.Embed(
-            title=f"{day_of_week}の日替わり秘境はこちら", color=0x1e90ff)
-        embed.set_image(url=url)
+        embed = MyEmbed(day_of_week=day_of_week,url=url)
         self.EMBEDS[key] = embed
         # optionsの追加
         self.SELECT_OPTIONS.append(
             discord.SelectOption(label=day_of_week, value=str(key)))
-
 
 DATA = DayOfWeekUnexploredRegion("weekday.yaml")
 
@@ -86,12 +128,12 @@ class weekselectView(View):
     @discord.ui.button(label="今日の秘境に戻る")
     async def today(self, _: discord.ui.Button, interaction: discord.Interaction):
         self.weekday = datetime.date.today().weekday()
-        await interaction.response.edit_message(embed=DATA.EMBEDS[self.weekday], view=self)
+        await interaction.response.edit_message(embed=DATA.EMBEDS[self.weekday].get_embed(), view=self)
 
     @discord.ui.button(label="次の日の秘境")
     async def nextday(self, _: discord.ui.Button, interaction: discord.Interaction):
         self.weekday = (self.weekday + 1) % 7
-        await interaction.response.edit_message(embed=DATA.EMBEDS[self.weekday], view=self)
+        await interaction.response.edit_message(embed=DATA.EMBEDS[self.weekday].get_embed(), view=self)
 
     @discord.ui.select(
         placeholder="確認したい曜日を選択",
@@ -102,7 +144,7 @@ class weekselectView(View):
         view = self
         print(
             f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり - {self.weekday}")
-        await interaction.response.edit_message(embed=DATA.EMBEDS[self.weekday], view=view)
+        await interaction.response.edit_message(embed=DATA.EMBEDS[self.weekday].get_embed(), view=view)
 
 #バグ報告モーダル
 class ReportModal(discord.ui.Modal):
@@ -175,6 +217,7 @@ class GenbotCog(commands.Cog):
     def __init__(self, bot):
         print('genbot_initしたよ')
         self.bot = bot
+        self.slow_count.start()
 
     genbot = SlashCommandGroup('genbot', 'test')
 
@@ -195,50 +238,21 @@ class GenbotCog(commands.Cog):
 
         view = weekselectView()
         weekday = view.weekday
-        hoge = DATA
-        await ctx.respond(embed=hoge.EMBEDS[weekday], view=view, ephemeral=True)
+        embed = DATA.EMBEDS[weekday].get_embed()
+        await ctx.respond(embed=embed, view=view, ephemeral=True)
+        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\ntoday - 今日の日替わり秘境")
 
     @genbot.command(name='report', description='不具合報告はこちらから！')
     async def report(self, ctx):
 
         view = bugselectView()
         await ctx.respond(view=view, ephemeral=True)
+        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nreport - 不具合報告")
 
-    @genbot.command(name='now', description='デイリー更新まであと何分？等を表示してくれます')
-    async def now(self, ctx):
-        now = datetime.datetime.now()
-        print(now)
-        embed = discord.Embed( 
-                title=f"今の原神ステータス",
-                description=now.strftime('%Y年%m月%d日 %H:%M:%S'),
-                color=0x1e90ff, 
-                )
-        #現在の時間+1日
-        daily = now + datetime.timedelta(days=1)
-        #明日の5時
-        daily = datetime.datetime(daily.year, daily.month, daily.day, 5, 00, 00, 0000)
-        hoge = daily - now
-        hour = round(hoge / datetime.timedelta (hours=1) - hoge.days*24 )
-        print(str(hoge))
-        resalt = f"{hour}時間{round(hoge.seconds/60)-hour*60}分"
-        embed.add_field(inline=False,name="デイリー更新まで",value=f"```あと{resalt}```")
-        #明日の1時
-        daily = datetime.datetime(daily.year, daily.month, daily.day, 1, 00, 00, 0000)
-        hoge = daily - now
-        hour = round(hoge / datetime.timedelta (hours=1)) - hoge.days*24
-        resalt = f"{hour}時間{round(hoge.seconds/60)-hour*60}分"
-        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```あと{resalt}```")
-        #曜日取得
-        weekday = datetime.date.today().weekday()
-        #7から曜日を引いた日後が来週の月曜日
-        hoge = 7-weekday
-        nextWeek = now + datetime.timedelta(days=hoge)
-        nextWeek = datetime.datetime(nextWeek.year, nextWeek.month, nextWeek.day, 0, 00, 00, 0000)
-        hoge = nextWeek - now
-        hour = round(hoge / datetime.timedelta (hours=1)) - hoge.days*24
-        resalt = f"{hoge.days}日{hour}時間{round(hoge.seconds/60)-hour*60}分"
-        embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```あと{resalt}```")
-        await ctx.respond(embed=embed)
+    @tasks.loop(hours=3.0)
+    async def slow_count(self):
+        getTime.init_reference_times()
+        print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')    
 
 def setup(bot):
     bot.add_cog(GenbotCog(bot))

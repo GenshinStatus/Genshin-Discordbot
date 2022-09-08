@@ -220,6 +220,7 @@ class WishCog(commands.Cog):
             embed.add_field(name="=====================",
                             value="\n".join(final_resalt))
             await ctx.respond(embed=embed)
+            print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nwish - m連")
 
     @wish.command(name="get", description="【10連】原神ガチャシミュレーター　※鍾離ピックアップ中！")
     async def get(
@@ -254,7 +255,6 @@ class WishCog(commands.Cog):
             per = getPer(resalt)
             three = 1 - per - 0.051
             five = per / 2
-            print(per)
 
             # 次に確率です。天井システムを考慮したうえで、10連分の結果をrandomresalt[]として出します。
             # 結果によっては天井カウントをリセットさせます。
@@ -271,7 +271,6 @@ class WishCog(commands.Cog):
                     tmpresalt = random.choices(["3", "4", "5", "6"], weights=[
                                                three, 0.051, five, five])
                     randomresalt.append("".join(tmpresalt))
-                    print(randomresalt)
                     if "5" in randomresalt:
                         WishCog.genshinliset(id, name, 9)
                         per = 0.006
@@ -293,7 +292,6 @@ class WishCog(commands.Cog):
                     tmpresalt = random.choices(["3", "4", "5", "6"], weights=[
                                                three, 0.051, five, five])
                     randomresalt.append("".join(tmpresalt))
-                    print(randomresalt)
                     if "5" in randomresalt:
                         per = 0.006
                         three = 1 - per - 0.051
@@ -318,7 +316,6 @@ class WishCog(commands.Cog):
                     tmpresalt = random.choices(
                         ["3", "4", "6"], weights=[three, 0.051, per])
                     randomresalt.append("".join(tmpresalt))
-                    print(randomresalt)
                     if "6" in randomresalt:
                         WishCog.genshinliset(id, name, 0)
                         per = 0.006
@@ -333,7 +330,6 @@ class WishCog(commands.Cog):
                     tmpresalt = random.choices(["3", "4", "5", "6"], weights=[
                                                three, 0.051, five, five])
                     randomresalt.append("".join(tmpresalt))
-                    print(randomresalt)
                 randomresalt.append("6")
                 WishCog.genshinliset(id, name, 0)
 
@@ -375,8 +371,6 @@ class WishCog(commands.Cog):
                         final_result.append(f"**星4武器**   ★★★★")
                         continue
                     genshinname = WishCog.genshinster("".join(sterresalt))
-                    print(genshinname)
-                    print(sterresalt)
                     await ctx.respond(embed=WishCog.embeded(f"{genshinname}    ★★★★", None, WishCog.genshingen(genshinname)))
                     final_result.append(f"**{genshinname}**   ★★★★")
                     continue
@@ -404,11 +398,11 @@ class WishCog(commands.Cog):
                 resalt_per = 100
             else:
                 resalt_per = per*100
-            print(resalt_per)
             embed = discord.Embed(title=f"ガチャ結果", color=0x1e90ff,)
             embed.add_field(
                 name=f"{ctx.author.name}\nガチャを引いた回数：{resalt*10}\n使った金額：約{resalt*1600*2}円\n今回のガチャの★5確率：{resalt_per}%\n=====================", value="\n".join(final_result))
             await ctx.respond(embed=embed)
+            print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nwish - 10連")
 
 def setup(bot):
     bot.add_cog(WishCog(bot))
