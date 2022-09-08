@@ -1,21 +1,21 @@
-'0':
+0:
   day_of_week: 月曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319824533671947/monday.png'
-'1':
+1:
   day_of_week: 火曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319824890167436/Tuesday.png'
-'2':
+2:
   day_of_week: 水曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319825183780904/Wednesday.png'
-'3':
+3:
   day_of_week: 木曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319825435435098/Thursday.png'
-'4':
+4:
   day_of_week: 金曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319825716449310/Friday.png'
-'5':
+5:
   day_of_week: 土曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319826010058784/Saturday.png'
-'6':
+6:
   day_of_week: 日曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319826274308146/Sunday.png'
