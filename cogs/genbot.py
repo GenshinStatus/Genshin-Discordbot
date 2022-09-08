@@ -1,11 +1,9 @@
-from dis import disco
 import discord
 from discord.ui import Select,View
 from discord.ext import commands
 from discord.commands import SlashCommandGroup
 import datetime
 from lib.yamlutil import yaml
-import lib.now as now
 
 l: list[discord.SelectOption] = []
 
@@ -67,39 +65,8 @@ class DayOfWeekUnexploredRegion:
 
     def __add_data(self, key, day_of_week, url):
         # embedの追加
-        
-        now = datetime.datetime.now()
         embed = discord.Embed(
-            title=f"{day_of_week}の日替わり秘境はこちら", color=0x1e90ff, description=now.strftime('%Y年%m月%d日 %H:%M:%S'))
-        #現在の時間+1日
-        daily = now + datetime.timedelta(days=1)
-
-        #明日の5時
-        daily = datetime.datetime(daily.year, daily.month, daily.day, 5, 00, 00, 0000)
-        hoge = daily - now
-        hour = round(hoge / datetime.timedelta (hours=1)) - hoge.days*24 
-        resalt = f"{hour}時間{round(hoge.seconds/60)-hour*60}分"
-        embed.add_field(inline=False,name="デイリー更新まで",value=f"```あと{resalt}```")
-        
-        #明日の1時
-        daily = datetime.datetime(daily.year, daily.month, daily.day, 1, 00, 00, 0000)
-        hoge = daily - now
-        hour = round(hoge / datetime.timedelta (hours=1)) - hoge.days*24
-        resalt = f"{hour}時間{round(hoge.seconds/60)-hour*60}分"
-        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```あと{resalt}```")
-        
-        #曜日取得
-        weekday = datetime.date.today().weekday()
-        
-        #7から曜日を引いた日後が来週の月曜日
-        hoge = 7-weekday
-        nextWeek = now + datetime.timedelta(days=hoge)
-        nextWeek = datetime.datetime(nextWeek.year, nextWeek.month, nextWeek.day, 0, 00, 00, 0000)
-        hoge = nextWeek - now
-        hour = round(hoge / datetime.timedelta (hours=1)) - hoge.days*24
-        resalt = f"{hoge.days}日{hour}時間{round(hoge.seconds/60)-hour*60}分"
-        embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```あと{resalt}```")
-
+            title=f"{day_of_week}の日替わり秘境はこちら", color=0x1e90ff)
         embed.set_image(url=url)
         self.EMBEDS[key] = embed
         # optionsの追加
@@ -236,6 +203,42 @@ class GenbotCog(commands.Cog):
 
         view = bugselectView()
         await ctx.respond(view=view, ephemeral=True)
+
+    @genbot.command(name='now', description='デイリー更新まであと何分？等を表示してくれます')
+    async def now(self, ctx):
+        now = datetime.datetime.now()
+        print(now)
+        embed = discord.Embed( 
+                title=f"今の原神ステータス",
+                description=now.strftime('%Y年%m月%d日 %H:%M:%S'),
+                color=0x1e90ff, 
+                )
+        #現在の時間+1日
+        daily = now + datetime.timedelta(days=1)
+        #明日の5時
+        daily = datetime.datetime(daily.year, daily.month, daily.day, 5, 00, 00, 0000)
+        hoge = daily - now
+        hour = round(hoge / datetime.timedelta (hours=1) - hoge.days*24 )
+        print(str(hoge))
+        resalt = f"{hour}時間{round(hoge.seconds/60)-hour*60}分"
+        embed.add_field(inline=False,name="デイリー更新まで",value=f"```あと{resalt}```")
+        #明日の1時
+        daily = datetime.datetime(daily.year, daily.month, daily.day, 1, 00, 00, 0000)
+        hoge = daily - now
+        hour = round(hoge / datetime.timedelta (hours=1)) - hoge.days*24
+        resalt = f"{hour}時間{round(hoge.seconds/60)-hour*60}分"
+        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```あと{resalt}```")
+        #曜日取得
+        weekday = datetime.date.today().weekday()
+        #7から曜日を引いた日後が来週の月曜日
+        hoge = 7-weekday
+        nextWeek = now + datetime.timedelta(days=hoge)
+        nextWeek = datetime.datetime(nextWeek.year, nextWeek.month, nextWeek.day, 0, 00, 00, 0000)
+        hoge = nextWeek - now
+        hour = round(hoge / datetime.timedelta (hours=1)) - hoge.days*24
+        resalt = f"{hoge.days}日{hour}時間{round(hoge.seconds/60)-hour*60}分"
+        embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```あと{resalt}```")
+        await ctx.respond(embed=embed)
 
 def setup(bot):
     bot.add_cog(GenbotCog(bot))
