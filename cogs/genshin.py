@@ -84,37 +84,39 @@ class UidModal(discord.ui.Modal):
         uid = self.uid.value
         ctx = self.ctx
         if uid == "000000000":
-            await interaction.response.edit_message(f"エラー：UIDを入力してください。")
+            await interaction.response.edit_message(f"エラー：UIDを入力してください。",view=None)
         try:
             #指定したUIDが非公開だった場合
             if uidList[ctx.guild.id][uid]["isPablic"] == "False":
                 #かつ、コマンドの送信者がそのUIDの保有者じゃなかった場合
                 if uidList[ctx.guild.id][uid]["user"] != ctx.author.name:
-                    await interaction.response.send_message(content="このUIDは表示できません。", ephemeral=True )
+                    await interaction.response.edit_message(content="このUIDは表示できません。",view=None)
                     return
         except:
             #エラーということはそのUIDがないということなので適当にプリントしてパス
             print(ctx.author.name)
 
-        await interaction.response.send_message(content="アカウント情報読み込み中...",delete_after=5)  
+        await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 resp = await response.json()
                 resalt = []
         embed = await GenshinCog.getApi(self,uid,resp)
-        await ctx.send(content="キャラ情報読み込み中...",delete_after=5)  
+        await interaction.edit_original_message(content="キャラ情報読み込み中...")  
+        if resp == {}:
+            await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
 
+        await interaction.edit_original_message(content="画像を生成中...")  
+        hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
         try:
             for id in resp["playerInfo"]["showAvatarInfoList"]:
                 resalt.append(id["avatarId"])
+            await interaction.edit_original_message(content="ボタンを生成中...")  
+            await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
         except:
-            await ctx.respond(content="エラー：入力されたものがUIDではありません",ephemeral=True)
-            return  
-        await ctx.send(content="画像を生成中...",delete_after=5)  
-        hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
-        await ctx.send(content="ボタンを生成中...",delete_after=5)  
-        await ctx.respond(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge, ephemeral=True)
+            embed.add_field(name="エラー",value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
+            await interaction.edit_original_message(content=None,embed=embed,file=hoge)
 
 #UIDを表示させるボタン
 class UidButton(discord.ui.Button):
@@ -144,14 +146,19 @@ class UidButton(discord.ui.Button):
                 resp = await response.json()
                 resalt = []
         embed = await GenshinCog.getApi(self,uid,resp)
-        await interaction.edit_original_message(content="キャラ情報読み込み中...")  
-
-        for id in resp["playerInfo"]["showAvatarInfoList"]:
-            resalt.append(id["avatarId"])
+        await interaction.edit_original_message(content="キャラ情報読み込み中...") 
+        if resp == {}:
+            await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
         await interaction.edit_original_message(content="画像を生成中...")  
         hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
-        await interaction.edit_original_message(content="ボタンを生成中...")  
-        await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
+        try:
+            for id in resp["playerInfo"]["showAvatarInfoList"]:
+                resalt.append(id["avatarId"])
+            await interaction.edit_original_message(content="ボタンを生成中...")  
+            await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
+        except:
+            embed.add_field(name="エラー",value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
+            await interaction.edit_original_message(content=None,embed=embed,file=hoge)
 
 async def getProfile(ctx,uid,interaction):
     await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
@@ -162,9 +169,11 @@ async def getProfile(ctx,uid,interaction):
             resalt = []
     embed = await GenshinCog.getApi(uid,resp)
     await interaction.edit_original_message(content="キャラ情報読み込み中...")  
-
-    for id in resp["playerInfo"]["showAvatarInfoList"]:
-        resalt.append(id["avatarId"])
+    try: 
+        for id in resp["playerInfo"]["showAvatarInfoList"]:
+            resalt.append(id["avatarId"])
+    except:
+        print("genshinstat - 誰も見ることができない")
     await interaction.edit_original_message(content="画像を生成中...")  
     hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
     await interaction.edit_original_message(content="ボタンを生成中...")  
