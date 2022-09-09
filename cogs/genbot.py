@@ -83,12 +83,12 @@ class MyEmbed(discord.Embed):
         min = getTime.daily - now 
         min = min / datetime.timedelta(minutes=1)
         resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
-        embed.add_field(inline=False,name="デイリー更新まで",value=f"```あと{resalt}```")
+        embed.add_field(inline=False,name="デイリー更新まで",value=f"```fix\nあと{resalt}```")
         #明日の1時
         min = getTime.hoyo - now
         min = min / datetime.timedelta(minutes=1)
         resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
-        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```あと{resalt}```")
+        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```fix\nあと{resalt}```")
         #曜日取得
         min = getTime.weekly - now
         #これで来週の月曜日まであと何分になった
@@ -96,7 +96,7 @@ class MyEmbed(discord.Embed):
         #これでhourは時間を24で割ったあまりになる
         hour = min/60 % 24 
         resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
-        embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```あと{resalt}```")
+        embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```fix\nあと{resalt}```")
         return embed
 
 class DayOfWeekUnexploredRegion:
@@ -217,6 +217,8 @@ class GenbotCog(commands.Cog):
     def __init__(self, bot):
         print('genbot_initしたよ')
         self.bot = bot
+        getTime.init_reference_times() 
+        print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')   
         self.slow_count.start()
 
     genbot = SlashCommandGroup('genbot', 'test')
@@ -249,10 +251,12 @@ class GenbotCog(commands.Cog):
         await ctx.respond(view=view, ephemeral=True)
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nreport - 不具合報告")
 
-    @tasks.loop(hours=3.0)
-    async def slow_count(self):
-        getTime.init_reference_times()
-        print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')    
+    tz = datetime.timezone(offset=datetime.timedelta(hours=9))
+
+    @tasks.loop(time=[datetime.time(hour=5, second=1, tzinfo=tz), datetime.time(hour=1, second=1, tzinfo=tz)]) 
+    async def slow_count(self): 
+        getTime.init_reference_times() 
+        print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')   
 
 def setup(bot):
     bot.add_cog(GenbotCog(bot))

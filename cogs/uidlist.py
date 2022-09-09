@@ -279,12 +279,15 @@ class uidListCog(commands.Cog):
             ctx: discord.ApplicationContext,
     ):
         embed = await getEmbed(ctx)
-        k = embed[1]
-        view = View()
-        view.add_item(isDeleteButton(ctx,uid=k))
-        view.add_item(isPabricEnterButton(ctx,k))
-        await ctx.respond(embed=embed[0],view=view,ephemeral=True)
-        print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
+        try:
+            k = embed[1]
+            view = View()
+            view.add_item(isDeleteButton(ctx,uid=k))
+            view.add_item(isPabricEnterButton(ctx,k))
+            await ctx.respond(embed=embed[0],view=view,ephemeral=True)
+            print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
+        except:
+            print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 登録してくれ")
 
 def setup(bot):
     bot.add_cog(uidListCog(bot))
