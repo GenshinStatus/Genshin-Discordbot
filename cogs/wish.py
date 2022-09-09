@@ -24,7 +24,6 @@ PERDATA = {0: 0.006, 1: 0.006, 2: 0.006, 3: 0.006, 4: 0.006, 5: 0.006, 6: 0.006,
 def getPer(top):
     for v in PERDATA:
         if top <= v:
-            print(PERDATA[v])
             return PERDATA[v]
 
 class WishCog(commands.Cog):

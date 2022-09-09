@@ -156,7 +156,6 @@ async def uid_set(ctx,uid,isPablic):
     elif isPablic == False:
         isPablic = "False"
     uidList[serverId][uid] = {"user":ctx.author.name,"name":name,"isPablic":isPablic}
-    print(uidList)
     uidListYaml.save_yaml(uidList)
     if isPablic == "True":
         name = f"{uid}を公開設定で登録しました！"
@@ -169,9 +168,7 @@ async def uid_del(ctx,uid):
     uidListYaml = yaml(path='uidList.yaml')
     uidList = uidListYaml.load_yaml()
     serverId = ctx.guild.id
-    print(serverId)
     uidList[serverId].pop(uid)
-    print(uidList)
     uidListYaml.save_yaml(uidList)
     return uid
 
