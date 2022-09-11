@@ -7,6 +7,7 @@ from lib.yamlutil import yaml
 import copy
 import lib.now as getTime
 import math
+import google.calendar as calendar
 
 l: list[discord.SelectOption] = []
 
@@ -250,6 +251,39 @@ class GenbotCog(commands.Cog):
         view = bugselectView()
         await ctx.respond(view=view, ephemeral=True)
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nreport - 不具合報告")
+
+    @genbot.command(name='event', description='開催中のイベントなどをまとめて確認！')
+    async def event(self, ctx):
+        hoge = await ctx.respond("読み込み中...", ephemeral=True)
+        embed = discord.Embed(title=f"本日開催中のイベントはこちら", color=0x1e90ff)
+        event = calendar.get()
+        now="```ありません```"
+        before="```ありません```"
+        for i in event:
+            if i["start"] > datetime.datetime.now():
+                if before=="```ありません```":
+                    before = ""        
+                min = i["start"] - datetime.datetime.now()
+                #これで来週の月曜日まであと何分になった
+                min = min / datetime.timedelta(minutes=1)
+                #これでhourは時間を24で割ったあまりになる
+                hour = min/60 % 24 
+                resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
+                before += (f"**イベント名：{i['name']}**\n```css\n{i['description']}\n\n開始まで:{resalt}\n開始日:{i['start'].strftime('%m月%d日')}\n終了日:{i['end'].strftime('%m月%d日')}```\n")
+            else:
+                if now=="```ありません```":
+                    now = ""
+                min = i["end"] - datetime.datetime.now()
+                #これで来週の月曜日まであと何分になった
+                min = min / datetime.timedelta(minutes=1)
+                #これでhourは時間を24で割ったあまりになる
+                hour = min/60 % 24 
+                resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
+                now += (f"**イベント名：{i['name']}**\n```css\n{i['description']}\n\n終了日:{i['end'].strftime('%m月%d日')}\n残り時間:{resalt}```\n")
+        embed.add_field(inline=True,name="開催中のイベント\n",value=now)
+        embed.add_field(inline=True,name="開催予定のイベント\n",value=before)
+        await hoge.edit_original_message(content=None,embed=embed)
+        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nevent - イベント確認")
 
     tz = datetime.timezone(offset=datetime.timedelta(hours=9))
 
