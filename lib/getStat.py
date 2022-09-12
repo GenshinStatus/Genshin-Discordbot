@@ -7,7 +7,7 @@ from typing import List
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
 genshinJpYaml = yaml(path='genshinJp.yaml')
-genshinJp = genshinJpYaml.load_yaml()
+genshinTextHash = genshinJpYaml.load_yaml()
 
 async def get(uid,id):
     url = f"https://enka.network/u/{uid}/__data.json"
@@ -15,22 +15,14 @@ async def get(uid,id):
         async with session.get(url) as response:
             resp = await response.json()
     name = characters[id]["NameId"]
-    name = genshinJp[name]
-    print(id)
+    name = genshinTextHash[name]
+    
     id = int(id)
     try:
+        #アバターインフォリストを回す。nにキャラ情報がすべて入る。
         for n in resp['avatarInfoList']:
             if n["avatarId"] == id:
                 chara = n
-                print("hogehogheogheohgpoihvgp;ogiazwqp;oabwo")
-                break
-            else:
-                continue
-        for n in resp['playerInfo']["showAvatarInfoList"]:
-            print(n["avatarId"])
-            if n["avatarId"] == id:
-                level = n["level"]
-                print("hogehogehoge")
                 break
             else:
                 continue
@@ -43,14 +35,16 @@ async def get(uid,id):
         )
         return embed
     try:
+        level = chara["propMap"]["4001"]["val"]
         embed = discord.Embed( 
                     title=name,
                     color=0x1e90ff, 
                     description=f"{level}lv", 
                     url=url 
                     )
-        hoge = characters[str(id)]["sideIconName"]
-        embed.set_thumbnail(url=f"https://enka.network/ui/{hoge}.png")
+        sideIcon = characters[str(id)]["sideIconName"]
+        embed.set_thumbnail(url=f"https://enka.network/ui/{sideIcon}.png")
+
         embed.add_field(inline=True,name="キャラレベル",value=f"{level}lv")
         embed.add_field(inline=True,name="キャラ突破レベル",value=str(chara["propMap"]["1002"]["ival"]))
         embed.add_field(inline=True,name="HP",
@@ -121,22 +115,38 @@ async def get(uid,id):
         embed.add_field(inline=False,name="天賦レベル",
             value="\n".join(temp)
         )
+
+        #ここから聖遺物とかを回す
         for n in chara["equipList"]:
-            name = genshinJp[n["flat"]["setNameTextMapHash"]]
-            equip = genshinJp[n["flat"]["equipType"]]
-            main = genshinJp[n["flat"]["reliquaryMainstat"]["mainPropId"]]
             hoge = []
             statscore = []
-            for b in n["flat"]["reliquarySubstats"]:
-                name_ = genshinJp[b["appendPropId"]]
-                value_ = b["statValue"]
-                hoge.append(f"{name_}：{value_}")
-                statscore.append({name_:value_})
-            getscore = {main:n["flat"]["reliquaryMainstat"]["statValue"]}
-            embed.add_field(inline=True,name=f'聖遺物：{equip}\n{name}\n{main}：{n["flat"]["reliquaryMainstat"]["statValue"]}\n{n["reliquary"]["level"]-1}lv\n聖遺物スコア：**{await genshinscore.score(statscore,getscore)}**\n',
-                value="\n".join(hoge)
-            )
-        embed.set_footer(text="ボタンは連続リクエストを防ぐため、一定時間後に無効化されます。ご了承ください。")
+            #print(f"{n}\n\n")
+            if 'weapon' in n:
+                level = n["weapon"]["level"]
+                name = genshinTextHash[n["flat"]["nameTextMapHash"]]
+                resalt = f"{level}lv\n{name}\n"
+                for weapon in n["flat"]["weaponStats"]:
+                    main_name = genshinTextHash[weapon["appendPropId"]]
+                    main_value = "".join(str([weapon["statValue"]]))
+                    resalt += f"**{main_name}** : {main_value}\n"
+                embed.add_field(inline=True,name=f'武器',
+                value=resalt
+                )
+            else:
+                name = genshinTextHash[n["flat"]["setNameTextMapHash"]]
+                equip = genshinTextHash[n["flat"]["equipType"]]
+                main = genshinTextHash[n["flat"]["reliquaryMainstat"]["mainPropId"]]
+                for b in n["flat"]["reliquarySubstats"]:
+                    name_ = genshinTextHash[b["appendPropId"]]
+                    value_ = b["statValue"]
+                    hoge.append(f"{name_}：{value_}")
+                    statscore.append({name_:value_})
+                getscore = {main:n["flat"]["reliquaryMainstat"]["statValue"]}
+                embed.add_field(inline=True,name=f'聖遺物：{equip}\n{name}\n{main}：{n["flat"]["reliquaryMainstat"]["statValue"]}\n{n["reliquary"]["level"]-1}lv\n聖遺物スコア：**{await genshinscore.score(statscore,getscore)}**\n',
+                    value="\n".join(hoge)
+                )
+            embed.set_footer(text="ボタンは連続リクエストを防ぐため、一定時間後に無効化されます。ご了承ください。")
         return embed
     except KeyError:
+        raise
         return embed
