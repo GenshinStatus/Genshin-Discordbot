@@ -36,7 +36,8 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         print(f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nget - キャラ詳細")
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
-        await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
+        #await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
+        await interaction.response.edit_message(content=content, file=await getStat.getCharacterImage(self.uid, id), view=TicTacToe(self.data,self.uid))
 
 class TicTacToe(discord.ui.View):
     children: List[TicTacToeButton]
