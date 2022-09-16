@@ -28,21 +28,28 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         assert self.view is not None
         view: TicTacToe = self.view
 
+        await interaction.response.edit_message(content="読み込み中...（10秒ほどかかります）", embed=None, view=None)
         self.style = discord.ButtonStyle.success
-        content = self.label
         #ラベル（名前）からIDを割り出す
         #多分「名前：iD」ってなってるはず
         id = self.dict[self.label]
         print(f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nget - キャラ詳細")
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
-        await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
+        #await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
+        embed = discord.Embed( 
+                                title=f"{self.label}",
+                                color=0x1e90ff, 
+                                )
+        embed.set_image(url=f"attachment://{str(self.dict[self.label])}.png") 
+        file = discord.File(await getStat.getCharacterImage(self.uid, id), filename=f"{str(self.dict[self.label])}.png")
+        await interaction.edit_original_message(content=None, file=file, embed=embed, view=TicTacToe(self.data,self.uid))
 
 class TicTacToe(discord.ui.View):
     children: List[TicTacToeButton]
 
     def __init__(self, data, uid):
-        super().__init__(timeout=300)
+        super().__init__(timeout=300, disable_on_timeout=True)
         names = []
         dict = {}
         #入ってきたidを名前にしてリスト化
@@ -212,7 +219,7 @@ class GenshinCog(commands.Cog):
     ):
         uidListYaml = yaml(path='uidList.yaml')
         uidList = uidListYaml.load_yaml()
-        view = View()
+        view = View(timeout=300, disable_on_timeout=True)
         uid = None
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nget - キャラ情報取得")
         # もしuserに当てはまるUIDが無ければ終了
