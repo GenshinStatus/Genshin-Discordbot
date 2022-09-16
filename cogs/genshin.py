@@ -49,7 +49,7 @@ class TicTacToe(discord.ui.View):
     children: List[TicTacToeButton]
 
     def __init__(self, data, uid):
-        super().__init__(timeout=300)
+        super().__init__(timeout=300, disable_on_timeout=True)
         names = []
         dict = {}
         #入ってきたidを名前にしてリスト化
@@ -219,7 +219,7 @@ class GenshinCog(commands.Cog):
     ):
         uidListYaml = yaml(path='uidList.yaml')
         uidList = uidListYaml.load_yaml()
-        view = View()
+        view = View(timeout=300, disable_on_timeout=True)
         uid = None
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nget - キャラ情報取得")
         # もしuserに当てはまるUIDが無ければ終了

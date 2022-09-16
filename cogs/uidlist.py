@@ -42,7 +42,7 @@ class UidModal(discord.ui.Modal):
 #公開するかどうかを聞くボタン
 class isPablicButton(View):
     def __init__(self, uid: str, ctx):
-        super().__init__(timeout=300)
+        super().__init__(timeout=300, disable_on_timeout=True)
         self.ctx = ctx
         self.uid = uid
 
@@ -100,7 +100,7 @@ class isDeleteButton(discord.ui.Button):
 #本当にUIDを削除するかどうか聞くボタン
 class isDeleteEnterButton(View):
     def __init__(self, uid: str, ctx):
-        super().__init__(timeout=300)
+        super().__init__(timeout=300, disable_on_timeout=True)
         self.ctx = ctx
         self.uid = uid
 
@@ -189,7 +189,7 @@ async def uid_isPablic(ctx,uid):
 async def getEmbed(ctx):
     serverId = ctx.guild.id
     hoge = None
-    view = View()
+    view = View(timeout=300, disable_on_timeout=True)
     uidListYaml = yaml(path='uidList.yaml')
     uidList = uidListYaml.load_yaml()
     
@@ -256,7 +256,7 @@ class uidListCog(commands.Cog):
                 embed.add_field(inline=False,name=k,value=f"Discord：{v['user']}\nユーザー名：{v['name']}")
         except:
             print(ctx.guild.name)
-        view = View()
+        view = View(timeout=300, disable_on_timeout=True)
         try:
             for k,v in uidList[serverId].items():
                 if v["user"] == ctx.author.name:
@@ -278,7 +278,7 @@ class uidListCog(commands.Cog):
         embed = await getEmbed(ctx)
         try:
             k = embed[1]
-            view = View()
+            view = View(timeout=300, disable_on_timeout=True)
             view.add_item(isDeleteButton(ctx,uid=k))
             view.add_item(isPabricEnterButton(ctx,k))
             await ctx.respond(embed=embed[0],view=view,ephemeral=True)

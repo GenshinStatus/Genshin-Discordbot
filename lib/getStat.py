@@ -30,9 +30,9 @@ def downloadPicture(url):
     response = requests.get(url)
     image = response.content
 
-    with open(f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\temp\\{file_name}", "wb") as aaa:
+    with open(f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\temp\\{file_name}", "wb") as aaa:
         aaa.write(image)
-    return f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\temp\\{file_name}"
+    return f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\temp\\{file_name}"
 
 def add_text_to_image(img, text, font_size, font_color, height, width, max_length=740, anchor=None):
     position = (width, height)
@@ -51,7 +51,7 @@ def getCharacterPicture(name):
     global genshinTextHash
     hoge = []
     hoge.append(name)
-    if name in ["コレイ","ティナリ"]:
+    if name in ["コレイ","ティナリ","旅人"]:
         return words[name]["url"]
     if name in words:
         resalt = urllib.parse.quote(words[name]["zh"])
@@ -74,7 +74,6 @@ def mask_circle_transparent(pil_img, blur_radius, offset=0):
     return result
 
 async def getCharacterImage(uid,id):
-    os.mkdir("temp")
     url = f"https://enka.network/u/{uid}/__data.json"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -404,10 +403,13 @@ async def getCharacterImage(uid,id):
             width = 1100
             img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
-            #凸、レベル　文字追加
-            for z in n["weapon"]["affixMap"].values():
-                f = z
-            player_name = f'{str(f)}凸  {n["weapon"]["level"]}Lv'
+            try:
+                #凸、レベル　文字追加
+                for z in n["weapon"]["affixMap"].values():
+                    f = z
+                player_name = f'{str(f)}凸  {n["weapon"]["level"]}Lv'
+            except:
+                player_name = f'{n["weapon"]["level"]}Lv'
             font_size = 30
             font_color = (255, 255, 255)
             height = 420

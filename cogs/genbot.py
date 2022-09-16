@@ -232,7 +232,7 @@ class GenbotCog(commands.Cog):
             value=f"\
                 \n**・/genshinstat get**\n自分以外が見ることができない状態で原神のステータスを取得します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
         ")
-        view = helpselectView(timeout=None)
+        view = helpselectView(timeout=300, disable_on_timeout=True)
         # レスポンスで定義したボタンを返す
         await ctx.respond("確認したいコマンドのジャンルを選択してね", embed=embed, view=view, ephemeral=True)
 
