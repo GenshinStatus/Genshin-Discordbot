@@ -28,8 +28,8 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         assert self.view is not None
         view: TicTacToe = self.view
 
+        await interaction.response.edit_message(content="読み込み中...（10秒ほどかかります）", embed=None, view=None)
         self.style = discord.ButtonStyle.success
-        content = self.label
         #ラベル（名前）からIDを割り出す
         #多分「名前：iD」ってなってるはず
         id = self.dict[self.label]
@@ -37,7 +37,13 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
         #await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
-        await interaction.response.edit_message(content=content, file=await getStat.getCharacterImage(self.uid, id), view=TicTacToe(self.data,self.uid))
+        embed = discord.Embed( 
+                                title=f"{self.label}",
+                                color=0x1e90ff, 
+                                )
+        embed.set_image(url=f"attachment://{str(self.dict[self.label])}.png") 
+        file = discord.File(await getStat.getCharacterImage(self.uid, id), filename=f"{str(self.dict[self.label])}.png")
+        await interaction.edit_original_message(content=None, file=file, embed=embed, view=TicTacToe(self.data,self.uid))
 
 class TicTacToe(discord.ui.View):
     children: List[TicTacToeButton]
