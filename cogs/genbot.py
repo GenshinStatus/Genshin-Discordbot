@@ -289,7 +289,7 @@ class GenbotCog(commands.Cog):
     @genbot.command(name='dev', description='開発者用コマンドです。')
     async def event(self, ctx: discord.ApplicationContext,):
         if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986:
-            main.guildsCount()
+            await main.guildsCount()
             await ctx.respond("更新したよ", ephemeral=True)
         else:
             await ctx.respond("管理者限定コマンドです。", ephemeral=True)
