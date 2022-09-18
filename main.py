@@ -26,6 +26,10 @@ async def on_application_command_error(ctx, error):
 async def on_ready():
     print(f"Bot名:{bot.user} On ready!!")
     await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {len(bot.guilds)}サーバーで稼働中",))
+
+async def guildsCount():
+    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {len(bot.guilds)}サーバーで稼働中",))
+
 bot.load_extension('cogs.genshin', store=False)
 bot.load_extension('cogs.wish', store=False)
 bot.load_extension('cogs.genbot', store=False)

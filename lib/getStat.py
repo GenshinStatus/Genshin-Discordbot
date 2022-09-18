@@ -351,8 +351,17 @@ async def getCharacterImage(uid,id,interaction):
 
     temp = []
     hogehoge = 0
-    for myvalue in chara["skillLevelMap"].values():
-        temp.append(f"{myvalue}")
+    h = 0
+    if len(chara["skillLevelMap"]) == 4:
+        for myvalue in chara["skillLevelMap"].values():
+            h+=1
+            if h == 3:
+                continue
+            else:
+                temp.append(f"{myvalue}")
+    else:
+        for myvalue in chara["skillLevelMap"].values():
+            temp.append(f"{myvalue}")
 
     for level in temp:
         hogehoge+=1

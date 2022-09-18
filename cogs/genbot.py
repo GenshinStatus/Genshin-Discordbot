@@ -8,6 +8,7 @@ import copy
 import lib.now as getTime
 import math
 import google.calendar as calendar
+import main
 
 l: list[discord.SelectOption] = []
 
@@ -284,6 +285,14 @@ class GenbotCog(commands.Cog):
         embed.add_field(inline=True,name="開催予定のイベント\n",value=before)
         await hoge.edit_original_message(content=None,embed=embed)
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nevent - イベント確認")
+
+    @genbot.command(name='dev', description='開発者用コマンドです。')
+    async def event(self, ctx: discord.ApplicationContext,):
+        if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986:
+            main.guildsCount()
+            await ctx.respond("更新したよ", ephemeral=True)
+        else:
+            await ctx.respond("管理者限定コマンドです。", ephemeral=True)
 
     tz = datetime.timezone(offset=datetime.timedelta(hours=9))
 
