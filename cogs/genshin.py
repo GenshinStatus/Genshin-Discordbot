@@ -28,7 +28,7 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         assert self.view is not None
         view: TicTacToe = self.view
 
-        await interaction.response.edit_message(content="読み込み中...（10秒ほどかかります）", embed=None, view=None)
+        await interaction.response.edit_message(content="```読み込み中...（10秒ほどかかります）```", embed=None, view=None)
         self.style = discord.ButtonStyle.success
         #ラベル（名前）からIDを割り出す
         #多分「名前：iD」ってなってるはず
@@ -42,7 +42,11 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
                                 color=0x1e90ff, 
                                 )
         embed.set_image(url=f"attachment://{str(self.dict[self.label])}.png") 
-        file = discord.File(await getStat.getCharacterImage(self.uid, id), filename=f"{str(self.dict[self.label])}.png")
+        getImage = await getStat.getCharacterImage(self.uid, id, interaction)
+        if type(getImage) is discord.embeds.Embed:
+            await interaction.edit_original_message(content=None, embed=getImage)
+            return
+        file = discord.File(getImage, filename=f"{str(self.dict[self.label])}.png")
         await interaction.edit_original_message(content=None, file=file, embed=embed, view=TicTacToe(self.data,self.uid))
 
 class TicTacToe(discord.ui.View):

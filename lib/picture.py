@@ -22,9 +22,9 @@ def downloadPicture(url):
     response = requests.get(url)
     image = response.content
 
-    with open(f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\{file_name}", "wb") as aaa:
+    with open(f"picture/{file_name}", "wb") as aaa:
         aaa.write(image)
-    return f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\{file_name}"
+    return f"picture/{file_name}"
 
 def add_text_to_image(img, text, font_size, font_color, height, width, max_length=740):
     position = (width, height)
@@ -69,7 +69,7 @@ async def getProfile(uid,resp):
     icon.putalpha(mask)
 
     #背景画像読み込み
-    base_img = Image.open("C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\ProfileImage.png").convert('RGBA').copy()
+    base_img = Image.open("Image/ProfileImage.png").convert('RGBA').copy()
     #バグ対策に背景を完全透過させたものを生成
     base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
     #base_img.paste(icon, (80, 134), icon)
@@ -107,32 +107,44 @@ async def getProfile(uid,resp):
     width = 565
     img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
-    #レベル文字追加
-    player_name = str(resp['playerInfo']['level'])
+    try:
+        #レベル文字追加
+        player_name = str(resp['playerInfo']['level'])
+    except:
+        player_name = "0"
     font_size = 45
     font_color = (255, 255, 255)
     height = 255
     width = 50
     img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
-    #世界レベル文字追加
-    player_name = str(resp['playerInfo']['worldLevel'])
+    try:
+        #世界レベル文字追加
+        player_name = str(resp['playerInfo']['worldLevel'])
+    except:
+        player_name = "0"
     font_size = 45
     font_color = (255, 255, 255)
     height = 335
     width = 50
     img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
-    #螺旋文字追加
-    player_name = f"{resp['playerInfo']['towerFloorIndex']}-{resp['playerInfo']['towerLevelIndex']}"
+    try:
+        #螺旋文字追加
+        player_name = f"{resp['playerInfo']['towerFloorIndex']}-{resp['playerInfo']['towerLevelIndex']}"
+    except:
+        player_name = "0-0"
     font_size = 45
     font_color = (255, 255, 255)
     height = 255
     width = 295
     img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
-    #アチーブメント文字追加
-    player_name = f"{resp['playerInfo']['finishAchievementNum']}"
+    try:
+        #アチーブメント文字追加
+        player_name = f"{resp['playerInfo']['finishAchievementNum']}"
+    except:
+        player_name = "0"
     font_size = 45
     font_color = (255, 255, 255)
     height = 335
@@ -147,6 +159,6 @@ async def getProfile(uid,resp):
     width = 600
     img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
-    img.save('C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\1.png')
+    img.save('picture/1.png')
     os.remove(temp_1)
-    return "C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\1.png"
+    return "picture/1.png"

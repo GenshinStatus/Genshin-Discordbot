@@ -30,9 +30,9 @@ def downloadPicture(url):
     response = requests.get(url)
     image = response.content
 
-    with open(f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\temp\\{file_name}", "wb") as aaa:
+    with open(f"temp/{file_name}", "wb") as aaa:
         aaa.write(image)
-    return f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\temp\\{file_name}"
+    return f"temp/{file_name}"
 
 def add_text_to_image(img, text, font_size, font_color, height, width, max_length=740, anchor=None):
     position = (width, height)
@@ -73,7 +73,7 @@ def mask_circle_transparent(pil_img, blur_radius, offset=0):
 
     return result
 
-async def getCharacterImage(uid,id):
+async def getCharacterImage(uid,id,interaction):
     url = f"https://enka.network/u/{uid}/__data.json"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -88,8 +88,9 @@ async def getCharacterImage(uid,id):
     s = 720/icon.height
     icon = icon.resize(size=(round(icon.width*s)+100, round(icon.height*s)+100), resample=Image.ANTIALIAS)
 
+    await interaction.edit_original_message(content="```準備中...```")
     #背景画像読み込み
-    base_img = Image.open(f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\status\\{config[str(id)]['Element']}.png").convert('RGBA').copy()
+    base_img = Image.open(f"Image/status/{config[str(id)]['Element']}.png").convert('RGBA').copy()
     #バグ対策に背景を完全透過させたものを生成
     base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
     #base_img.paste(icon, (80, 134), icon)
@@ -105,14 +106,14 @@ async def getCharacterImage(uid,id):
     base_img = Image.alpha_composite(base_img, base_img_clear)
 
     #テキスト取得
-    icon = Image.open("C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\status\\base_text.png").convert('RGBA').copy()
+    icon = Image.open("Image/status/base_text.png").convert('RGBA').copy()
     #バグ対策背景画像にアルファ合成
     base_img_clear.paste(icon, (0, 0))
     #バグ対策できたんでちゃんと合成
     base_img = Image.alpha_composite(base_img, base_img_clear)
 
     #☆追加
-    icon = Image.open("C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\ster.png").convert('RGBA').copy()
+    icon = Image.open("Image/ster.png").convert('RGBA').copy()
     icon = icon.resize(size=(icon.width//1, icon.height//1), resample=Image.ANTIALIAS)
     base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
     #バグ対策背景画像にアルファ合成
@@ -121,6 +122,7 @@ async def getCharacterImage(uid,id):
     #バグ対策できたんでちゃんと合成
     base_img = Image.alpha_composite(base_img, base_img_clear)
 
+    await interaction.edit_original_message(content="```キャラ基本情報取得中...```")
     #ユーザー名文字追加
     player_name = name
     font_size = 88
@@ -155,8 +157,13 @@ async def getCharacterImage(uid,id):
     try:
         hoge = chara["talentIdList"]
         hoge = str(len(hoge))
+        print(hoge)
+        if hoge == "6":
+            hoge = "完"
+        elif hoge == "0":
+            hoge = "無"
     except:
-        hoge = "0"
+        hoge = "無"
     #レベル文字追加
     player_name = f'{chara["propMap"]["4001"]["val"]}Lv  {hoge}凸'
     font_size = 24
@@ -164,15 +171,6 @@ async def getCharacterImage(uid,id):
     height = 130
     width = 50+x*40+40
     img = add_text_to_image(base_img, player_name, font_size, font_color, height, width)
-
-    embed = discord.Embed( 
-                title=name,
-                color=0x1e90ff, 
-                description=f'{chara["propMap"]["4001"]["val"]}lv', 
-                url=url 
-                )
-    sideIcon = characters[str(id)]["sideIconName"]
-    embed.set_thumbnail(url=f"https://enka.network/ui/{sideIcon}.png")
 
     #HP基礎　文字追加
     player_name = str(round(chara["fightPropMap"]["1"]))
@@ -337,6 +335,7 @@ async def getCharacterImage(uid,id):
         width = 220
         img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
+    await interaction.edit_original_message(content="```キャラ天賦情報取得中...```")
     hogehoge = 0
     for skill in config[id]['SkillOrder']:
         hogehoge+=1
@@ -365,6 +364,7 @@ async def getCharacterImage(uid,id):
         width = 1215
         img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
+    await interaction.edit_original_message(content="```キャラ聖遺物情報取得中...```")
     #ここから聖遺物とかを回す
     hogehoge = 0
     for n in chara["equipList"]:
@@ -407,10 +407,10 @@ async def getCharacterImage(uid,id):
                 #凸、レベル　文字追加
                 for z in n["weapon"]["affixMap"].values():
                     f = z
-                player_name = f'{str(f)}凸  {n["weapon"]["level"]}Lv'
+                player_name = f'精錬ランク{str(f+1)}  {n["weapon"]["level"]}Lv'
             except:
                 player_name = f'{n["weapon"]["level"]}Lv'
-            font_size = 30
+            font_size = 28
             font_color = (255, 255, 255)
             height = 420
             width = 1100
@@ -420,7 +420,7 @@ async def getCharacterImage(uid,id):
             hogehoge+=1
             #聖遺物の土台アイコン追加
             lank = n["flat"]["rankLevel"]
-            icon = Image.open(f"C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\Image\\artifact\\{str(lank)}.png").convert('RGBA').copy()
+            icon = Image.open(f"Image/artifact/{str(lank)}.png").convert('RGBA').copy()
             icon = icon.resize(size=(260, 260), resample=Image.ANTIALIAS)
             base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
             #円形用に合成
@@ -486,7 +486,8 @@ async def getCharacterImage(uid,id):
             width = 1450
             img = add_text_to_image(img, player_name, font_size, font_color, height, width)
 
-    img.save('C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\2.png')
+    await interaction.edit_original_message(content="```まもなく完了...```")
+    img.save('picture/2.png')
     shutil.rmtree("temp")
     os.mkdir("temp")
-    return "C:\\Users\\Cinnamon\\Desktop\\DebugGenshinNetwork\\picture\\2.png"
+    return "picture/2.png"
