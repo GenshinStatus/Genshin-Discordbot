@@ -1,7 +1,7 @@
 import discord
 from discord.ui import Select,View
 from discord.ext import commands,tasks
-from discord.commands import SlashCommandGroup
+from discord.commands import Option, SlashCommandGroup
 import datetime
 from lib.yamlutil import yaml
 import copy
@@ -9,6 +9,7 @@ import lib.now as getTime
 import math
 import google.calendar as calendar
 import main
+import lib.image_to_string as textImage
 
 l: list[discord.SelectOption] = []
 
@@ -214,6 +215,9 @@ class bugselectView(View):
         print(str(select.values[0]))
         await interaction.response.send_modal(ReportModal(select.values[0]))
 
+def get_jst(hour: int):
+    return (24 - 9 + hour) % 24
+
 class GenbotCog(commands.Cog):
 
     def __init__(self, bot):
@@ -287,16 +291,14 @@ class GenbotCog(commands.Cog):
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nevent - イベント確認")
 
     @genbot.command(name='dev', description='開発者用コマンドです。')
-    async def event(self, ctx: discord.ApplicationContext,):
+    async def dev(self, ctx: discord.ApplicationContext,):
         if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986:
             await main.guildsCount()
             await ctx.respond("更新したよ", ephemeral=True)
         else:
             await ctx.respond("管理者限定コマンドです。", ephemeral=True)
 
-    tz = datetime.timezone(offset=datetime.timedelta(hours=9))
-
-    @tasks.loop(time=[datetime.time(hour=5, second=1, tzinfo=tz), datetime.time(hour=1, second=1, tzinfo=tz)]) 
+    @tasks.loop(time=[datetime.time(hour=get_jst(5),second=1), datetime.time(hour=get_jst(1), second=1)]) 
     async def slow_count(self): 
         getTime.init_reference_times() 
         print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')   
