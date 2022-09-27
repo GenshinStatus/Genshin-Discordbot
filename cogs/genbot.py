@@ -10,6 +10,7 @@ import math
 import google.calendar as calendar
 import main
 import lib.image_to_string as textImage
+import time
 
 l: list[discord.SelectOption] = []
 
@@ -118,22 +119,16 @@ class MyEmbed(discord.Embed):
 
         now = datetime.datetime.now()
         #明日の5時
-        min = getTime.daily - now 
-        min = min / datetime.timedelta(minutes=1)
-        resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
+        daily = int(getTime.daily.timestamp() - time.time())
+        resalt = f"約{daily//3600}時間{daily%3600//60}分"
         embed.add_field(inline=False,name="デイリー更新まで",value=f"```fix\nあと{resalt}```")
         #明日の1時
-        min = getTime.hoyo - now
-        min = min / datetime.timedelta(minutes=1)
-        resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
+        hoyo = int(getTime.hoyo.timestamp() - time.time())
+        resalt = f"約{hoyo//3600}時間{hoyo%3600//60}分"
         embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```fix\nあと{resalt}```")
         #曜日取得
-        min = getTime.weekly - now
-        #これで来週の月曜日まであと何分になった
-        min = min / datetime.timedelta(minutes=1)
-        #これでhourは時間を24で割ったあまりになる
-        hour = min/60 % 24 
-        resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
+        weekly = int(getTime.weekly.timestamp() - time.time())
+        resalt = f"約{weekly//86400}日{weekly%86400//3600}時間{weekly%86400%3600//60}分"
         embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```fix\nあと{resalt}```")
         return embed
 
