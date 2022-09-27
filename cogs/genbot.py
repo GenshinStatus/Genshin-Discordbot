@@ -34,6 +34,18 @@ class helpselectView(View):
                     label="便利コマンド",
                     emoji="🧰",
                     description="今日の日替わり秘境など"),
+                discord.SelectOption(
+                    label="聖遺物スコア計算コマンド",
+                    emoji="🧮",
+                    description="スコアを簡単に計算します"),
+                discord.SelectOption(
+                    label="通知コマンド",
+                    emoji="📢",
+                    description="樹脂などが溢れる前に通知します"),
+                discord.SelectOption(
+                    label="設定コマンド",
+                    emoji="⚙",
+                    description="通知チャンネルなどを設定します"),
         ])
     async def select_callback(self, select:discord.ui.Select, interaction):
         embed = discord.Embed(title=f"helpコマンド：{select.values[0]}",color=0x1e90ff)
@@ -70,6 +82,29 @@ class helpselectView(View):
                     \n**・/genbot help**\n迷ったらこちらから確認しよう。\
                     \n**・/genbot today**\n今日の日替わり秘境（天賦本や武器突破素材）や、デイリー更新まであと何分？を表示！\
                     \n**・/genbot report**\nバグ・不具合報告はこちらからよろしくお願いいたします...\
+                    \n**・/genbot event**\n原神のイベントを確認できます。\
+                ")
+        elif select.values[0] == "聖遺物スコア計算コマンド":
+            print(f"help - 聖遺物スコア計算コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            embed.add_field(
+                name=f"聖遺物スコア計算を簡単にしてくれるコマンドです。",
+                value=f"\
+                    \n**・/artifact get**\n会心率基準で簡単に計算してくれます。数値はコマンド実行時に入力します。\
+                    \n**・/artifact get_detail**\nHP基準や防御力基準など、より詳細に設定して計算します。\
+                ")
+        elif select.values[0] == "通知コマンド":
+            print(f"help - 通知コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            embed.add_field(
+                name=f"樹脂が溢れないように通知してくれるコマンドです。",
+                value=f"\
+                    \n**・/notification resin**\n現在の樹脂量を入力することで、溢れる前に通知します。\
+                ")
+        elif select.values[0] == "設定コマンド":
+            print(f"help - 設定コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            embed.add_field(
+                name=f"通知チャンネルなどを設定するコマンドです。",
+                value=f"\
+                    \n**・/setting channel**\n樹脂通知をするチャンネルを設定します。\
                 ")
         await interaction.response.edit_message(content=None,embed=embed,view=self)
 
@@ -210,6 +245,15 @@ class bugselectView(View):
                 discord.SelectOption(
                     label="/wish",
                     description="get、get_n等"),
+                discord.SelectOption(
+                    label="/setting",
+                    description="channel等"),
+                discord.SelectOption(
+                    label="/artifact",
+                    description="get等"),
+                discord.SelectOption(
+                    label="/notification",
+                    description="resin等"),
         ])
     async def select_callback(self, select:discord.ui.Select, interaction):
         print(str(select.values[0]))
