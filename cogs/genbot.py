@@ -1,7 +1,7 @@
 import discord
 from discord.ui import Select,View
 from discord.ext import commands,tasks
-from discord.commands import SlashCommandGroup
+from discord.commands import Option, SlashCommandGroup
 import datetime
 from lib.yamlutil import yaml
 import copy
@@ -9,6 +9,8 @@ import lib.now as getTime
 import math
 import google.calendar as calendar
 import main
+import lib.image_to_string as textImage
+import time
 
 l: list[discord.SelectOption] = []
 
@@ -33,6 +35,18 @@ class helpselectView(View):
                     label="便利コマンド",
                     emoji="🧰",
                     description="今日の日替わり秘境など"),
+                discord.SelectOption(
+                    label="聖遺物スコア計算コマンド",
+                    emoji="🧮",
+                    description="スコアを簡単に計算します"),
+                discord.SelectOption(
+                    label="通知コマンド",
+                    emoji="📢",
+                    description="樹脂などが溢れる前に通知します"),
+                discord.SelectOption(
+                    label="設定コマンド",
+                    emoji="⚙",
+                    description="通知チャンネルなどを設定します"),
         ])
     async def select_callback(self, select:discord.ui.Select, interaction):
         embed = discord.Embed(title=f"helpコマンド：{select.values[0]}",color=0x1e90ff)
@@ -69,6 +83,29 @@ class helpselectView(View):
                     \n**・/genbot help**\n迷ったらこちらから確認しよう。\
                     \n**・/genbot today**\n今日の日替わり秘境（天賦本や武器突破素材）や、デイリー更新まであと何分？を表示！\
                     \n**・/genbot report**\nバグ・不具合報告はこちらからよろしくお願いいたします...\
+                    \n**・/genbot event**\n原神のイベントを確認できます。\
+                ")
+        elif select.values[0] == "聖遺物スコア計算コマンド":
+            print(f"help - 聖遺物スコア計算コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            embed.add_field(
+                name=f"聖遺物スコア計算を簡単にしてくれるコマンドです。",
+                value=f"\
+                    \n**・/artifact get**\n会心率基準で簡単に計算してくれます。数値はコマンド実行時に入力します。\
+                    \n**・/artifact get_detail**\nHP基準や防御力基準など、より詳細に設定して計算します。\
+                ")
+        elif select.values[0] == "通知コマンド":
+            print(f"help - 通知コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            embed.add_field(
+                name=f"樹脂が溢れないように通知してくれるコマンドです。",
+                value=f"\
+                    \n**・/notification resin**\n現在の樹脂量を入力することで、溢れる前に通知します。\
+                ")
+        elif select.values[0] == "設定コマンド":
+            print(f"help - 設定コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            embed.add_field(
+                name=f"通知チャンネルなどを設定するコマンドです。",
+                value=f"\
+                    \n**・/setting channel**\n樹脂通知をするチャンネルを設定します。\
                 ")
         await interaction.response.edit_message(content=None,embed=embed,view=self)
 
@@ -82,22 +119,16 @@ class MyEmbed(discord.Embed):
 
         now = datetime.datetime.now()
         #明日の5時
-        min = getTime.daily - now 
-        min = min / datetime.timedelta(minutes=1)
-        resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
+        daily = int(getTime.daily.timestamp() - time.time())
+        resalt = f"約{daily//3600}時間{daily%3600//60}分"
         embed.add_field(inline=False,name="デイリー更新まで",value=f"```fix\nあと{resalt}```")
         #明日の1時
-        min = getTime.hoyo - now
-        min = min / datetime.timedelta(minutes=1)
-        resalt = f"{math.floor(min/60)}時間{math.floor(min % 60)}分"
+        hoyo = int(getTime.hoyo.timestamp() - time.time())
+        resalt = f"約{hoyo//3600}時間{hoyo%3600//60}分"
         embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"```fix\nあと{resalt}```")
         #曜日取得
-        min = getTime.weekly - now
-        #これで来週の月曜日まであと何分になった
-        min = min / datetime.timedelta(minutes=1)
-        #これでhourは時間を24で割ったあまりになる
-        hour = min/60 % 24 
-        resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
+        weekly = int(getTime.weekly.timestamp() - time.time())
+        resalt = f"約{weekly//86400}日{weekly%86400//3600}時間{weekly%86400%3600//60}分"
         embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```fix\nあと{resalt}```")
         return embed
 
@@ -209,10 +240,22 @@ class bugselectView(View):
                 discord.SelectOption(
                     label="/wish",
                     description="get、get_n等"),
+                discord.SelectOption(
+                    label="/setting",
+                    description="channel等"),
+                discord.SelectOption(
+                    label="/artifact",
+                    description="get等"),
+                discord.SelectOption(
+                    label="/notification",
+                    description="resin等"),
         ])
     async def select_callback(self, select:discord.ui.Select, interaction):
         print(str(select.values[0]))
         await interaction.response.send_modal(ReportModal(select.values[0]))
+
+def get_jst(hour: int):
+    return (24 - 9 + hour) % 24
 
 class GenbotCog(commands.Cog):
 
@@ -287,16 +330,14 @@ class GenbotCog(commands.Cog):
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nevent - イベント確認")
 
     @genbot.command(name='dev', description='開発者用コマンドです。')
-    async def event(self, ctx: discord.ApplicationContext,):
+    async def dev(self, ctx: discord.ApplicationContext,):
         if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986:
-            main.guildsCount()
+            await main.guildsCount()
             await ctx.respond("更新したよ", ephemeral=True)
         else:
             await ctx.respond("管理者限定コマンドです。", ephemeral=True)
 
-    tz = datetime.timezone(offset=datetime.timedelta(hours=9))
-
-    @tasks.loop(time=[datetime.time(hour=5, second=1, tzinfo=tz), datetime.time(hour=1, second=1, tzinfo=tz)]) 
+    @tasks.loop(time=[datetime.time(hour=get_jst(5),second=1), datetime.time(hour=get_jst(1), second=1)]) 
     async def slow_count(self): 
         getTime.init_reference_times() 
         print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')   

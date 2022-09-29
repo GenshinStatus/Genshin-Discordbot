@@ -7,7 +7,6 @@ bot = commands.Bot()
 #debug_guilds=[879288794560471050]
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
-print(TOKEN)
 
 path = "./cogs"
 
@@ -34,5 +33,8 @@ bot.load_extension('cogs.genshin', store=False)
 bot.load_extension('cogs.wish', store=False)
 bot.load_extension('cogs.genbot', store=False)
 bot.load_extension('cogs.uidlist', store=False)
+bot.load_extension('cogs.artifact', store=False)
+bot.load_extension('cogs.notification', store=False)
+bot.load_extension('cogs.setting', store=False)
 
 bot.run(TOKEN)

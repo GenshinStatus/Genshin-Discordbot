@@ -21,7 +21,6 @@ def init_reference_times():
     hoyo = datetime(year=now.year, month=now.month, day=now.day, hour=1)
     if hoyo < now:
         hoyo += one_day
-    weekly = datetime(year=now.year, month=now.month,
-                      day=now.day + ((7-now.weekday()) % 7), hour=5)
+    weekly = datetime(year=now.year, month=now.month, day=now.day, hour=5) + timedelta(days=(7-now.weekday())%7)
     if weekly < now:
         weekly += seven_days
