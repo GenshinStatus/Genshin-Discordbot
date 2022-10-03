@@ -59,6 +59,7 @@ class NotificationCog(commands.Cog):
         embed = discord.Embed(title=f"<t:{hoge}:R>に通知を以下のチャンネルから送信します", color=0x1e90ff,
                 description=f"チャンネル：<#{channelId[ctx.guild.id]['channelid']}>")
         await n.edit_original_message(content="設定しました。", embed=embed)
+        print(f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nnotification_resin - set")
 
     @tasks.loop(seconds=10) 
     async def slow_count(self): 
@@ -75,6 +76,7 @@ class NotificationCog(commands.Cog):
             await channel.send(content=f"{hoge['userId']}", embed=embed)
             notificationData.pop(round(round(time.time()),-1))
             notificationYaml.save_yaml(notificationData)
+            print(f"notification_resin - 通知")
         except:
             return
 

@@ -44,6 +44,7 @@ class SettingCog(commands.Cog):
         channel = self.bot.get_partial_messageable(channel.id)
         await channel.send(embed=embed)
         await ctx.respond(content="設定しました。", ephemeral=True)
+        print(f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nsetting_channel - set")
 
 def setup(bot):
     bot.add_cog(SettingCog(bot))
