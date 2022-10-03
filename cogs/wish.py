@@ -64,7 +64,7 @@ class WishCog(commands.Cog):
         global jhwords
         hoge = []
         hoge.append(name)
-        if name in ["コレイ","ティナリ"]:
+        if name in ["コレイ","ティナリ","旅人","ニィロウ","キャンディス","セノ"]:
             return words[name]["url"]
         if name in words:
             resalt = urllib.parse.quote(words[name]["zh"])
