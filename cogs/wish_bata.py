@@ -2,6 +2,7 @@ from lib.yamlutil import yaml
 import discord
 from discord.ext import commands
 from discord import Option, OptionChoice, SlashCommandGroup
+from discord.ui import View
 import random
 import urllib
 import asyncio
@@ -58,7 +59,7 @@ def roofGet(id:int,roof:int):
         banner = hoge[id]["banner"]
         num = hoge[id]["num"]
     else:
-        roof += 0
+        roof = 0
         banner = 00000
         num = 0
     hoge[id] = {"roof": roof, "banner": banner, "num": num}
@@ -153,7 +154,7 @@ class Wish_bataCog(commands.Cog):
         name = ctx.author.name
 
         # 何か送信しないと応答なしと判断されてエラーを吐くので一応
-        await ctx.respond("処理を開始中...", ephemeral=True)
+        foo = await ctx.respond("処理を開始中...")
 
         #まずこいつの天井、指定バナーを取得
         roofGet(id,0)
@@ -166,8 +167,36 @@ class Wish_bataCog(commands.Cog):
         for n in range(10):
             resalt.append(wish_list(roof=roof,id=id))
             roof = roofGet(id,1)
+            print(resalt)
 
-        await ctx.respond(resalt)
+        #条件分岐で画像変化
+        view = View()
+        view.add_item(WishSkipButton(ctx,resalt,foo))
+        if "5" in resalt or "6" in resalt:
+            direction_embed = Wish_bataCog.embeded(
+                None, None, "https://c.tenor.com/rOuL0G1uRpMAAAAC/genshin-impact-pull.gif")
+            await foo.edit_original_message(content=None,embed=direction_embed,view=view)
+        else:
+            direction_embed = Wish_bataCog.embeded(
+                None, None, "https://c.tenor.com/pVzBgcp1RPQAAAAC/genshin-impact-animation.gif")
+            await foo.edit_original_message(content=None,embed=direction_embed,view=view)
+        await asyncio.sleep(5.5)
+        await resalt_character(ctx,resalt,foo)
+
+#スキップボタンを表示させるボタン
+class WishSkipButton(discord.ui.Button):
+    def __init__(self, ctx, resalt,foo):
+        super().__init__(label="スキップ",style=discord.ButtonStyle.green)
+        self.ctx = ctx
+        self.resalt = resalt
+        self.foo = foo
+
+    async def callback(self, interaction: discord.Interaction):
+        await resalt_character(self.ctx, self.resalt, self.foo)
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
+
+async def resalt_character(ctx: discord.ApplicationContext,resalt,foo):
+    await foo.edit_original_message(content=resalt,embed=None,view=None)
 
 def setup(bot):
     bot.add_cog(Wish_bataCog(bot))
