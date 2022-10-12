@@ -11,6 +11,7 @@ import google.calendar as calendar
 import main
 import lib.image_to_string as textImage
 import time
+import lib.sql as SQL
 
 l: list[discord.SelectOption] = []
 
@@ -333,7 +334,13 @@ class GenbotCog(commands.Cog):
     async def dev(self, ctx: discord.ApplicationContext,):
         if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986:
             await main.guildsCount()
-            await ctx.respond("更新したよ", ephemeral=True)
+            await ctx.respond("更新したよ\nGithub: https://github.com/CinnamonSea2073/Genshin-Discordbot", ephemeral=True)
+            message_list = []
+            uidList = SQL.UID.get_uid_list(ctx.guild.id)
+            for uid in uidList:
+                message_list.append(f"UID:{uid.uid}\n{uid.d_name}\n{uid.g_name}")
+            print("\n".join(message_list))
+            await ctx.send(content="\n".join(message_list))
         else:
             await ctx.respond("管理者限定コマンドです。", ephemeral=True)
 
