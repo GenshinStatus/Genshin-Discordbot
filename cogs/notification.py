@@ -1,16 +1,9 @@
-from calendar import c
 import discord
 from discord.ui import Select,View
 from discord.ext import commands,tasks
 from discord.commands import Option, SlashCommandGroup
 import datetime
 from lib.yamlutil import yaml
-import copy
-import lib.now as getTime
-import math
-import google.calendar as calendar
-import main
-import lib.image_to_string as textImage
 import time
 
 channelIdYaml = yaml(path='channelId.yaml')
