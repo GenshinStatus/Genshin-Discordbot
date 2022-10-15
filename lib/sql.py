@@ -104,3 +104,34 @@ class UID:
     print(result)
     data: list[UID] = [UID(uid=v[0], d_name=v[1], g_name=v[2]) for v in result]
     return data
+
+  def set_uid_list(guild_id, user_id, user_name, uid, game_name, public):
+    # sqlでデータセット
+    print(guild_id)
+    sql.write_sql(execute="""
+        insert into user_table values (%s, %s, %s, %s, %s, %s)""", 
+        data=(guild_id,user_id,user_name,uid,game_name,public))
+    return 
+
+  def update_uid_list(where,set,data):
+    # sqlでデータセット
+    sql.write_sql(execute=f"""
+        update user_table set {set} where {where}""", 
+        data=data)
+    return 
+
+class channel:
+  def __init__(self,guilt_id: int, channel_id: int):
+    self.guilt_id = guilt_id
+    self.channel_id = channel_id
+
+  def get_channel(guild_id):
+    # sqlでデータとってくるやつ
+    print(guild_id)
+    result = sql.load_data_sql(execute="""
+        select *
+        from server_table
+        where serverid = %s""", data=(guild_id,))
+    print(result)
+    data: list[channel] = [channel(guilt_id=v[0], channel_id=v[1]) for v in result]
+    return data
