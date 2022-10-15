@@ -188,7 +188,7 @@ class WishCog(commands.Cog):
         embed.set_image(url=picture)
         await ctx.respond(embed=embed)
 
-    @wish.command(name="get_n", description="【回数指定】原神ガチャシミュレーター　※鍾離ピックアップ中！")
+    @wish.command(name="get_n", description="【回数指定】原神ガチャシミュレーター　※ニィロウPU中！")
     async def get_n(
         self,
         ctx: discord.ApplicationContext,
@@ -221,7 +221,7 @@ class WishCog(commands.Cog):
             await ctx.respond(embed=embed)
             print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nwish - m連")
 
-    @wish.command(name="get", description="【10連】原神ガチャシミュレーター　※鍾離ピックアップ中！")
+    @wish.command(name="get", description="【10連】原神ガチャシミュレーター　※ニィロウPU中！")
     async def get(
         self,
         ctx: discord.ApplicationContext,
