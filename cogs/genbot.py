@@ -336,7 +336,7 @@ class GenbotCog(commands.Cog):
             await main.guildsCount()
             await ctx.respond("更新したよ\nGithub: https://github.com/CinnamonSea2073/Genshin-Discordbot", ephemeral=True)
             message_list = []
-            uidList = SQL.UID.get_uid_list(ctx.guild.id)
+            uidList = SQL.PermitID.get_uid_list(ctx.guild.id)
             for uid in uidList:
                 message_list.append(f"UID:{uid.uid}\n{uid.d_name}\n{uid.g_name}")
             print("\n".join(message_list))
