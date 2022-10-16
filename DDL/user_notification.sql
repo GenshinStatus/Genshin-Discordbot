@@ -1,10 +1,14 @@
--- public.server_table definition
+-- public.user_notification definition
 
 -- Drop table
 
--- DROP TABLE public.server_table;
+-- DROP TABLE public.user_notification;
 
-CREATE TABLE public.server_table (
+CREATE TABLE public.user_notification (
 	serverid int8 NULL,
-	channelid int4 NULL
+	id int8 NOT NULL,
+	"name" bpchar(1) NULL,
+	resin int8 NULL DEFAULT 0,
+	channelid int8 NULL,
+	CONSTRAINT user_notification_pkey PRIMARY KEY (id)
 );
