@@ -6,6 +6,6 @@
 
 CREATE TABLE public.permit_ids (
 	serverid int8 NOT NULL,
-	userid _int8 NULL,
-	CONSTRAINT permit_ids_pkey PRIMARY KEY (serverid)
+	userid int8 NOT NULL,
+	CONSTRAINT permit_ids_pkey PRIMARY KEY (serverid, userid)
 );
