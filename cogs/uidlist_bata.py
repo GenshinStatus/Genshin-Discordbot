@@ -48,7 +48,7 @@ class isPablicButton(View):
         await interaction.response.edit_message(content="処理中です...",view=None)
         SQL.PermitID.add_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content=None,embed=embed,view=None)
+        await interaction.edit_original_message(content="公開しました！",embed=embed,view=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
 
     @discord.ui.button(label="公開しない", style=discord.ButtonStyle.red)
@@ -56,7 +56,7 @@ class isPablicButton(View):
         await interaction.response.edit_message(content="処理中です...",view=None)
         SQL.PermitID.remove_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content=None,embed=embed,view=None)
+        await interaction.edit_original_message(content="非公開にしました！",embed=embed,view=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 非公開")
 
 #モーダルを表示させるボタン
@@ -145,9 +145,10 @@ async def getEmbed(ctx):
         view.add_item(button)
         await ctx.respond(content="UIDが登録されていません。下のボタンから登録してください。",view=view,ephemeral=True)
         return
-    if SQL.PermitID.is_user_public(ctx.guild.id, ctx.author.id) == False:
+    isPublic = SQL.PermitID.is_user_public(ctx.guild.id, ctx.author.id)
+    if isPublic == False:
         isPublic = "非公開です"
-    else:
+    elif isPublic == True:
         isPublic = "公開されています"
     embed = discord.Embed( 
                 title=f"登録情報",
@@ -159,14 +160,13 @@ async def getEmbed(ctx):
     return embed
 
 class select_uid_pulldown(discord.ui.Select):
-    def __init__(self, ctx, selectOptions:list[discord.SelectOption]):
+    def __init__(self, ctx, selectOptions: list[discord.SelectOption]):
         super().__init__(placeholder="削除するUIDを選択してください", options=selectOptions)
         self.ctx = ctx
 
-    async def select_callback(self, select:discord.ui.Select, interaction:discord.Interaction):
-        view = View()
-        view.add_item(isDeleteButton(self.ctx,select.values[0]))
-        await interaction.response.edit_message(content=None, view=view)
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(content="UIDを登録すれば、各種コマンドの入力が省かれ、便利になります。\n**本当に削除しますか？**",view=isDeleteEnterButton(int(self.values[0]),self.ctx))
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 削除するかどうか")
 
 class uidList_bataCog(commands.Cog):
 
@@ -188,7 +188,7 @@ class uidList_bataCog(commands.Cog):
                     )
         uidList = SQL.PermitID.get_uid_list(ctx.guild.id)
         for v in uidList:
-             embed.add_field(inline=False,name=v.uid,value=f"Discord：{v.d_name}\nユーザー名：{v.g_name}")
+             embed.add_field(inline=False,name=v.uid,value=f"Discord： <@{v.d_id}>\nユーザー名：{v.g_name}")
         view = View(timeout=300, disable_on_timeout=True)
         try:
             for v in uidList:
@@ -213,16 +213,18 @@ class uidList_bataCog(commands.Cog):
         userData = SQL.User.get_user_list(ctx.author.id)
         for v in userData:
             select_options.append(
-                discord.SelectOption(label=v.game_name, value=str(v.uid)))
-    #try:
-        view = View(timeout=300, disable_on_timeout=True)
-        view.add_item(select_uid_pulldown(ctx,userData))
-        view.add_item(isPabricEnterButton(ctx))
-        view.add_item(UidModalButton(ctx))
-        await ctx.respond(embed=embed,view=view,ephemeral=True)
-        print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
-    #except:
-        print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 登録してくれ")
+                discord.SelectOption(label=v.game_name, description=str(v.uid), value=str(v.uid)))
+        try:
+            view = View(timeout=300, disable_on_timeout=True)
+            view.add_item(select_uid_pulldown(ctx, select_options))
+            view.add_item(isPabricEnterButton(ctx))
+            view.add_item(UidModalButton(ctx))
+            await ctx.respond(embed=embed, view=view, ephemeral=True)
+            print(
+                f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
+        except:
+            print(
+                f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 登録してくれ")
 
 def setup(bot):
     bot.add_cog(uidList_bataCog(bot))

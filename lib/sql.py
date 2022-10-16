@@ -118,15 +118,15 @@ class User:
         """
         database.table_update_sql(
             sql="""
-            delete user_table where id = %s and uid = %s
+            delete from user_table where id = %s and uid = %s
             """,
             data=(user_id, uid)
         )
 
 class PermitID:
-    def __init__(self, uid: int, d_name: str, g_name: str):
+    def __init__(self, uid: int, d_id: str, g_name: str):
         self.uid = uid
-        self.d_name = d_name
+        self.d_id = d_id
         self.g_name = g_name
 
     def get_uid_list(guild_id: int):
@@ -135,7 +135,7 @@ class PermitID:
         genshin botでguildごとのuidlistを取得するために利用します。
         """
         result = database.load_data_sql(sql="""
-            select a.id, a.uid, a.name
+            select a.id, a.uid, a.username
             from user_table a
             inner join permit_ids b
             on a.id = b.userid
@@ -143,7 +143,7 @@ class PermitID:
         data=(guild_id,))
         # print(result)
         data: list[PermitID] = [
-            PermitID(uid=v[0], d_name=v[1], g_name=v[2])
+            PermitID(uid=v[1], d_id=v[0], g_name=v[2])
             for v in result
         ]
         return data
@@ -153,14 +153,17 @@ class PermitID:
         ユーザーが登録したUIDが公開されているか取得する関数です。
         getEmbedで公開されているかどうかを取得するために利用します。
         """
-        try:
-            result = database.load_data_sql(sql="""
-                select *
-                from permit_ids
-                where serverid = %s and user_id = %s""", 
-            data=(guild_id,user_id))
+        result = database.load_data_sql(
+            sql="""
+            select 0
+            from permit_ids
+            where serverid = %s and userid = %s
+            """,
+            data=(guild_id, user_id))
+            
+        if len(result) != 0:
             return True
-        except:
+        else:
             return False
 
     def add_permit_id(guild_id: int, user_id: int):
