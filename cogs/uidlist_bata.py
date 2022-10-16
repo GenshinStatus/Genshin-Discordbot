@@ -28,7 +28,7 @@ class UidModal(discord.ui.Modal):
         self.uid = self.uid.value
         if self.uid == "000000000":
             await interaction.response.edit_message(f"エラー：UIDを入力してください。")
-        view = isPablicButton(self.uid,self.ctx)
+        view = isPablicButton(self.ctx)
         try:
             await uid_set(self.ctx,self.uid)
         except:
@@ -39,39 +39,24 @@ class UidModal(discord.ui.Modal):
 
 #公開するかどうかを聞くボタン
 class isPablicButton(View):
-    def __init__(self, uid: str, ctx):
+    def __init__(self, ctx):
         super().__init__(timeout=300, disable_on_timeout=True)
         self.ctx = ctx
-        self.uid = uid
 
     @discord.ui.button(label="公開する", style=discord.ButtonStyle.green)
     async def callback(self, button, interaction: discord.Interaction):
-        isPablic = True
         await interaction.response.edit_message(content="処理中です...",view=None)
-        try:
-            userData = SQL.User.get_one_user(self.ctx.author.id, self.ctx.guild.id)
-            userData.pubric = True
-            name = await SQL.User.update_user(userData)
-        except:
-            await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。",view=None)
-            return
+        SQL.PermitID.add_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content=name,embed=embed[0],view=None)
+        await interaction.edit_original_message(content=None,embed=embed,view=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
 
     @discord.ui.button(label="公開しない", style=discord.ButtonStyle.red)
     async def no_callback(self, button, interaction: discord.Interaction):
-        isPablic = False
         await interaction.response.edit_message(content="処理中です...",view=None)
-        try:
-            userData = SQL.User.get_one_user(self.ctx.author.id, self.ctx.guild.id)
-            userData.pubric = False
-            name = await SQL.User.update_user(userData)
-        except:
-            await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。",view=None)
-            return
+        SQL.PermitID.remove_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content=name,embed=embed[0],view=None)
+        await interaction.edit_original_message(content=None,embed=embed,view=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 非公開")
 
 #モーダルを表示させるボタン
@@ -121,13 +106,12 @@ class isDeleteEnterButton(View):
 
 #UIDを公開するかどうか聞くボタン
 class isPabricEnterButton(discord.ui.Button):
-    def __init__(self, ctx, uid):
+    def __init__(self, ctx):
         super().__init__(label="公開設定変更",style=discord.ButtonStyle.gray)
         self.ctx = ctx
-        self.uid = uid
-    
+   
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content="UIDを公開すると、UIDリストに表示されたり、他のユーザーがあなたのステータスを確認することができるようになります",view=isPablicButton(self.uid,self.ctx))
+        await interaction.response.edit_message(content="UIDを公開すると、UIDリストに表示されたり、他のユーザーがあなたのステータスを確認することができるようになります\n※UIDが複数登録している場合は個別で設定することはできません。",view=isPablicButton(self.ctx))
 
 #UIDを登録する関数
 async def uid_set(ctx,uid):
@@ -139,52 +123,50 @@ async def uid_set(ctx,uid):
     print(ctx.guild.name)
     name = resp['playerInfo']['nickname']
     print(name)
-    uidList = SQL.User.get_one_user(ctx.author.id, ctx.guild.id)
-    if True == SQL.User.uid_duplicate_check(ctx.guild.id, uid):
-        await ctx.send("このUIDはすでに他の人によって登録されています")
-        return False
-    userData = SQL.User(ctx.guild.id, ctx.author.id, ctx.author.name, uid, name, False)
+    userData = SQL.User(ctx.author.id, uid, name)
     SQL.User.insert_user(userData)
     return 
 
 #UIDを削除する関数
 async def uid_del(ctx,uid):
     serverId = ctx.guild.id
-    SQL.User.delete_user(serverId, ctx.author.id)
+    SQL.User.delete_user(ctx.author.id, uid)
     return uid
-
-#UIDが公開設定かどうか調べてくれる関数
-async def uid_isPablic(ctx):
-    serverId = ctx.guild.id
-    print(ctx.guild.name)
-    isPablic = SQL.User.get_one_user(serverId, ctx.author.id)
-    return isPablic.public
 
 async def getEmbed(ctx):
     serverId = ctx.guild.id
     view = View(timeout=300, disable_on_timeout=True)
   
     # もしuserに当てはまるUIDが無ければ終了
-    uidList = SQL.User.get_one_user(serverId, ctx.author.id)
     try:
-        uidList = SQL.User.get_one_user(serverId, ctx.author.id)
+        uidList = SQL.User.get_user_list(ctx.author.id)
     except:
         button = UidModalButton(ctx)
         view.add_item(button)
         await ctx.respond(content="UIDが登録されていません。下のボタンから登録してください。",view=view,ephemeral=True)
         return
-
+    if SQL.PermitID.is_user_public(ctx.guild.id, ctx.author.id) == False:
+        isPublic = "非公開です"
+    else:
+        isPublic = "公開されています"
     embed = discord.Embed( 
-                title=f"登録情報・{uidList.user_name}",
-                description=f"UID:{uidList.uid}",
+                title=f"登録情報",
+                description=f"{len(uidList)}個のUIDが登録されています。\n公開設定: {isPublic}",
                 color=0x1e90ff, 
                 )
-    if uidList.public == False:
-        isPablic = "非公開です"
-    else:
-        isPablic = "公開されています"
-    embed.add_field(inline=False,name="UID公開設定",value=isPablic)
-    return embed, uidList.uid
+    for v in uidList:
+        embed.add_field(inline=False,name=f"ユーザー名・{v.game_name}",value=f"UID: {v.uid}")
+    return embed
+
+class select_uid_pulldown(discord.ui.Select):
+    def __init__(self, ctx, selectOptions:list[discord.SelectOption]):
+        super().__init__(placeholder="削除するUIDを選択してください", options=selectOptions)
+        self.ctx = ctx
+
+    async def select_callback(self, select:discord.ui.Select, interaction:discord.Interaction):
+        view = View()
+        view.add_item(isDeleteButton(self.ctx,select.values[0]))
+        await interaction.response.edit_message(content=None, view=view)
 
 class uidList_bataCog(commands.Cog):
 
@@ -227,15 +209,20 @@ class uidList_bataCog(commands.Cog):
             ctx: discord.ApplicationContext,
     ):
         embed = await getEmbed(ctx)
-        try:
-            k = embed[1]
-            view = View(timeout=300, disable_on_timeout=True)
-            view.add_item(isDeleteButton(ctx,uid=k))
-            view.add_item(isPabricEnterButton(ctx,k))
-            await ctx.respond(embed=embed[0],view=view,ephemeral=True)
-            print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
-        except:
-            print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 登録してくれ")
+        select_options: list[discord.SelectOption] = []
+        userData = SQL.User.get_user_list(ctx.author.id)
+        for v in userData:
+            select_options.append(
+                discord.SelectOption(label=v.game_name, value=str(v.uid)))
+    #try:
+        view = View(timeout=300, disable_on_timeout=True)
+        view.add_item(select_uid_pulldown(ctx,userData))
+        view.add_item(isPabricEnterButton(ctx))
+        view.add_item(UidModalButton(ctx))
+        await ctx.respond(embed=embed,view=view,ephemeral=True)
+        print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
+    #except:
+        print(f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 登録してくれ")
 
 def setup(bot):
     bot.add_cog(uidList_bataCog(bot))

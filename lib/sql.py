@@ -64,29 +64,24 @@ class database:
 
 
 class User:
-    def __init__(self, server_id:int, user_id: int, user_name: str, uid: int, game_name: str, public:bool):
-        self.server_id = server_id
+    def __init__(self, user_id: int, uid: int, game_name: str):
         self.user_id = user_id
-        self.user_name = user_name
         self.uid = uid
         self.game_name = game_name
-        self.public = public
 
-    def get_one_user(user_id: int, server_id: int):
+    def get_user_list(user_id: int):
         """
-        user_idから一意のユーザー情報を取得します。
+        user_idからユーザーが登録したUIDの一覧を取得します
         """
-        print(user_id)
-        print(server_id)
+        # print(user_id)
         data = database.load_data_sql(
             sql="""
-            select * from user_table where serverid = %s and id = %s
+            select id, uid, username from user_table where id = %s
             """,
-            data=(server_id, user_id, )
+            data=(user_id, )
         )
-        print(data)
-        data = data[0]
-        return User(data[0], data[1], data[2], data[4], data[5])
+        # print(data)
+        return [User(v[0], v[1], v[2]) for v in data]
 
     def insert_user(user):
         """
@@ -97,9 +92,9 @@ class User:
         try:
             database.table_update_sql(
                 sql="""
-                insert into user_table values(%s, %s, %s, %s, %s, %s) 
+                insert into user_table values(%s, %s, %s) 
                 """,
-                data=(user.server_id, user.user_id, user.user_name, user.uid, user.game_name, False)
+                data=(user.user_id, user.uid, user.game_name)
             )
             return user.game_name
         except:
@@ -112,37 +107,21 @@ class User:
         """
         database.table_update_sql(
             sql="""
-            update user_table set user_name=%s, uid=%s, game_name=%s public=%s where serverid = %s and id = %s
+            update user_table set game_name=%s where id = %s and uid = %s
             """,
-            data=(user.user_name, user.uid, user.game_name, user.public, user.server_id, user.user_id)
+            data=(user.user_id, user.uid, user.game_name,)
         )
-    
-    def delete_user(server_id:int, user_id:int):
+
+    def delete_user(user_id: int, uid: int):
         """
         利用者情報を削除する場合に利用します。
         """
         database.table_update_sql(
             sql="""
-            delete user_table where serverid = %s and id = %s limit = 1
+            delete user_table where id = %s and uid = %s
             """,
-            data=(server_id, user_id)
+            data=(user_id, uid)
         )
-
-    def uid_duplicate_check(server_id, uid):
-        """
-        UIDが被っているか確認する場合に利用します。
-        """
-        try:
-            n = database.load_data_sql(
-            sql="""
-            select serverid, uid from user_table where serverid = %s and uid = %s
-            """,
-            data=(server_id, uid)
-            )
-            return True
-        except:
-            return False
-
 
 class PermitID:
     def __init__(self, uid: int, d_name: str, g_name: str):
@@ -155,11 +134,13 @@ class PermitID:
         guild_idからUIDのlistを取得する関数です。
         genshin botでguildごとのuidlistを取得するために利用します。
         """
-        # print(guild_id)
         result = database.load_data_sql(sql="""
-        select uid, username, name
-        from user_table
-        where id in(select unnest(userid) from permit_ids where serverid = %s )""", data=(guild_id,))
+            select a.id, a.uid, a.name
+            from user_table a
+            inner join permit_ids b
+            on a.id = b.userid
+            where b.serverid = %s""", 
+        data=(guild_id,))
         # print(result)
         data: list[PermitID] = [
             PermitID(uid=v[0], d_name=v[1], g_name=v[2])
@@ -167,21 +148,32 @@ class PermitID:
         ]
         return data
 
+    def is_user_public(guild_id: int, user_id: int):
+        """
+        ユーザーが登録したUIDが公開されているか取得する関数です。
+        getEmbedで公開されているかどうかを取得するために利用します。
+        """
+        try:
+            result = database.load_data_sql(sql="""
+                select *
+                from permit_ids
+                where serverid = %s and user_id = %s""", 
+            data=(guild_id,user_id))
+            return True
+        except:
+            return False
+
     def add_permit_id(guild_id: int, user_id: int):
         """
         genshin botでuidlistを公開設定とした時にdatabaseにデータを追加する処理です。
         """
         # print(guild_id)
-        try:
-            database.table_update_sql(
-                sql="""
-                update permit_ids set userid = array_append(userid, %s) where serverid = %s and not (column @> array[%s])""",
-                data=(user_id, guild_id, user_id,))
-        except:
-            database.table_update_sql(
-                sql="""
-                insert into permit_ids values(%s, array[%s])""",
-                data=(guild_id, user_id,))
+        database.table_update_sql(
+            sql="""
+            insert into permit_ids values(%s, %s)
+            on conflict do nothing
+            """,
+            data=(guild_id, user_id,))
 
     def remove_permit_id(guild_id: int, user_id: int):
         """
@@ -189,11 +181,10 @@ class PermitID:
         """
         database.table_update_sql(
             sql="""
-            update permit_ids set userid = array_remove(userid, %s) where serverid = %s
+            delete from permit_ids where serverid = %s and userid = %s
             """,
-            data=(user_id, guild_id,)
+            data=(guild_id, user_id,)
         )
-
 
 class channel:
     def __init__(self, guilt_id: int, channel_id: int):
