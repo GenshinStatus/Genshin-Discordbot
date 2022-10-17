@@ -126,7 +126,7 @@ class MyEmbed(discord.Embed):
         #明日の1時
         hoyo = int(getTime.hoyo.timestamp() - time.time())
         resalt = f"約{hoyo//3600}時間{hoyo%3600//60}分"
-        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"ログインボーナス：https://onl.tw/QiBNTBm\n```fix\nあと{resalt}```")
+        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"ログインボーナス：https://t.co/MnjUZfg7Dn\n```fix\nあと{resalt}```")
         #曜日取得
         weekly = int(getTime.weekly.timestamp() - time.time())
         resalt = f"約{weekly//86400}日{weekly%86400//3600}時間{weekly%86400%3600//60}分"
