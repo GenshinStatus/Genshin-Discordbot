@@ -107,9 +107,9 @@ class User:
         """
         database.table_update_sql(
             sql="""
-            update user_table set game_name=%s where id = %s and uid = %s
+            update user_table set username=%s where id = %s and uid = %s
             """,
-            data=(user.user_id, user.uid, user.game_name,)
+            data=(user.game_name, user.user_id, user.uid, )
         )
 
     def delete_user(user_id: int, uid: int):

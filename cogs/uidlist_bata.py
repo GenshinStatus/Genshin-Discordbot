@@ -5,6 +5,7 @@ from discord import Option, SlashCommandGroup
 import aiohttp
 from typing import List
 import lib.sql as SQL
+from urllib.error import HTTPError
 
 l: list[discord.SelectOption] = []
 
@@ -25,16 +26,25 @@ class UidModal(discord.ui.Modal):
         self.add_item(self.uid)
 
     async def callback(self, interaction: discord.Interaction) -> None:
-        self.uid = self.uid.value
-        if self.uid == "000000000":
-            await interaction.response.edit_message(f"エラー：UIDを入力してください。")
         view = isPablicButton(self.ctx)
         try:
+            self.uid = int(self.uid.value)
+            is_first_registration = SQL.User.get_user_list(self.ctx.author.id)
             await uid_set(self.ctx,self.uid)
-        except:
-            await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。",embed=None,view=None)
+        except HTTPError as e:
+            print(e)
+            await interaction.response.edit_message(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
             return
-        await interaction.response.edit_message(content=f"{self.uid}を登録します。UIDは公開しますか？",view=view)
+        except Exception as e:
+            print(e)
+            await interaction.response.edit_message(content="不明なエラー")
+            return
+        if is_first_registration == []:
+            await interaction.response.edit_message(content=f"{self.uid}を登録します。UIDは公開しますか？",view=view)
+        else:
+            embed = await getEmbed(self.ctx)
+            await interaction.response.edit_message(content="登録しました！",embed=embed,view=None)
+            print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
         return
 
 #公開するかどうかを聞くボタン
@@ -77,7 +87,7 @@ class isDeleteButton(discord.ui.Button):
         self.uid = uid
     
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content="UIDを登録すれば、各種コマンドの入力が省かれ、便利になります。\n**本当に削除しますか？**",view=isDeleteEnterButton(self.uid,self.ctx))
+        await interaction.response.edit_message(content=f"UIDを登録すれば、各種コマンドの入力が省かれ、便利になります。\n**本当に削除しますか？**\n削除しようとしているUID：{self.uid}",view=isDeleteEnterButton(self.uid,self.ctx),embed=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 削除するかどうか")
 
 #本当にUIDを削除するかどうか聞くボタン
@@ -114,10 +124,17 @@ class isPabricEnterButton(discord.ui.Button):
         await interaction.response.edit_message(content="UIDを公開すると、UIDリストに表示されたり、他のユーザーがあなたのステータスを確認することができるようになります\n※UIDが複数登録している場合は個別で設定することはできません。",view=isPablicButton(self.ctx))
 
 #UIDを登録する関数
-async def uid_set(ctx,uid):
+async def uid_set(ctx, uid):
     url = f"https://enka.network/u/{uid}/__data.json"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
+            # ステータスが正常終了（200）でない場合はHTTPErrorのオブジェクトをスローさせる
+            if response.status != 200:
+                raise HTTPError(
+                    url=url,
+                    code=response.status,
+                    msg=response.reason,
+                )
             resp = await response.json()
     serverId = ctx.guild.id
     print(ctx.guild.name)
@@ -125,7 +142,7 @@ async def uid_set(ctx,uid):
     print(name)
     userData = SQL.User(ctx.author.id, uid, name)
     SQL.User.insert_user(userData)
-    return 
+    return
 
 #UIDを削除する関数
 async def uid_del(ctx,uid):
@@ -138,13 +155,7 @@ async def getEmbed(ctx):
     view = View(timeout=300, disable_on_timeout=True)
   
     # もしuserに当てはまるUIDが無ければ終了
-    try:
-        uidList = SQL.User.get_user_list(ctx.author.id)
-    except:
-        button = UidModalButton(ctx)
-        view.add_item(button)
-        await ctx.respond(content="UIDが登録されていません。下のボタンから登録してください。",view=view,ephemeral=True)
-        return
+    uidList = SQL.User.get_user_list(ctx.author.id)
     isPublic = SQL.PermitID.is_user_public(ctx.guild.id, ctx.author.id)
     if isPublic == False:
         isPublic = "非公開です"
@@ -160,12 +171,14 @@ async def getEmbed(ctx):
     return embed
 
 class select_uid_pulldown(discord.ui.Select):
-    def __init__(self, ctx, selectOptions: list[discord.SelectOption]):
+    def __init__(self, ctx, selectOptions: list[discord.SelectOption], game_name):
         super().__init__(placeholder="削除するUIDを選択してください", options=selectOptions)
         self.ctx = ctx
+        self.game_name = game_name
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content="UIDを登録すれば、各種コマンドの入力が省かれ、便利になります。\n**本当に削除しますか？**",view=isDeleteEnterButton(int(self.values[0]),self.ctx))
+        embed = discord.Embed(title="削除しようとしているUID",description=f"UID:{self.values[0]}\nユーザー名:{self.game_name}",color=0x1e90ff, )
+        await interaction.response.edit_message(content=f"UIDを登録すれば、各種コマンドの入力が省かれ、便利になります。\n**本当に削除しますか？**\n",view=isDeleteEnterButton(int(self.values[0]),self.ctx),embed=embed)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 削除するかどうか")
 
 class uidList_bataCog(commands.Cog):
@@ -208,23 +221,36 @@ class uidList_bataCog(commands.Cog):
             self,
             ctx: discord.ApplicationContext,
     ):
-        embed = await getEmbed(ctx)
-        select_options: list[discord.SelectOption] = []
-        userData = SQL.User.get_user_list(ctx.author.id)
-        for v in userData:
-            select_options.append(
-                discord.SelectOption(label=v.game_name, description=str(v.uid), value=str(v.uid)))
         try:
+            embed = await getEmbed(ctx)
+            select_options: list[discord.SelectOption] = []
+            userData = SQL.User.get_user_list(ctx.author.id)
+            if userData == []:
+                view = View()
+                button = UidModalButton(ctx)
+                view.add_item(button)
+                await ctx.respond(content="UIDが登録されていません。下のボタンから登録してください。",view=view,ephemeral=True)
+                print(
+                    f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 登録してくれ")
+                return
+            for v in userData:
+                select_options.append(
+                discord.SelectOption(label=v.game_name, description=str(v.uid), value=str(v.uid)))
             view = View(timeout=300, disable_on_timeout=True)
-            view.add_item(select_uid_pulldown(ctx, select_options))
+            view.add_item(select_uid_pulldown(ctx, select_options, v.game_name))
             view.add_item(isPabricEnterButton(ctx))
             view.add_item(UidModalButton(ctx))
             await ctx.respond(embed=embed, view=view, ephemeral=True)
             print(
                 f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 開く")
         except:
+            view = View()
+            button = UidModalButton(ctx)
+            view.add_item(button)
+            await ctx.respond(content="UIDが登録されていません。下のボタンから登録してください。",view=view,ephemeral=True)
             print(
                 f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidcontrole - 登録してくれ")
+            return
 
 def setup(bot):
     bot.add_cog(uidList_bataCog(bot))
