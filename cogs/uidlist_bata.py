@@ -26,24 +26,21 @@ class UidModal(discord.ui.Modal):
         self.add_item(self.uid)
 
     async def callback(self, interaction: discord.Interaction) -> None:
+        await interaction.response.edit_message(content=f"処理中です...", embed=None, view=None)
         view = isPablicButton(self.ctx)
         try:
             self.uid = int(self.uid.value)
             is_first_registration = SQL.User.get_user_list(self.ctx.author.id)
             await uid_set(self.ctx,self.uid)
-        except HTTPError as e:
-            print(e)
-            await interaction.response.edit_message(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
-            return
         except Exception as e:
             print(e)
-            await interaction.response.edit_message(content="不明なエラー")
+            await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
             return
         if is_first_registration == []:
-            await interaction.response.edit_message(content=f"{self.uid}を登録します。UIDは公開しますか？",view=view)
+            await interaction.edit_original_message(content=f"{self.uid}を登録します。UIDは公開しますか？",view=view)
         else:
             embed = await getEmbed(self.ctx)
-            await interaction.response.edit_message(content="登録しました！",embed=embed,view=None)
+            await interaction.edit_original_message(content="登録しました！",embed=embed,view=None)
             print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
         return
 
@@ -128,13 +125,6 @@ async def uid_set(ctx, uid):
     url = f"https://enka.network/u/{uid}/__data.json"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
-            # ステータスが正常終了（200）でない場合はHTTPErrorのオブジェクトをスローさせる
-            if response.status != 200:
-                raise HTTPError(
-                    url=url,
-                    code=response.status,
-                    msg=response.reason,
-                )
             resp = await response.json()
     serverId = ctx.guild.id
     print(ctx.guild.name)
