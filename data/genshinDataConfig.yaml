@@ -1250,7 +1250,7 @@
     },
     "ProudMap": { "10701": 7031, "10702": 7032, "10705": 7039 },
     "NameTextMapHash": 3850149970,
-    "SideIconName": ""UI_AvatarIcon_Side_Nilou",
+    "SideIconName": "UI_AvatarIcon_Side_Nilou",
     "QualityType": "QUALITY_ORANGE"
   },
   "10000071": {
@@ -1271,11 +1271,11 @@
     },
     "ProudMap": { "10711": 7131, "10712": 7132, "10715": 7139 },
     "NameTextMapHash": 1049891906,
-    "SideIconName": "UI_AvatarIcon_Cyno",
+    "SideIconName": "UI_AvatarIcon_Side_Cyno",
     "QualityType": "QUALITY_ORANGE"
   },
   "10000072": {
-    "Element": "Electric",
+    "Element": "Water",
     "Consts": [
       "UI_Talent_S_Candace_01",
       "UI_Talent_S_Candace_02",
@@ -1292,7 +1292,7 @@
     },
     "ProudMap": { "10721": 7231, "10722": 7232, "10725": 7239 },
     "NameTextMapHash": 3092975658,
-    "SideIconName": "UI_AvatarIcon_Candace",
+    "SideIconName": "UI_AvatarIcon_Side_Candace",
     "QualityType": "QUALITY_PURPLE"
   },
   "10000005-501": {

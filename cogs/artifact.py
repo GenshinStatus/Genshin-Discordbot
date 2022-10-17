@@ -110,42 +110,66 @@ class ArtifactSuboptionValueModal(discord.ui.Modal):
         super().__init__(title="数値入力（半角数字で小数点まで入力してください）",timeout=300,)
         self.list = list
         self.mainType = mainType
-
-        self.contentA = discord.ui.InputText(
-            label=f"{self.list[0]}（半角数字で小数点まで入力してください）",
-            style=discord.InputTextStyle.short,
-            placeholder=f"{self.list[0]}の数値",
-            required=True,
-        )
-        self.add_item(self.contentA)
-        self.contentB = discord.ui.InputText(
-            label=f"{self.list[1]}（半角数字で小数点まで入力してください）",
-            style=discord.InputTextStyle.short,
-            placeholder=f"{self.list[1]}の数値",
-            required=True,
-        )
-        self.add_item(self.contentB)
-        self.contentC = discord.ui.InputText(
-            label=f"{self.list[2]}（半角数字で小数点まで入力してください）",
-            style=discord.InputTextStyle.short,
-            placeholder=f"{self.list[2]}の数値",
-            required=True,
-        )
-        self.add_item(self.contentC)
-        self.contentD = discord.ui.InputText(
-            label=f"{self.list[3]}（半角数字で小数点まで入力してください）",
-            style=discord.InputTextStyle.short,
-            placeholder=f"{self.list[3]}の数値",
-            required=True,
-        )
-        self.add_item(self.contentD)
+        
+        try:
+            self.contentA = discord.ui.InputText(
+                label=f"{self.list[0]}（半角数字で小数点まで入力してください）",
+                style=discord.InputTextStyle.short,
+                placeholder=f"{self.list[0]}の数値",
+                required=True,
+            )
+            self.add_item(self.contentA)
+        except:
+            print(":)")
+        try:
+            self.contentB = discord.ui.InputText(
+                label=f"{self.list[1]}（半角数字で小数点まで入力してください）",
+                style=discord.InputTextStyle.short,
+                placeholder=f"{self.list[1]}の数値",
+                required=True,
+            )
+            self.add_item(self.contentB)
+        except:
+            print(":)")
+        try:
+            self.contentC = discord.ui.InputText(
+                label=f"{self.list[2]}（半角数字で小数点まで入力してください）",
+                style=discord.InputTextStyle.short,
+                placeholder=f"{self.list[2]}の数値",
+                required=True,
+            )
+            self.add_item(self.contentC)
+        except:
+            print(":)")
+        try:
+            self.contentD = discord.ui.InputText(
+                label=f"{self.list[3]}（半角数字で小数点まで入力してください）",
+                style=discord.InputTextStyle.short,
+                placeholder=f"{self.list[3]}の数値",
+                required=True,
+            )
+            self.add_item(self.contentD)
+        except:
+            print(":)")
 
     async def callback(self, interaction: discord.Interaction) -> None:
         resalt={}
-        resalt[self.list[0]] = self.contentA.value
-        resalt[self.list[1]] = self.contentB.value
-        resalt[self.list[2]] = self.contentC.value
-        resalt[self.list[3]] = self.contentD.value
+        try:
+            resalt[self.list[0]] = self.contentA.value
+        except:
+            print(":)")
+        try:
+            resalt[self.list[1]] = self.contentB.value
+        except:
+            print(":)")
+        try:
+            resalt[self.list[2]] = self.contentC.value
+        except:
+            print(":)")
+        try:
+            resalt[self.list[3]] = self.contentD.value
+        except:
+            print(":)")
         view = View()
         view.add_item(ArtifactScoreSelectView(resalt,self.mainType))
         await interaction.response.edit_message(content="スコア計算方法", view=view)

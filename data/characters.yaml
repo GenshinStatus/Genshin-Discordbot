@@ -323,3 +323,18 @@
   IconName: UI_AvatarIcon_Tighnari
   NameId: '2506955778'
   sideIconName: UI_AvatarIcon_Side_Tighnari
+'10000070':
+  Element: Water
+  IconName: UI_AvatarIcon_Nilou
+  NameId: '3850149970'
+  sideIconName: UI_AvatarIcon_Side_Nilou
+'10000071':
+  Element: Electric
+  IconName: UI_AvatarIcon_Cyno
+  NameId: '1049891906'
+  sideIconName: UI_AvatarIcon_Side_Cyno
+'10000072':
+  Element: Water
+  IconName: UI_AvatarIcon_Candace
+  NameId: '3092975658'
+  sideIconName: UI_AvatarIcon_Side_Candace

@@ -1,16 +1,9 @@
-from calendar import c
 import discord
 from discord.ui import Select,View
 from discord.ext import commands,tasks
 from discord.commands import Option, SlashCommandGroup
 import datetime
 from lib.yamlutil import yaml
-import copy
-import lib.now as getTime
-import math
-import google.calendar as calendar
-import main
-import lib.image_to_string as textImage
 import time
 
 channelIdYaml = yaml(path='channelId.yaml')
@@ -59,6 +52,7 @@ class NotificationCog(commands.Cog):
         embed = discord.Embed(title=f"<t:{hoge}:R>に通知を以下のチャンネルから送信します", color=0x1e90ff,
                 description=f"チャンネル：<#{channelId[ctx.guild.id]['channelid']}>")
         await n.edit_original_message(content="設定しました。", embed=embed)
+        print(f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nnotification_resin - set")
 
     @tasks.loop(seconds=10) 
     async def slow_count(self): 
@@ -75,6 +69,7 @@ class NotificationCog(commands.Cog):
             await channel.send(content=f"{hoge['userId']}", embed=embed)
             notificationData.pop(round(round(time.time()),-1))
             notificationYaml.save_yaml(notificationData)
+            print(f"notification_resin - 通知")
         except:
             return
 
