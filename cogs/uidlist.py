@@ -216,7 +216,7 @@ class uidListCog(commands.Cog):
             select_options: list[discord.SelectOption] = []
             userData = SQL.User.get_user_list(ctx.author.id)
             if userData == []:
-                view = View()
+                view = View(timeout=300, disable_on_timeout=True)
                 button = UidModalButton(ctx)
                 view.add_item(button)
                 await ctx.respond(content="UIDが登録されていません。下のボタンから登録してください。",view=view,ephemeral=True)
