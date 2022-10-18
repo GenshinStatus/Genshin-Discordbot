@@ -8,13 +8,13 @@ from lib.yamlutil import yaml
 import lib.getStat as getStat
 import lib.picture as getPicture
 from typing import List
+import lib.sql as SQL
+import cogs.uidlist as uidlist
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
 genshinJpYaml = yaml(path='genshinJp.yaml')
 genshinJp = genshinJpYaml.load_yaml()
-uidListYaml = yaml(path='uidList.yaml')
-uidList = uidListYaml.load_yaml()
 l: list[discord.SelectOption] = []
 
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
@@ -69,7 +69,7 @@ class TicTacToe(discord.ui.View):
 #モーダルを表示させるボタン
 class UidModalButton(discord.ui.Button):
     def __init__(self,ctx):
-        super().__init__(label="UIDからステータスを検索",style=discord.ButtonStyle.green)
+        super().__init__(label="登録せずにUIDから検索",style=discord.ButtonStyle.green)
         self.ctx = ctx
  
     async def callback(self, interaction: discord.Interaction):
@@ -94,40 +94,7 @@ class UidModal(discord.ui.Modal):
     async def callback(self, interaction: discord.Interaction) -> None:
         uid = self.uid.value
         ctx = self.ctx
-        if uid == "000000000":
-            await interaction.response.edit_message(f"エラー：UIDを入力してください。",view=None)
-        try:
-            #指定したUIDが非公開だった場合
-            if uidList[ctx.guild.id][uid]["isPablic"] == "False":
-                #かつ、コマンドの送信者がそのUIDの保有者じゃなかった場合
-                if uidList[ctx.guild.id][uid]["user"] != ctx.author.name:
-                    await interaction.response.edit_message(content="このUIDは表示できません。",view=None)
-                    return
-        except:
-            #エラーということはそのUIDがないということなので適当にプリントしてパス
-            print(ctx.author.name)
-
-        await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
-        url = f"https://enka.network/u/{uid}/__data.json"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                resp = await response.json()
-                resalt = []
-        embed = await GenshinCog.getApi(self,uid,resp)
-        await interaction.edit_original_message(content="キャラ情報読み込み中...")  
-        if resp == {}:
-            await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
-
-        await interaction.edit_original_message(content="画像を生成中...")  
-        hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
-        try:
-            for id in resp["playerInfo"]["showAvatarInfoList"]:
-                resalt.append(id["avatarId"])
-            await interaction.edit_original_message(content="ボタンを生成中...")  
-            await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
-        except:
-            embed.add_field(name="エラー",value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
-            await interaction.edit_original_message(content=None,embed=embed,file=hoge)
+        await uid_respond(self,interaction,ctx,uid)
 
 #UIDを表示させるボタン
 class UidButton(discord.ui.Button):
@@ -139,37 +106,36 @@ class UidButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         ctx = self.ctx
         uid = self.uid
-        try:
-            #指定したUIDが非公開だった場合
-            if uidList[ctx.guild.id][uid]["isPablic"] == "False":
-                #かつ、コマンドの送信者がそのUIDの保有者じゃなかった場合
-                if uidList[ctx.guild.id][uid]["user"] != ctx.author.name:
-                    await interaction.response.edit_message(content="このUIDは表示できません。", ephemeral=True )
-                    return
-        except:
-            #エラーということはそのUIDがないということなので適当にプリントしてパス
-            print(ctx.author.name)
-
-        await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
+        await uid_respond(self,interaction,ctx,uid)
+ 
+async def uid_respond(self,interaction: discord.Interaction,ctx,uid):
+    await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
+    try:
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 resp = await response.json()
                 resalt = []
-        embed = await GenshinCog.getApi(self,uid,resp)
-        await interaction.edit_original_message(content="キャラ情報読み込み中...") 
-        if resp == {}:
-            await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
-        await interaction.edit_original_message(content="画像を生成中...")  
-        hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
-        try:
-            for id in resp["playerInfo"]["showAvatarInfoList"]:
-                resalt.append(id["avatarId"])
-            await interaction.edit_original_message(content="ボタンを生成中...")  
-            await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
-        except:
-            embed.add_field(name="エラー",value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
-            await interaction.edit_original_message(content=None,embed=embed,file=hoge)
+    except:
+        await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
+        return
+
+    embed = await GenshinCog.getApi(self,uid,resp)
+    await interaction.edit_original_message(content="キャラ情報読み込み中...") 
+    if resp == {}:
+        await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
+        return
+
+    await interaction.edit_original_message(content="画像を生成中...")  
+    hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
+    try:
+        for id in resp["playerInfo"]["showAvatarInfoList"]:
+            resalt.append(id["avatarId"])
+        await interaction.edit_original_message(content="ボタンを生成中...")  
+        await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
+    except:
+        embed.add_field(name="エラー",value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
+        await interaction.edit_original_message(content=None,embed=embed,file=hoge)
 
 async def getProfile(ctx,uid,interaction):
     await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
@@ -189,6 +155,15 @@ async def getProfile(ctx,uid,interaction):
     hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
     await interaction.edit_original_message(content="ボタンを生成中...")  
     await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
+
+class select_uid_pulldown(discord.ui.Select):
+    def __init__(self, ctx, selectOptions: list[discord.SelectOption], game_name):
+        super().__init__(placeholder="表示するUIDを選択してください", options=selectOptions)
+        self.ctx = ctx
+        self.game_name = game_name
+
+    async def callback(self, interaction: discord.Interaction):
+        await uid_respond(self,interaction,self.ctx,self.values[0])
 
 class GenshinCog(commands.Cog):
 
@@ -221,26 +196,37 @@ class GenshinCog(commands.Cog):
             self,
             ctx: discord.ApplicationContext,
     ):
-        uidListYaml = yaml(path='uidList.yaml')
-        uidList = uidListYaml.load_yaml()
         view = View(timeout=300, disable_on_timeout=True)
         uid = None
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nget - キャラ情報取得")
-        # もしuserに当てはまるUIDが無ければ終了
-        try:
-            for k,v in uidList[ctx.guild.id].items():
-                if v["user"] == ctx.author.name:
-                    uid = k
-                    view.add_item(UidButton(ctx,uid))
-                    view.add_item(UidModalButton(ctx))
-                    await ctx.respond(content="UIDが登録されていますが、UIDを指定しますか？",view=view,ephemeral=True)
-                    return
-        except:
-            uid = None
-        if uid == None:
+        select_options: list[discord.SelectOption] = []
+        userData = SQL.User.get_user_list(ctx.author.id)
+
+        #  登録してないときの処理
+        if userData == []:
+            view = View(timeout=300, disable_on_timeout=True)
+            view.add_item(uidlist.UidModalButton(ctx))
             view.add_item(UidModalButton(ctx))
-            await ctx.respond(content="UIDが登録されていません。```/uidlist control```で登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。",view=view,ephemeral=True)
+            await ctx.respond(content="UIDが登録されていません。下のボタンから登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。",view=view,ephemeral=True)
             return
+
+        #  1つだけ登録してたときの処理
+        if len(userData) == 1:
+            view = View(timeout=300, disable_on_timeout=True)
+            view.add_item(UidButton(ctx,uid))
+            view.add_item(UidModalButton(ctx))
+            await ctx.respond(content="UIDが登録されています。登録されているUIDを使うか、直接UIDを指定するか選んでください。",view=view,ephemeral=True)
+            return
+        
+        #  それ以外
+        for v in userData:
+            select_options.append(
+            discord.SelectOption(label=v.game_name, description=str(v.uid), value=str(v.uid)))
+        view = View(timeout=300, disable_on_timeout=True)
+        view.add_item(select_uid_pulldown(ctx,select_options,v.game_name))
+        view.add_item(UidModalButton(ctx))
+        await ctx.respond(content="UIDが複数登録されています。表示するUIDを選ぶか、ボタンから指定してください。",view=view,ephemeral=True)
+        return
 
 def setup(bot):
     bot.add_cog(GenshinCog(bot))
