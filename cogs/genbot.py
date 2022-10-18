@@ -332,15 +332,9 @@ class GenbotCog(commands.Cog):
 
     @genbot.command(name='dev', description='開発者用コマンドです。')
     async def dev(self, ctx: discord.ApplicationContext,):
-        if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986:
+        if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986 or ctx.author.id == 802066206529028117:
             await main.guildsCount()
             await ctx.respond("更新したよ\nGithub: https://github.com/CinnamonSea2073/Genshin-Discordbot", ephemeral=True)
-            message_list = []
-            uidList = SQL.PermitID.get_uid_list(ctx.guild.id)
-            for uid in uidList:
-                message_list.append(f"UID:{uid.uid}\n{uid.d_name}\n{uid.g_name}")
-            print("\n".join(message_list))
-            await ctx.send(content="\n".join(message_list))
         else:
             await ctx.respond("管理者限定コマンドです。", ephemeral=True)
 
