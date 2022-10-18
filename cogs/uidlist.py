@@ -37,7 +37,7 @@ class UidModal(discord.ui.Modal):
             await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
             return
         if is_first_registration == []:
-            await interaction.edit_original_message(content=f"{self.uid}を登録します。UIDは公開しますか？",view=view)
+            await interaction.edit_original_message(content=f"{self.uid}を登録します。\nUIDを公開すると、UIDリストに表示されるようになります\n※UIDを複数登録している場合は個別で設定することはできません。",view=view)
         else:
             embed = await getEmbed(self.ctx)
             await interaction.edit_original_message(content="登録しました！",embed=embed,view=None)
@@ -55,7 +55,7 @@ class isPablicButton(View):
         await interaction.response.edit_message(content="処理中です...",view=None)
         SQL.PermitID.add_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content="公開しました！",embed=embed,view=None)
+        await interaction.edit_original_message(content="公開しました！\nUIDは`/uidlist controle`から管理できます。",embed=embed,view=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
 
     @discord.ui.button(label="公開しない", style=discord.ButtonStyle.red)
@@ -63,7 +63,7 @@ class isPablicButton(View):
         await interaction.response.edit_message(content="処理中です...",view=None)
         SQL.PermitID.remove_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content="非公開にしました！",embed=embed,view=None)
+        await interaction.edit_original_message(content="非公開にしました！\nUIDは`/uidlist controle`から管理できます。",embed=embed,view=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 非公開")
 
 #モーダルを表示させるボタン
@@ -118,7 +118,7 @@ class isPabricEnterButton(discord.ui.Button):
         self.ctx = ctx
    
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content="UIDを公開すると、UIDリストに表示されたり、他のユーザーがあなたのステータスを確認することができるようになります\n※UIDが複数登録している場合は個別で設定することはできません。",view=isPablicButton(self.ctx))
+        await interaction.response.edit_message(content="UIDを公開すると、UIDリストに表示されるようになります\n※UIDを複数登録している場合は個別で設定することはできません。",view=isPablicButton(self.ctx))
 
 #UIDを登録する関数
 async def uid_set(ctx, uid):
