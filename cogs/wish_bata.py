@@ -1,3 +1,4 @@
+from webbrowser import get
 from lib.yamlutil import yaml
 import discord
 from discord.ext import commands
@@ -154,48 +155,50 @@ class Wish_bataCog(commands.Cog):
         self,
         ctx: discord.ApplicationContext):
         
-        id = ctx.author.id
-        name = ctx.author.name
-
-        # 何か送信しないと応答なしと判断されてエラーを吐くので一応
-        foo = await ctx.respond("処理を開始中...")
-
-        #まずこいつの天井、指定バナーを取得
-        roofGet(id,0)
-        wishData = roofInit()
-        roof = wishData[id]["roof"]
-        banner = wishData[id]["banner"]
+        await wish_start(ctx)
         
-        #とりあえず天井から結果10回を排出
-        resalt = []
-        for n in range(10):
-            resalt.append(wish_list(roof=roof,id=id))
-            roof = roofGet(id,1)
-            print(resalt)
-        random.shuffle(resalt)
+async def wish_start(ctx):
+    id = ctx.author.id
 
-        print(type(foo))
-        global is_skip_button_pressed
-        is_skip_button_pressed = False
-        #条件分岐で画像変化
-        view = View()
-        view.add_item(WishSkipButton(ctx,resalt))
-        if "5" in resalt or "6" in resalt:
-            direction_embed = Wish_bataCog.embeded(
-                None, None, "https://c.tenor.com/rOuL0G1uRpMAAAAC/genshin-impact-pull.gif")
-            await foo.edit_original_message(content=None,embed=direction_embed,view=view)
-        else:
-            direction_embed = Wish_bataCog.embeded(
-                None, None, "https://c.tenor.com/pVzBgcp1RPQAAAAC/genshin-impact-animation.gif")
-            await foo.edit_original_message(content=None,embed=direction_embed,view=view)
-        await asyncio.sleep(5.5)
-        
-        if is_skip_button_pressed == False:
-            ster = resalt[0]
-            view=View()
-            view.add_item(GotoNextButton(ctx,resalt,1))
-            view.add_item(GotoResultButton(ctx,resalt))
-            await foo.edit_original_message(content=ster,embed=None,view=view)
+    # 何か送信しないと応答なしと判断されてエラーを吐くので一応
+    foo = await ctx.respond("処理を開始中...")
+
+    #まずこいつの天井、指定バナーを取得
+    roofGet(id,0)
+    wishData = roofInit()
+    roof = wishData[id]["roof"]
+    banner = wishData[id]["banner"]
+    
+    #とりあえず天井から結果10回を排出
+    resalt = []
+    for n in range(10):
+        resalt.append(wish_list(roof=roof,id=id))
+        roof = roofGet(id,1)
+        print(resalt)
+    random.shuffle(resalt)
+
+    print(type(foo))
+    global is_skip_button_pressed
+    is_skip_button_pressed = False
+    #条件分岐で画像変化
+    view = View()
+    view.add_item(WishSkipButton(ctx,resalt))
+    if "5" in resalt or "6" in resalt:
+        direction_embed = Wish_bataCog.embeded(
+            None, None, "https://c.tenor.com/rOuL0G1uRpMAAAAC/genshin-impact-pull.gif")
+        await foo.edit_original_message(content=None,embed=direction_embed,view=view)
+    else:
+        direction_embed = Wish_bataCog.embeded(
+            None, None, "https://c.tenor.com/pVzBgcp1RPQAAAAC/genshin-impact-animation.gif")
+        await foo.edit_original_message(content=None,embed=direction_embed,view=view)
+    await asyncio.sleep(5.5)
+    
+    if is_skip_button_pressed == False:
+        ster = resalt[0]
+        view=View()
+        view.add_item(GotoNextButton(ctx,resalt,1))
+        view.add_item(GotoResultButton(ctx,resalt))
+        await foo.edit_original_message(content=ster,embed=None,view=view)
 
 
 #スキップボタンを表示させるボタン
@@ -245,6 +248,16 @@ class GotoResultButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.edit_message(content=self.resalt,embed=None,view=None)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
+
+#もう一回遊べるドン
+class WishAgainButton(discord.ui.Button):
+    def __init__(self, ctx):
+        super().__init__(label="もう一度回す",style=discord.ButtonStyle.green)
+        self.ctx = ctx
+
+    async def callback(self, interaction: discord.Interaction):
+        wish_start(self.ctx)
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - もう一度")
 
 def setup(bot):
     bot.add_cog(Wish_bataCog(bot))
