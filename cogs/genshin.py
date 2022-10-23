@@ -136,7 +136,7 @@ async def uid_respond(self,interaction: discord.Interaction,ctx,uid):
     except:
         embed.add_field(name="エラー",value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
         await interaction.edit_original_message(content=None,embed=embed,file=hoge)
-        
+
 class select_uid_pulldown(discord.ui.Select):
     def __init__(self, ctx, selectOptions: list[discord.SelectOption], game_name):
         super().__init__(placeholder="表示するUIDを選択してください", options=selectOptions)
@@ -178,7 +178,6 @@ class GenshinCog(commands.Cog):
             ctx: discord.ApplicationContext,
     ):
         view = View(timeout=300, disable_on_timeout=True)
-        uid = None
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nget - キャラ情報取得")
         select_options: list[discord.SelectOption] = []
         userData = SQL.User.get_user_list(ctx.author.id)
@@ -194,7 +193,7 @@ class GenshinCog(commands.Cog):
         #  1つだけ登録してたときの処理
         if len(userData) == 1:
             view = View(timeout=300, disable_on_timeout=True)
-            view.add_item(UidButton(ctx,uid))
+            view.add_item(UidButton(ctx,userData[0].uid))
             view.add_item(UidModalButton(ctx))
             await ctx.respond(content="UIDが登録されています。登録されているUIDを使うか、直接UIDを指定するか選んでください。",view=view,ephemeral=True)
             return
