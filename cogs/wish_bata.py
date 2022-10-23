@@ -168,10 +168,12 @@ class Wish_bataCog(commands.Cog):
             resalt.append(wish_list(roof=roof,id=id))
             roof = roofGet(id,1)
             print(resalt)
+        random.shuffle(resalt)
 
         #条件分岐で画像変化
+        v = 0
         view = View()
-        view.add_item(WishSkipButton(ctx,resalt,foo))
+        view.add_item(WishSkipButton(ctx,resalt,foo,v))
         if "5" in resalt or "6" in resalt:
             direction_embed = Wish_bataCog.embeded(
                 None, None, "https://c.tenor.com/rOuL0G1uRpMAAAAC/genshin-impact-pull.gif")
@@ -181,22 +183,43 @@ class Wish_bataCog(commands.Cog):
                 None, None, "https://c.tenor.com/pVzBgcp1RPQAAAAC/genshin-impact-animation.gif")
             await foo.edit_original_message(content=None,embed=direction_embed,view=view)
         await asyncio.sleep(5.5)
-        await resalt_character(ctx,resalt,foo)
+        await resalt_character(ctx,resalt,foo,v)
 
 #スキップボタンを表示させるボタン
 class WishSkipButton(discord.ui.Button):
-    def __init__(self, ctx, resalt,foo):
+    def __init__(self, ctx, resalt,foo,v):
         super().__init__(label="スキップ",style=discord.ButtonStyle.green)
         self.ctx = ctx
         self.resalt = resalt
         self.foo = foo
+        self.v = v
 
     async def callback(self, interaction: discord.Interaction):
-        await resalt_character(self.ctx, self.resalt, self.foo)
+        await resalt_character(self.ctx, self.resalt, self.foo, self.v)
         print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
 
-async def resalt_character(ctx: discord.ApplicationContext,resalt,foo):
-    await foo.edit_original_message(content=resalt,embed=None,view=None)
+async def resalt_character(ctx: discord.ApplicationContext,resalt,foo,v):
+    if v < 9:
+        ster = resalt[v]
+        v+=1
+        view=View()
+        view.add_item(GotoNextButton(ctx,resalt,foo,v))
+        await foo.edit_original_message(content=ster,embed=None,view=view)
+    else:
+        await foo.edit_original_message(content=resalt,embed=None,view=None)
+
+#次のボタンを表示させるボタン
+class GotoNextButton(discord.ui.Button):
+    def __init__(self, ctx, resalt,foo,v):
+        super().__init__(label="続ける",style=discord.ButtonStyle.green)
+        self.ctx = ctx
+        self.resalt = resalt
+        self.foo = foo
+        self.v = v
+
+    async def callback(self, interaction: discord.Interaction):
+        await resalt_character(self.ctx, self.resalt, self.foo, self.v)
+        print(f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
 
 def setup(bot):
     bot.add_cog(Wish_bataCog(bot))
