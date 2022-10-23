@@ -1,5 +1,5 @@
 from this import d
-from lib.sql import sql
+import lib.sql as sql
 from lib.yamlutil import yaml
 
 uidListYaml = yaml(path='uidList_sql.yaml')
@@ -11,23 +11,12 @@ wishData = wishDataYaml.load_yaml()
 def uidList_to_sql():
     for serverID,v in uidList.items():
         for userID,n in v.items():
-            try:
-                if n["isPablic"] in ["True"]:
-                    hoge = True
-                if n["isPablic"] in ["False"]:
-                    hoge = False
-            except:
-                hoge= False
-            
-            print(type(hoge))
-            sql.write_sql(f"insert into user_table values (%s, %s, %s, %s, %s, %s)",
-                (
-                    int(serverID),
+            print()
+            sql.database.table_update_sql(sql="insert into user_table values (%s, %s, %s)",
+                data=(
                     0,
-                    str(n["user"]),
                     int(userID),
                     str(n["name"]),
-                    hoge,
                 )
             )
 
@@ -56,5 +45,15 @@ def wish_to_data():
                     n[1],
                 )
             )
+def aaa(server,id,uid,name,public):
+    sql.database.table_update_sql(sql="insert into user_table values (%s, %s, %s)",
+        data=(
+            id,
+            uid,
+            name,
+        )
+    )
+    if public == True:
+        sql.PermitID.add_permit_id(server,id)
 
-wish_to_data()
+aaa()
