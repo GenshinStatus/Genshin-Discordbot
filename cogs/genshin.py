@@ -120,12 +120,12 @@ async def uid_respond(self,interaction: discord.Interaction,ctx,uid):
         await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
         return
 
-    embed = await GenshinCog.getApi(self,uid,resp)
-    await interaction.edit_original_message(content="キャラ情報読み込み中...") 
     if resp == {}:
         await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
         return
 
+    await interaction.edit_original_message(content="キャラ情報読み込み中...")    
+    embed = await GenshinCog.getApi(self,uid,resp)
     await interaction.edit_original_message(content="画像を生成中...")  
     hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
     try:
@@ -136,26 +136,7 @@ async def uid_respond(self,interaction: discord.Interaction,ctx,uid):
     except:
         embed.add_field(name="エラー",value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
         await interaction.edit_original_message(content=None,embed=embed,file=hoge)
-
-async def getProfile(ctx,uid,interaction):
-    await interaction.response.edit_message(content="アカウント情報読み込み中...",view=None)  
-    url = f"https://enka.network/u/{uid}/__data.json"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            resp = await response.json()
-            resalt = []
-    embed = await GenshinCog.getApi(uid,resp)
-    await interaction.edit_original_message(content="キャラ情報読み込み中...")  
-    try: 
-        for id in resp["playerInfo"]["showAvatarInfoList"]:
-            resalt.append(id["avatarId"])
-    except:
-        print("genshinstat - 誰も見ることができない")
-    await interaction.edit_original_message(content="画像を生成中...")  
-    hoge = discord.File(await getPicture.getProfile(uid,resp), f"{uid}.png")
-    await interaction.edit_original_message(content="ボタンを生成中...")  
-    await interaction.edit_original_message(content=None,embed=embed,view=TicTacToe(resalt,uid), file=hoge)
-
+        
 class select_uid_pulldown(discord.ui.Select):
     def __init__(self, ctx, selectOptions: list[discord.SelectOption], game_name):
         super().__init__(placeholder="表示するUIDを選択してください", options=selectOptions)
