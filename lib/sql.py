@@ -212,21 +212,20 @@ class channel:
         return data
 
 
-class WithUser:
-    def __init__(self, id: int, name: str, loof: int, banner: int, wishnum: int):
+class WishUser:
+    def __init__(self, id: int, char_loof: int, weapon_loof: int, wishnum: int):
         self.id = id
-        self.name = name
-        self.loof = loof
-        self.banner = banner
+        self.char_loof = char_loof
+        self.weapon_loof = weapon_loof
         self.wishnum = wishnum
 
     def get_wish_user(id: int):
-        result = database.load_data_sql(
+        result: Tuple = database.load_data_sql(
             execute="""
             select *
             from user_wish
             where id = %s
             """,
             data=(id,),
-        )
-        return user
+        )[0]
+        return WishUser(result[0], result[1], result[2], result[3])
