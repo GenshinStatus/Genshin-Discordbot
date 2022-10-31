@@ -11,13 +11,14 @@ from psycopg2 import Error
 load_dotenv()
 print(os.getenv('SQL'))
 
+
 class database:
     __DSN = 'postgresql://{user}:{password}@{host}:{port}/{dbname}'.format(
-        user="postgres",  # ユーザ
+        user=os.getenv('USER'),  # ユーザ
         password=os.getenv('SQL'),  # パスワード
-        host="localhost",  # ホスト名
-        port="5432",  # ポート
-        dbname="postgres")  # データベース名
+        host=os.getenv('HOST'),  # ホスト名
+        port=os.getenv('PORT'),  # ポート
+        dbname=os.getenv('DNAME'))  # データベース名
 
     def __connection():
         return psycopg2.connect(database.__DSN)
@@ -123,6 +124,7 @@ class User:
             data=(user_id, uid)
         )
 
+
 class PermitID:
     def __init__(self, uid: int, d_id: str, g_name: str):
         self.uid = uid
@@ -139,8 +141,8 @@ class PermitID:
             from user_table a
             inner join permit_ids b
             on a.id = b.userid
-            where b.serverid = %s""", 
-        data=(guild_id,))
+            where b.serverid = %s""",
+                                        data=(guild_id,))
         # print(result)
         data: list[PermitID] = [
             PermitID(uid=v[1], d_id=v[0], g_name=v[2])
@@ -160,7 +162,7 @@ class PermitID:
             where serverid = %s and userid = %s
             """,
             data=(guild_id, user_id))
-            
+
         if len(result) != 0:
             return True
         else:
@@ -189,6 +191,7 @@ class PermitID:
             data=(guild_id, user_id,)
         )
 
+
 class channel:
     def __init__(self, guilt_id: int, channel_id: int):
         self.guilt_id = guilt_id
@@ -207,3 +210,23 @@ class channel:
             for v in result
         ]
         return data
+
+
+class WithUser:
+    def __init__(self, id: int, name: str, loof: int, banner: int, wishnum: int):
+        self.id = id
+        self.name = name
+        self.loof = loof
+        self.banner = banner
+        self.wishnum = wishnum
+
+    def get_wish_user(id: int):
+        result = database.load_data_sql(
+            execute="""
+            select *
+            from user_wish
+            where id = %s
+            """,
+            data=(id,),
+        )
+        return user
