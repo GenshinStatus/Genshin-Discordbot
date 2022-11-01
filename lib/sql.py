@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import psycopg2
 from psycopg2 import Error
+import discord
 
 
 # 予め定数として接続先を定義しておきます
@@ -62,6 +63,31 @@ class database:
             connector.commit()
             cursor.close()
             connector.close()
+
+
+class Guild:
+    def __init__(self, id: int):
+        self.id = id
+
+    def set_guilds(guild_id_list: list[discord.Guild]):
+        """
+        guildオブジェクトの配列を受け取り登録を行います。
+        """
+        if len(guild_id_list) > 0:
+            database.table_update_sql(
+                sql="insert into bot_table values " +
+                    ",".join(["(%s)"] * len(guild_id_list)) +
+                    " ON CONFLICT DO NOTHING",
+                data=[v.id for v in guild_id_list],
+            )
+
+    def get_count():
+        """
+        guildの数を取得し返します。
+        """
+        result = database.load_data_sql(
+            sql="select count(*) from bot_table", data=None)
+        return result[0][0]
 
 
 class User:
