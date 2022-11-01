@@ -2,9 +2,10 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
+from lib.sql import Guild
 
 bot = commands.Bot()
-#debug_guilds=[879288794560471050]
+# debug_guilds=[879288794560471050]
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
@@ -12,21 +13,25 @@ path = "./cogs"
 
 
 @bot.event
-async def on_application_command_error(ctx, error):
+async def on_application_command_error(ctx: discord.ApplicationContext, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.respond(error)
-        await bot.get_partial_messageable(1009731664412426240).send(error)#traceback.format_exc())
+        # traceback.format_exc())
+        await bot.get_partial_messageable(1009731664412426240).send(error)
     elif isinstance(error, commands.MissingPermissions):
         await ctx.respond(content="BOT管理者限定コマンドです", ephemeral=True)
     else:
         raise error
 
+
 @bot.event
 async def on_ready():
     print(f"Bot名:{bot.user} On ready!!")
-    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {len(bot.guilds)}サーバーで稼働中",))
+    await guildsCount()
+
 
 async def guildsCount():
+    Guild.set_guilds(bot.guilds)
     await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {len(bot.guilds)}サーバーで稼働中",))
 
 #bot.load_extension('cogs.wish_bata', store=False)
