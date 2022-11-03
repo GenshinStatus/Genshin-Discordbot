@@ -338,3 +338,13 @@
   IconName: UI_AvatarIcon_Candace
   NameId: '3092975658'
   sideIconName: UI_AvatarIcon_Side_Candace
+'10000073':
+  Element: Grass
+  IconName: UI_AvatarIcon_Nahida
+  NameId: '712501082'
+  sideIconName: UI_AvatarIcon_Side_Nahida
+'10000074':
+  Element: Ice
+  IconName: UI_AvatarIcon_Layla
+  NameId: '2889777514'
+  sideIconName: UI_AvatarIcon_Side_Layla

@@ -6,7 +6,7 @@ from lib.sql import Guild
 class Time(commands.Cog):
 
     def __init__(self, bot: discord.Bot):
-        print('Notification_initしたよ')
+        print('Status_init')
         self.bot = bot
         self.slow_count.start()
 

@@ -43,7 +43,7 @@ def getCharacterPicture(name):
     global jhwords
     hoge = []
     hoge.append(name)
-    if name in ["コレイ","ティナリ","旅人","ニィロウ","キャンディス","セノ"]:
+    if name in ["コレイ","ティナリ","旅人","ニィロウ","キャンディス","セノ","ナヒーダ","レイラ"]:
         return words[name]["url"]
     if name in words:
         resalt = urllib.parse.quote(words[name]["zh"])
