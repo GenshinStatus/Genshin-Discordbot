@@ -9,7 +9,6 @@ import lib.now as getTime
 import math
 import google.calendar as calendar
 import main
-import lib.image_to_string as textImage
 import time
 import lib.sql as SQL
 

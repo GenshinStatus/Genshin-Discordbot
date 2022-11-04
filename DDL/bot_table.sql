@@ -5,5 +5,6 @@
 -- DROP TABLE public.bot_table;
 
 CREATE TABLE public.bot_table (
-	serverid int8 NULL
+	serverid int8 NOT NULL,
+	CONSTRAINT bot_table_pkey PRIMARY KEY (serverid)
 );

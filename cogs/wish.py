@@ -21,10 +21,12 @@ sters = genshinStarYaml.load_yaml()
 PERDATA = {0: 0.006, 1: 0.006, 2: 0.006, 3: 0.006, 4: 0.006, 5: 0.006, 6: 0.006, 7: 0.066, 8: 0.4, 9: 0.006,
            10: 0.006, 11: 0.006, 12: 0.006, 13: 0.006, 14: 0.006, 15: 0.006, 16: 0.066, 17: 0.4, 18: 0.006}
 
+
 def getPer(top):
     for v in PERDATA:
         if top <= v:
             return PERDATA[v]
+
 
 class WishCog(commands.Cog):
 
@@ -64,7 +66,7 @@ class WishCog(commands.Cog):
         global jhwords
         hoge = []
         hoge.append(name)
-        if name in ["コレイ","ティナリ","旅人","ニィロウ","キャンディス","セノ"]:
+        if name in ["コレイ", "ティナリ", "旅人", "ニィロウ", "キャンディス", "セノ", "ナヒーダ", "レイラ"]:
             return words[name]["url"]
         if name in words:
             resalt = urllib.parse.quote(words[name]["zh"])
@@ -188,7 +190,7 @@ class WishCog(commands.Cog):
         embed.set_image(url=picture)
         await ctx.respond(embed=embed)
 
-    @wish.command(name="get_n", description="【回数指定】原神ガチャシミュレーター　※ニィロウPU中！")
+    @wish.command(name="get_n", description="【回数指定】原神ガチャシミュレーター　※ナヒーダPU中！")
     async def get_n(
         self,
         ctx: discord.ApplicationContext,
@@ -200,7 +202,7 @@ class WishCog(commands.Cog):
 
         # 実行するときはTrueにしてね
         iscommand = True
-        
+
         # 上のコマンドで金銭が足りてたらレッツガチャ！
         if iscommand == True:
 
@@ -221,7 +223,7 @@ class WishCog(commands.Cog):
             await ctx.respond(embed=embed)
             print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nwish - m連")
 
-    @wish.command(name="get", description="【10連】原神ガチャシミュレーター　※ニィロウPU中！")
+    @wish.command(name="get", description="【10連】原神ガチャシミュレーター　※ナヒーダPU中！")
     async def get(
         self,
         ctx: discord.ApplicationContext,
@@ -233,7 +235,7 @@ class WishCog(commands.Cog):
 
         # 金銭消費しないならここをFalseに変えてね
         iscommand = True
-        
+
         # 上のコマンドで金銭が足りてたらレッツガチャ！
         if iscommand == True:
 
@@ -402,6 +404,7 @@ class WishCog(commands.Cog):
                 name=f"{ctx.author.name}\nガチャを引いた回数：{resalt*10}\n使った金額：約{resalt*1600*2}円\n今回のガチャの★5確率：{resalt_per}%\n=====================", value="\n".join(final_result))
             await ctx.respond(embed=embed)
             print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nwish - 10連")
+
 
 def setup(bot):
     bot.add_cog(WishCog(bot))

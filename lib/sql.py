@@ -5,19 +5,21 @@ from dotenv import load_dotenv
 import os
 import psycopg2
 from psycopg2 import Error
+import discord
 
 
 # 予め定数として接続先を定義しておきます
 load_dotenv()
 print(os.getenv('SQL'))
 
+
 class database:
     __DSN = 'postgresql://{user}:{password}@{host}:{port}/{dbname}'.format(
-        user="postgres",  # ユーザ
+        user=os.getenv('USER'),  # ユーザ
         password=os.getenv('SQL'),  # パスワード
-        host="localhost",  # ホスト名
-        port="5432",  # ポート
-        dbname="postgres")  # データベース名
+        host=os.getenv('HOST'),  # ホスト名
+        port=os.getenv('PORT'),  # ポート
+        dbname=os.getenv('DNAME'))  # データベース名
 
     def __connection():
         return psycopg2.connect(database.__DSN)
@@ -61,6 +63,31 @@ class database:
             connector.commit()
             cursor.close()
             connector.close()
+
+
+class Guild:
+    def __init__(self, id: int):
+        self.id = id
+
+    def set_guilds(guild_id_list: list[discord.Guild]):
+        """
+        guildオブジェクトの配列を受け取り登録を行います。
+        """
+        if len(guild_id_list) > 0:
+            database.table_update_sql(
+                sql="insert into bot_table values " +
+                    ",".join(["(%s)"] * len(guild_id_list)) +
+                    " ON CONFLICT DO NOTHING",
+                data=[v.id for v in guild_id_list],
+            )
+
+    def get_count():
+        """
+        guildの数を取得し返します。
+        """
+        result = database.load_data_sql(
+            sql="select count(*) from bot_table", data=None)
+        return result[0][0]
 
 
 class User:
@@ -123,6 +150,7 @@ class User:
             data=(user_id, uid)
         )
 
+
 class PermitID:
     def __init__(self, uid: int, d_id: str, g_name: str):
         self.uid = uid
@@ -139,8 +167,8 @@ class PermitID:
             from user_table a
             inner join permit_ids b
             on a.id = b.userid
-            where b.serverid = %s""", 
-        data=(guild_id,))
+            where b.serverid = %s""",
+                                        data=(guild_id,))
         # print(result)
         data: list[PermitID] = [
             PermitID(uid=v[1], d_id=v[0], g_name=v[2])
@@ -160,7 +188,7 @@ class PermitID:
             where serverid = %s and userid = %s
             """,
             data=(guild_id, user_id))
-            
+
         if len(result) != 0:
             return True
         else:
@@ -189,6 +217,7 @@ class PermitID:
             data=(guild_id, user_id,)
         )
 
+
 class channel:
     def __init__(self, guilt_id: int, channel_id: int):
         self.guilt_id = guilt_id
@@ -207,3 +236,22 @@ class channel:
             for v in result
         ]
         return data
+
+
+class WishUser:
+    def __init__(self, id: int, char_loof: int, weapon_loof: int, wishnum: int):
+        self.id = id
+        self.char_loof = char_loof
+        self.weapon_loof = weapon_loof
+        self.wishnum = wishnum
+
+    def get_wish_user(id: int):
+        result: Tuple = database.load_data_sql(
+            execute="""
+            select *
+            from user_wish
+            where id = %s
+            """,
+            data=(id,),
+        )[0]
+        return WishUser(result[0], result[1], result[2], result[3])

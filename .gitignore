@@ -1,4 +1,3 @@
 .env
 *.pyc
-data/game.yaml
-data/uidList.yaml
+test.py

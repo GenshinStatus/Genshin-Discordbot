@@ -2,9 +2,11 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
+from lib.sql import Guild
+import asyncio
 
 bot = commands.Bot()
-#debug_guilds=[879288794560471050]
+# debug_guilds=[879288794560471050]
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 
@@ -12,31 +14,41 @@ path = "./cogs"
 
 
 @bot.event
-async def on_application_command_error(ctx, error):
+async def on_application_command_error(ctx: discord.ApplicationContext, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.respond(error)
-        await bot.get_partial_messageable(1009731664412426240).send(error)#traceback.format_exc())
+        # traceback.format_exc())
+        await bot.get_partial_messageable(1009731664412426240).send(error)
     elif isinstance(error, commands.MissingPermissions):
         await ctx.respond(content="BOT管理者限定コマンドです", ephemeral=True)
     else:
         raise error
 
+
 @bot.event
 async def on_ready():
     print(f"Bot名:{bot.user} On ready!!")
-    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {len(bot.guilds)}サーバーで稼働中",))
+    await guildsCount()
+
 
 async def guildsCount():
-    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {len(bot.guilds)}サーバーで稼働中",))
+    Guild.set_guilds(bot.guilds)
+    await asyncio.sleep(10)  # 複数のBOTを同時に再起動するときにちょっとあけとく
+    count = Guild.get_count()
+    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {count}サーバーで稼働中",))
 
-#bot.load_extension('cogs.wish_bata', store=False)
-#bot.load_extension('cogs.uidlist_bata', store=False)
-bot.load_extension('cogs.genshin', store=False)
-bot.load_extension('cogs.wish', store=False)
-bot.load_extension('cogs.genbot', store=False)
-bot.load_extension('cogs.uidlist', store=False)
-bot.load_extension('cogs.artifact', store=False)
-bot.load_extension('cogs.notification', store=False)
-bot.load_extension('cogs.setting', store=False)
+bot.load_extensions(
+    # 'cogs.wish_bata',
+    # 'cogs.uidlist_bata',
+    'cogs.genshin',
+    'cogs.wish',
+    'cogs.genbot',
+    'cogs.uidlist',
+    'cogs.artifact',
+    'cogs.notification',
+    'cogs.setting',
+    'cogs.status',
+    store=False
+)
 
 bot.run(TOKEN)
