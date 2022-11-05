@@ -1,6 +1,6 @@
 import discord
-from discord.ui import Select,View
-from discord.ext import commands,tasks
+from discord.ui import Select, View
+from discord.ext import commands, tasks
 from discord.commands import Option, SlashCommandGroup
 import datetime
 from lib.yamlutil import yaml
@@ -14,51 +14,55 @@ import lib.sql as SQL
 
 l: list[discord.SelectOption] = []
 
+
 class helpselectView(View):
     @discord.ui.select(
-            placeholder="表示するヘルプコマンドを指定してね",
-            options=[
-                discord.SelectOption(
+        placeholder="表示するヘルプコマンドを指定してね",
+        options=[
+            discord.SelectOption(
                     label="メインコマンド",
                     emoji="📰",
                     description="原神ステータスを確認できます。",
-                    ),
-                discord.SelectOption(
-                    label="UIDリストコマンド",
-                    emoji="📚",
-                    description="忘れがちなUIDを保存してくれるコマンドです。"),
-                discord.SelectOption(
-                    label="祈願コマンド",
-                    emoji="✨",
-                    description="いわゆるガチャシミュレーターです。"),
-                discord.SelectOption(
-                    label="便利コマンド",
-                    emoji="🧰",
-                    description="今日の日替わり秘境など"),
-                discord.SelectOption(
-                    label="聖遺物スコア計算コマンド",
-                    emoji="🧮",
-                    description="スコアを簡単に計算します"),
-                discord.SelectOption(
-                    label="通知コマンド",
-                    emoji="📢",
-                    description="樹脂などが溢れる前に通知します"),
-                discord.SelectOption(
-                    label="設定コマンド",
-                    emoji="⚙",
-                    description="通知チャンネルなどを設定します"),
+            ),
+            discord.SelectOption(
+                label="UIDリストコマンド",
+                emoji="📚",
+                description="忘れがちなUIDを保存してくれるコマンドです。"),
+            discord.SelectOption(
+                label="祈願コマンド",
+                emoji="✨",
+                description="いわゆるガチャシミュレーターです。"),
+            discord.SelectOption(
+                label="便利コマンド",
+                emoji="🧰",
+                description="今日の日替わり秘境など"),
+            discord.SelectOption(
+                label="聖遺物スコア計算コマンド",
+                emoji="🧮",
+                description="スコアを簡単に計算します"),
+            discord.SelectOption(
+                label="通知コマンド",
+                emoji="📢",
+                description="樹脂などが溢れる前に通知します"),
+            discord.SelectOption(
+                label="設定コマンド",
+                emoji="⚙",
+                description="通知チャンネルなどを設定します"),
         ])
-    async def select_callback(self, select:discord.ui.Select, interaction):
-        embed = discord.Embed(title=f"helpコマンド：{select.values[0]}",color=0x1e90ff)
+    async def select_callback(self, select: discord.ui.Select, interaction):
+        embed = discord.Embed(
+            title=f"helpコマンド：{select.values[0]}", color=0x1e90ff)
         if select.values[0] == "メインコマンド":
-            print(f"help - メインコマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            print(
+                f"help - メインコマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"このbotのメインとなるコマンドです。",
                 value=f"\
                     \n**・/genshinstat get**\n自分以外が見ることができない状態で原神のステータスを取得します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
                 ")
         elif select.values[0] == "UIDリストコマンド":
-            print(f"help - UIDリストコマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            print(
+                f"help - UIDリストコマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"いちいち確認するのが面倒なUIDを管理するコマンドです。",
                 value=f"\
@@ -66,7 +70,8 @@ class helpselectView(View):
                     \n**・/uidlist control**\n登録したUIDを管理するパネルを表示します。UIDの登録や削除、公開設定の切り替えもここからできます。\
                 ")
         elif select.values[0] == "祈願コマンド":
-            print(f"help - 祈願コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            print(
+                f"help - 祈願コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"いわゆるガチャシミュレーターです。天井もユーザーごとにカウントされています。",
                 value=f"\
@@ -74,9 +79,10 @@ class helpselectView(View):
                     \n**・/wish get**\n原神のガチャを10連分引きます。演出をするかしないか設定できます。\
                     \n**・/wish get_n**\n原神のガチャを指定回数分（最大200回）連続で引きます。結果はまとめて表示します。\
                     "
-                )
+            )
         elif select.values[0] == "便利コマンド":
-            print(f"help - 便利コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            print(
+                f"help - 便利コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"botを活用する上で覚えておきたいコマンドたちです。",
                 value=f"\
@@ -86,7 +92,8 @@ class helpselectView(View):
                     \n**・/genbot event**\n原神のイベントを確認できます。\
                 ")
         elif select.values[0] == "聖遺物スコア計算コマンド":
-            print(f"help - 聖遺物スコア計算コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            print(
+                f"help - 聖遺物スコア計算コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"聖遺物スコア計算を簡単にしてくれるコマンドです。",
                 value=f"\
@@ -94,20 +101,23 @@ class helpselectView(View):
                     \n**・/artifact get_detail**\nHP基準や防御力基準など、より詳細に設定して計算します。\
                 ")
         elif select.values[0] == "通知コマンド":
-            print(f"help - 通知コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            print(
+                f"help - 通知コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"樹脂が溢れないように通知してくれるコマンドです。",
                 value=f"\
                     \n**・/notification resin**\n現在の樹脂量を入力することで、溢れる前に通知します。\
                 ")
         elif select.values[0] == "設定コマンド":
-            print(f"help - 設定コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
+            print(
+                f"help - 設定コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
                 name=f"通知チャンネルなどを設定するコマンドです。",
                 value=f"\
                     \n**・/setting channel**\n樹脂通知をするチャンネルを設定します。\
                 ")
-        await interaction.response.edit_message(content=None,embed=embed,view=self)
+        await interaction.response.edit_message(content=None, embed=embed, view=self)
+
 
 class MyEmbed(discord.Embed):
     def __init__(self, day_of_week: str, url: str):
@@ -118,19 +128,23 @@ class MyEmbed(discord.Embed):
         embed = copy.deepcopy(self)
 
         now = datetime.datetime.now()
-        #明日の5時
+        # 明日の5時
         daily = int(getTime.daily.timestamp() - time.time())
         resalt = f"約{daily//3600}時間{daily%3600//60}分"
-        embed.add_field(inline=False,name="デイリー更新まで",value=f"```fix\nあと{resalt}```")
-        #明日の1時
+        embed.add_field(inline=False, name="デイリー更新まで",
+                        value=f"```fix\nあと{resalt}```")
+        # 明日の1時
         hoyo = int(getTime.hoyo.timestamp() - time.time())
         resalt = f"約{hoyo//3600}時間{hoyo%3600//60}分"
-        embed.add_field(inline=False,name="HoYoLabログインボーナス更新まで",value=f"ログインボーナス：https://t.co/MnjUZfg7Dn\n```fix\nあと{resalt}```")
-        #曜日取得
+        embed.add_field(inline=False, name="HoYoLabログインボーナス更新まで",
+                        value=f"ログインボーナス：https://t.co/MnjUZfg7Dn\n```fix\nあと{resalt}```")
+        # 曜日取得
         weekly = int(getTime.weekly.timestamp() - time.time())
         resalt = f"約{weekly//86400}日{weekly%86400//3600}時間{weekly%86400%3600//60}分"
-        embed.add_field(inline=False,name="週ボス等リセットまで",value=f"```fix\nあと{resalt}```")
+        embed.add_field(inline=False, name="週ボス等リセットまで",
+                        value=f"```fix\nあと{resalt}```")
         return embed
+
 
 class DayOfWeekUnexploredRegion:
     def __init__(self, file_path: str):
@@ -143,11 +157,12 @@ class DayOfWeekUnexploredRegion:
 
     def __add_data(self, key, day_of_week, url):
         # embedの追加
-        embed = MyEmbed(day_of_week=day_of_week,url=url)
+        embed = MyEmbed(day_of_week=day_of_week, url=url)
         self.EMBEDS[key] = embed
         # optionsの追加
         self.SELECT_OPTIONS.append(
             discord.SelectOption(label=day_of_week, value=str(key)))
+
 
 DATA = DayOfWeekUnexploredRegion("weekday.yaml")
 
@@ -179,10 +194,12 @@ class weekselectView(View):
             f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり - {self.weekday}")
         await interaction.response.edit_message(embed=DATA.EMBEDS[self.weekday].get_embed(), view=view)
 
-#バグ報告モーダル
+# バグ報告モーダル
+
+
 class ReportModal(discord.ui.Modal):
-    def __init__(self,select:str):
-        super().__init__(title="バグ報告",timeout=300,)
+    def __init__(self, select: str):
+        super().__init__(title="バグ報告", timeout=300,)
         self.select = select
 
         self.content = discord.ui.InputText(
@@ -215,7 +232,8 @@ class ReportModal(discord.ui.Modal):
                 break
         now = datetime.datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')
         try:
-            bugList[hoge] = {"select":self.select,"userId":interaction.user.id,"userName":interaction.user.name,"serverId":interaction.guild.id,"serverName":interaction.guild.name,"time":now,"content":self.content,"resalt":self.resalt}
+            bugList[hoge] = {"select": self.select, "userId": interaction.user.id, "userName": interaction.user.name,
+                             "serverId": interaction.guild.id, "serverName": interaction.guild.name, "time": now, "content": self.content, "resalt": self.resalt}
             bugListYaml.save_yaml(bugList)
             await interaction.edit_original_message(content=f"不具合を送信しました！ご協力ありがとうございます！\nbugTrackNumber:00{hoge}\nbugTrackName:{self.content}")
             return
@@ -224,46 +242,50 @@ class ReportModal(discord.ui.Modal):
             await interaction.edit_original_message(content=f"送信できませんでしたが、管理者にログを表示しました。修正までしばらくお待ちください")
             raise
 
+
 class bugselectView(View):
     @discord.ui.select(
-            placeholder="どのコマンドで不具合が出ましたか？",
-            options=[
-                discord.SelectOption(
+        placeholder="どのコマンドで不具合が出ましたか？",
+        options=[
+            discord.SelectOption(
                     label="/genbot",
                     description="help、today等",),
-                discord.SelectOption(
-                    label="/uidlist",
-                    description="get、controle等",),
-                discord.SelectOption(
-                    label="/genshinstat",
-                    description="get等"),
-                discord.SelectOption(
-                    label="/wish",
-                    description="get、get_n等"),
-                discord.SelectOption(
-                    label="/setting",
-                    description="channel等"),
-                discord.SelectOption(
-                    label="/artifact",
-                    description="get等"),
-                discord.SelectOption(
-                    label="/notification",
-                    description="resin等"),
+            discord.SelectOption(
+                label="/uidlist",
+                description="get、controle等",),
+            discord.SelectOption(
+                label="/genshinstat",
+                description="get等"),
+            discord.SelectOption(
+                label="/wish",
+                description="get、get_n等"),
+            discord.SelectOption(
+                label="/setting",
+                description="channel等"),
+            discord.SelectOption(
+                label="/artifact",
+                description="get等"),
+            discord.SelectOption(
+                label="/notification",
+                description="resin等"),
         ])
-    async def select_callback(self, select:discord.ui.Select, interaction):
+    async def select_callback(self, select: discord.ui.Select, interaction):
         print(str(select.values[0]))
         await interaction.response.send_modal(ReportModal(select.values[0]))
 
+
 def get_jst(hour: int):
     return (24 - 9 + hour) % 24
+
 
 class GenbotCog(commands.Cog):
 
     def __init__(self, bot):
         print('genbot_initしたよ')
         self.bot = bot
-        getTime.init_reference_times() 
-        print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')   
+        getTime.init_reference_times()
+        print(
+            f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')
         self.slow_count.start()
 
     genbot = SlashCommandGroup('genbot', 'test')
@@ -287,7 +309,8 @@ class GenbotCog(commands.Cog):
         weekday = view.weekday
         embed = DATA.EMBEDS[weekday].get_embed()
         await ctx.respond(embed=embed, view=view, ephemeral=True)
-        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\ntoday - 今日の日替わり秘境")
+        print(
+            f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\ntoday - 今日の日替わり秘境")
 
     @genbot.command(name='report', description='不具合報告はこちらから！')
     async def report(self, ctx):
@@ -301,32 +324,32 @@ class GenbotCog(commands.Cog):
         hoge = await ctx.respond("読み込み中...", ephemeral=True)
         embed = discord.Embed(title=f"本日開催中のイベントはこちら", color=0x1e90ff)
         event = calendar.get()
-        now="```ありません```"
-        before="```ありません```"
+        now = "```ありません```"
+        before = "```ありません```"
         for i in event:
             if i["start"] > datetime.datetime.now():
-                if before=="```ありません```":
-                    before = ""        
+                if before == "```ありません```":
+                    before = ""
                 min = i["start"] - datetime.datetime.now()
-                #これで来週の月曜日まであと何分になった
+                # これで来週の月曜日まであと何分になった
                 min = min / datetime.timedelta(minutes=1)
-                #これでhourは時間を24で割ったあまりになる
-                hour = min/60 % 24 
+                # これでhourは時間を24で割ったあまりになる
+                hour = min/60 % 24
                 resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
                 before += (f"**イベント名：{i['name']}**\n```css\n{i['description']}\n\n開始まで:{resalt}\n開始日:{i['start'].strftime('%m月%d日')}\n終了日:{i['end'].strftime('%m月%d日')}```\n")
             else:
-                if now=="```ありません```":
+                if now == "```ありません```":
                     now = ""
                 min = i["end"] - datetime.datetime.now()
-                #これで来週の月曜日まであと何分になった
+                # これで来週の月曜日まであと何分になった
                 min = min / datetime.timedelta(minutes=1)
-                #これでhourは時間を24で割ったあまりになる
-                hour = min/60 % 24 
+                # これでhourは時間を24で割ったあまりになる
+                hour = min/60 % 24
                 resalt = f"{math.floor(min/60/24)}日{math.floor(hour)}時間{math.floor(min % 60)}分"
                 now += (f"**イベント名：{i['name']}**\n```css\n{i['description']}\n\n終了日:{i['end'].strftime('%m月%d日')}\n残り時間:{resalt}```\n")
-        embed.add_field(inline=True,name="開催中のイベント\n",value=now)
-        embed.add_field(inline=True,name="開催予定のイベント\n",value=before)
-        await hoge.edit_original_message(content=None,embed=embed)
+        embed.add_field(inline=True, name="開催中のイベント\n", value=now)
+        embed.add_field(inline=True, name="開催予定のイベント\n", value=before)
+        await hoge.edit_original_message(content=None, embed=embed)
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nevent - イベント確認")
 
     @genbot.command(name='dev', description='開発者用コマンドです。')
@@ -337,10 +360,12 @@ class GenbotCog(commands.Cog):
         else:
             await ctx.respond("管理者限定コマンドです。", ephemeral=True)
 
-    @tasks.loop(time=[datetime.time(hour=get_jst(5),second=1), datetime.time(hour=get_jst(1), second=1)]) 
-    async def slow_count(self): 
-        getTime.init_reference_times() 
-        print(f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')   
+    @tasks.loop(time=[datetime.time(hour=get_jst(5), second=1), datetime.time(hour=get_jst(1), second=1)])
+    async def slow_count(self):
+        getTime.init_reference_times()
+        print(
+            f'＝＝＝＝＝＝＝＝＝＝＝＝＝日付を更新したんご＝＝＝＝＝＝＝＝＝＝＝＝＝\n{datetime.datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}')
+
 
 def setup(bot):
     bot.add_cog(GenbotCog(bot))
