@@ -30,11 +30,32 @@ def get_wish_select_options():
     bannerIDYaml = yaml('wish_bannerID.yaml')
     banner_id = bannerIDYaml.load_yaml()
 
-    wish_select_options: list[discord.SelectOption] = []
-    for n, v in banner_id.items():
-        wish_select_options.append(
-            discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-    return wish_select_options
+    wish_select_options_1: list[discord.SelectOption] = []
+    wish_select_options_2: list[discord.SelectOption] = []
+    wish_select_options_3: list[discord.SelectOption] = []
+
+    for v, n in banner_id.items():
+        print(type(n["ver"]))
+        print(n["ver"])
+        print(type("".join(n["pickup_5"])))
+        print("".join(n["pickup_5"]))
+        print(type(", ".join(n["pickup_4"])))
+        print(", ".join(n["pickup_4"]))
+        print(type(str(v)))
+        print(str(v))
+        if v <= 13:
+            wish_select_options_1.append(
+                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
+        elif v <= 38:
+            wish_select_options_2.append(
+                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
+        elif v <= 100:
+            wish_select_options_3.append(
+                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
+    print(len(wish_select_options_1))
+    print(len(wish_select_options_2))
+    print(len(wish_select_options_3))
+    return wish_select_options_1, wish_select_options_2, wish_select_options_3, banner_id
 
 
 def roofInit():
@@ -204,6 +225,8 @@ class Wish_bataCog(commands.Cog):
             self,
             ctx: discord.ApplicationContext):
 
+        await ctx.respond(content="えらぶんだもん", view=wish_select_View())
+        return
         id = ctx.author.id
 
         # 何か送信しないと応答なしと判断されてエラーを吐くので一応
@@ -246,39 +269,52 @@ class Wish_bataCog(commands.Cog):
             view.add_item(GotoResultButton(ctx, resalt))
             await foo.edit_original_message(content=ster, embed=None, view=view)
 
-    @wish.command(name="test", description="testなんだもん")
-    async def get(
-            self,
-            ctx: discord.ApplicationContext):
-
-        ctx.respond(content="えらぶんだもん", view=wish_select_View())
-
 
 class wish_select_View(View):
     def __init__(self):
         super().__init__(timeout=300, disable_on_timeout=True)
 
     @discord.ui.button(label="1回")
-    async def today(self, _: discord.ui.Button, interaction: discord.Interaction):
+    async def once(self, _: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(content="testなんだもん", view=self)
 
     @discord.ui.button(label="10回")
-    async def nextday(self, _: discord.ui.Button, interaction: discord.Interaction):
+    async def twice(self, _: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(content="testなんだもん", view=self)
 
     @discord.ui.button(label="回数指定")
-    async def nextday(self, _: discord.ui.Button, interaction: discord.Interaction):
+    async def enter(self, _: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(content="testなんだもん", view=self)
 
     @discord.ui.select(
-        placeholder="ガチャを指定",
-        options=get_wish_select_options()
+        placeholder="ガチャを指定（~ver1.6）",
+        options=get_wish_select_options()[0]
     )
-    async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
+    async def select_callback_1(self, select: discord.ui.Select, interaction: discord.Interaction):
         view = self
         print(
-            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり - {self.weekday}")
-        await interaction.response.edit_message(content="testなんだもん", view=view)
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり")
+        await interaction.response.edit_message(content=f"https://cdn.discordapp.com/attachments/1034136716862296114/{get_wish_select_options()[3][int(select.values[0])]['image']}/unknown.png", view=view)
+
+    @discord.ui.select(
+        placeholder="ガチャを指定（~ver2.8）",
+        options=get_wish_select_options()[1]
+    )
+    async def select_callback_2(self, select: discord.ui.Select, interaction: discord.Interaction):
+        view = self
+        print(
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり")
+        await interaction.response.edit_message(content=f"https://cdn.discordapp.com/attachments/1034136716862296114/{get_wish_select_options()[3][int(select.values[0])]['image']}/unknown.png", view=view)
+
+    @discord.ui.select(
+        placeholder="ガチャを指定（ver3.0~）",
+        options=get_wish_select_options()[2]
+    )
+    async def select_callback_3(self, select: discord.ui.Select, interaction: discord.Interaction):
+        view = self
+        print(
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり")
+        await interaction.response.edit_message(content=f"https://cdn.discordapp.com/attachments/1034136716862296114/{get_wish_select_options()[3][int(select.values[0])]['image']}/unknown.png", view=view)
 
 # スキップボタンを表示させるボタン
 
