@@ -15,12 +15,26 @@ wishYaml = yaml('wish.yaml')
 genshinYaml = yaml('genshin.yaml')
 genshinHYaml = yaml('genshinH.yaml')
 genshinStarYaml = yaml('genshin_ster.yaml')
+bannerIDYaml = yaml('wish_bannerID.yaml')
 
 # ファイル初期化
 wishData = wishYaml.load_yaml()
 characterName = genshinYaml.load_yaml()
 characterTrans = genshinHYaml.load_yaml()
 bannerData = genshinStarYaml.load_yaml()
+banner_id = bannerIDYaml.load_yaml()
+
+
+def get_wish_select_options():
+    # bot再起動しなくてもyaml更新できるようにするためにいちいち取得するようにする
+    bannerIDYaml = yaml('wish_bannerID.yaml')
+    banner_id = bannerIDYaml.load_yaml()
+
+    wish_select_options: list[discord.SelectOption] = []
+    for n, v in banner_id.items():
+        wish_select_options.append(
+            discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
+    return wish_select_options
 
 
 def roofInit():
@@ -232,8 +246,43 @@ class Wish_bataCog(commands.Cog):
             view.add_item(GotoResultButton(ctx, resalt))
             await foo.edit_original_message(content=ster, embed=None, view=view)
 
+    @wish.command(name="test", description="testなんだもん")
+    async def get(
+            self,
+            ctx: discord.ApplicationContext):
+
+        ctx.respond(content="えらぶんだもん", view=wish_select_View())
+
+
+class wish_select_View(View):
+    def __init__(self):
+        super().__init__(timeout=300, disable_on_timeout=True)
+
+    @discord.ui.button(label="1回")
+    async def today(self, _: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.edit_message(content="testなんだもん", view=self)
+
+    @discord.ui.button(label="10回")
+    async def nextday(self, _: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.edit_message(content="testなんだもん", view=self)
+
+    @discord.ui.button(label="回数指定")
+    async def nextday(self, _: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.edit_message(content="testなんだもん", view=self)
+
+    @discord.ui.select(
+        placeholder="ガチャを指定",
+        options=get_wish_select_options()
+    )
+    async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
+        view = self
+        print(
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\n日替わり - {self.weekday}")
+        await interaction.response.edit_message(content="testなんだもん", view=view)
 
 # スキップボタンを表示させるボタン
+
+
 class WishSkipButton(discord.ui.Button):
     def __init__(self, ctx, resalt):
         super().__init__(label="スキップ", style=discord.ButtonStyle.green)

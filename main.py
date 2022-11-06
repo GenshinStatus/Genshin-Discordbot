@@ -38,7 +38,7 @@ async def guildsCount():
     await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {count}サーバーで稼働中",))
 
 bot.load_extensions(
-    # 'cogs.wish_bata',
+    'cogs.wish_bata',
     # 'cogs.uidlist_bata',
     'cogs.genshin',
     'cogs.wish',
