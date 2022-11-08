@@ -16,6 +16,7 @@ genshinYaml = yaml('genshin.yaml')
 genshinHYaml = yaml('genshinH.yaml')
 genshinStarYaml = yaml('genshin_ster.yaml')
 bannerIDYaml = yaml('wish_bannerID.yaml')
+wish_configYaml = yaml('wish_config.yaml')
 
 # ファイル初期化
 wishData = wishYaml.load_yaml()
@@ -23,6 +24,7 @@ characterName = genshinYaml.load_yaml()
 characterTrans = genshinHYaml.load_yaml()
 bannerData = genshinStarYaml.load_yaml()
 banner_id = bannerIDYaml.load_yaml()
+wish_config = wish_configYaml.load_yaml()
 
 
 def get_wish_select_options():
@@ -35,14 +37,6 @@ def get_wish_select_options():
     wish_select_options_3: list[discord.SelectOption] = []
 
     for v, n in banner_id.items():
-        print(type(n["ver"]))
-        print(n["ver"])
-        print(type("".join(n["pickup_5"])))
-        print("".join(n["pickup_5"]))
-        print(type(", ".join(n["pickup_4"])))
-        print(", ".join(n["pickup_4"]))
-        print(type(str(v)))
-        print(str(v))
         if v <= 13:
             wish_select_options_1.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
@@ -52,9 +46,6 @@ def get_wish_select_options():
         elif v <= 100:
             wish_select_options_3.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-    print(len(wish_select_options_1))
-    print(len(wish_select_options_2))
-    print(len(wish_select_options_3))
     return wish_select_options_1, wish_select_options_2, wish_select_options_3, banner_id
 
 
@@ -226,48 +217,6 @@ class Wish_bataCog(commands.Cog):
             ctx: discord.ApplicationContext):
 
         await ctx.respond(content="えらぶんだもん", view=wish_banner_select_View())
-        return
-        id = ctx.author.id
-
-        # 何か送信しないと応答なしと判断されてエラーを吐くので一応
-        foo = await ctx.respond("処理を開始中...")
-
-        # まずこいつの天井、指定バナーを取得
-        roofGet(id, 0)
-        wishData = roofInit()
-        roof = wishData[id]["roof"]
-        banner = wishData[id]["banner"]
-
-        # とりあえず天井から結果10回を排出
-        resalt = []
-        for n in range(10):
-            resalt.append(wish_list(roof=roof, id=id))
-            roof = roofGet(id, 1)
-            print(resalt)
-        random.shuffle(resalt)
-
-        print(type(foo))
-        global is_skip_button_pressed
-        is_skip_button_pressed = False
-        # 条件分岐で画像変化
-        view = View()
-        view.add_item(WishSkipButton(ctx, resalt))
-        if "5" in resalt or "6" in resalt:
-            direction_embed = Wish_bataCog.embeded(
-                None, None, "https://c.tenor.com/rOuL0G1uRpMAAAAC/genshin-impact-pull.gif")
-            await foo.edit_original_message(content=None, embed=direction_embed, view=view)
-        else:
-            direction_embed = Wish_bataCog.embeded(
-                None, None, "https://c.tenor.com/pVzBgcp1RPQAAAAC/genshin-impact-animation.gif")
-            await foo.edit_original_message(content=None, embed=direction_embed, view=view)
-        await asyncio.sleep(5.5)
-
-        if is_skip_button_pressed == False:
-            ster = resalt[0]
-            view = View()
-            view.add_item(GotoNextButton(ctx, resalt, 1))
-            view.add_item(GotoResultButton(ctx, resalt))
-            await foo.edit_original_message(content=ster, embed=None, view=view)
 
 
 def get_banner_embed(banner_id: int):
@@ -323,19 +272,19 @@ class wish_select_View(View):
     @discord.ui.button(label="1回")
     async def once(self, _: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(content="ローディング", view=None)
-        await get_wish_resalt(interaction, 1)
+        await get_wish_resalt(interaction, 1, self.banner_id)
 
     @discord.ui.button(label="10回")
     async def twice(self, _: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(content="ローディング", view=None)
-        await get_wish_resalt(interaction, 10)
+        await get_wish_resalt(interaction, 10, self.banner_id)
 
     @discord.ui.button(label="回数指定")
     async def enter(self, _: discord.ui.Button, interaction: discord.Interaction):
         await interaction.response.edit_message(content="ローディング", view=None)
 
 
-async def get_wish_resalt(interaction: discord.Interaction, num):
+async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     id = interaction.user.id
     # まずこいつの天井、指定バナーを取得
     roofGet(id, 0)
@@ -354,7 +303,7 @@ async def get_wish_resalt(interaction: discord.Interaction, num):
     is_skip_button_pressed = False
     # 条件分岐で画像変化
     view = View()
-    view.add_item(WishSkipButton(interaction, resalt))
+    view.add_item(WishSkipButton(interaction, resalt, banner_id))
     if "5" in resalt or "6" in resalt:
         direction_embed = Wish_bataCog.embeded(
             None, None, "https://c.tenor.com/rOuL0G1uRpMAAAAC/genshin-impact-pull.gif")
@@ -368,16 +317,37 @@ async def get_wish_resalt(interaction: discord.Interaction, num):
     if is_skip_button_pressed == False:
         ster = resalt[0]
         view = View()
-        view.add_item(GotoNextButton(interaction, resalt, 1))
-        view.add_item(GotoResultButton(interaction, resalt))
+        view.add_item(GotoNextButton(interaction, resalt, 1, banner_id))
+        view.add_item(GotoResultButton(interaction, resalt, banner_id))
         await interaction.edit_original_message(content=ster, embed=None, view=view)
+
+
+def number_to_character(num, banner_id: int):
+    print(type(num))
+    print("aaaaaaaaaaaaa{}".format(num))
+    banner_data = get_wish_select_options()[3][banner_id]
+    if num == "3":
+        return "".join(random.choices(wish_config["weapon_3"]))
+    if num == "4":
+        sterresalt = random.choices(
+            ["char_4", "weapon_4", "pickup_4"], weights=[0.25, 0.25, 0.5])
+        if sterresalt != ["pickup_4"]:
+            return "".join(random.choices(wish_config["".join(sterresalt)]))
+        else:
+            return "".join(random.choices(banner_data["pickup_4"]))
+    if num == ["5"] or num == "5":
+        return "".join(random.choices(wish_config["char_5"]))
+    if num == ["6"] or num == "6":
+        return "".join(banner_data["pickup_5"])
+
 
 # スキップボタンを表示させるボタン
 
 
 class WishSkipButton(discord.ui.Button):
-    def __init__(self, interaction, resalt):
+    def __init__(self, interaction, resalt, banner_id):
         super().__init__(label="スキップ", style=discord.ButtonStyle.green)
+        self.banner_id = banner_id
         self.interaction = interaction
         self.resalt = resalt
 
@@ -386,9 +356,13 @@ class WishSkipButton(discord.ui.Button):
         is_skip_button_pressed = True
         ster = self.resalt[0]
         view = View()
-        view.add_item(GotoNextButton(self.interaction, self.resalt, 1))
-        view.add_item(GotoResultButton(self.interaction, self.resalt))
-        await interaction.response.edit_message(content=ster, embed=None, view=view)
+        view.add_item(GotoNextButton(self.interaction,
+                      self.resalt, 1, self.banner_id))
+        view.add_item(GotoResultButton(
+            self.interaction, self.resalt, self.banner_id))
+        hoge = number_to_character(ster, int(self.banner_id))
+        print(hoge)
+        await interaction.response.edit_message(content=hoge, embed=None, view=view)
         print(
             f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
 
@@ -396,8 +370,9 @@ class WishSkipButton(discord.ui.Button):
 
 
 class GotoNextButton(discord.ui.Button):
-    def __init__(self, interaction, resalt, v):
+    def __init__(self, interaction, resalt, v, banner_id):
         super().__init__(label="続ける", style=discord.ButtonStyle.green)
+        self.banner_id = banner_id
         self.interaction = interaction
         self.resalt = resalt
         self.v = v
@@ -408,12 +383,16 @@ class GotoNextButton(discord.ui.Button):
             self.v += 1
             view = View()
             view.add_item(GotoNextButton(
-                self.interaction, self.resalt, self.v))
-            view.add_item(GotoResultButton(self.interaction, self.resalt))
-            await interaction.response.edit_message(content=ster, embed=None, view=view)
+                self.interaction, self.resalt, self.v, self.banner_id))
+            view.add_item(GotoResultButton(
+                self.interaction, self.resalt, self.banner_id))
+            hoge = number_to_character(ster, int(self.banner_id))
+            print(hoge)
+            await interaction.response.edit_message(content=hoge, embed=None, view=view)
         else:
             view = View()
-            view.add_item(Wish_again_Button(self.interaction, self.resalt))
+            view.add_item(Wish_again_Button(
+                self.interaction, self.resalt, self.banner_id))
             await interaction.response.edit_message(content=self.resalt, embed=None, view=view)
         print(
             f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
@@ -422,30 +401,31 @@ class GotoNextButton(discord.ui.Button):
 
 
 class GotoResultButton(discord.ui.Button):
-    def __init__(self, interaction, resalt):
+    def __init__(self, interaction, resalt, banner_id):
         super().__init__(label="結果を見る", style=discord.ButtonStyle.green)
+        self.banner_id = banner_id
         self.interaction = interaction
         self.resalt = resalt
 
     async def callback(self, interaction: discord.Interaction):
         view = View()
-        view.add_item(Wish_again_Button(self.interaction, self.resalt))
+        view.add_item(Wish_again_Button(
+            self.interaction, self.resalt, self.banner_id))
         await interaction.response.edit_message(content=self.resalt, embed=None, view=view)
-        print(
-            f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
 
 # もう一回遊べるどん
 
 
 class Wish_again_Button(discord.ui.Button):
-    def __init__(self, interaction, resalt):
+    def __init__(self, interaction, resalt, banner_id):
         super().__init__(label="もう一度祈願する", style=discord.ButtonStyle.green)
+        self.banner_id = banner_id
         self.interaction = interaction
         self.resalt = resalt
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.edit_message(content="ローディング", view=None)
-        await get_wish_resalt(interaction, len(self.resalt))
+        await get_wish_resalt(interaction, len(self.resalt), self.banner_id)
 
 
 def setup(bot):
