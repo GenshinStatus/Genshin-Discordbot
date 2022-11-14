@@ -1,4 +1,3 @@
-from webbrowser import get
 from lib.yamlutil import yaml
 import discord
 from discord.ext import commands
@@ -7,7 +6,6 @@ from discord.ui import View
 import random
 import urllib
 import asyncio
-import lib.wish_image as wish_image
 
 is_skip_button_pressed = False
 
