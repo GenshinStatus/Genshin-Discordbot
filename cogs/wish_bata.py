@@ -344,7 +344,7 @@ async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     for n in range(num):
         resalt.append(wish_list(roof=roof, id=id))
         roof = roofGet(id, 1)
-    # random.shuffle(resalt)
+    random.shuffle(resalt)
 
     # 結果からキャラ名に変換
     await interaction.edit_original_message(content="ガチャ画面読み込み中...")
@@ -482,7 +482,7 @@ class Wish_resetting_Button(discord.ui.Button):
         self.DATA = DATA
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content="祈願バナーを選択してください。", embed=None, view=wish_banner_select_View)
+        await interaction.response.edit_message(content="祈願バナーを選択してください。", embed=None, view=wish_banner_select_View())
 
 
 def setup(bot):
