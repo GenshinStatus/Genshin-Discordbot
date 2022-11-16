@@ -1,4 +1,5 @@
 from lib.yamlutil import yaml
+import lib.sql as sql
 import discord
 from discord.ext import commands
 from discord import Option, OptionChoice, SlashCommandGroup
@@ -10,29 +11,36 @@ import asyncio
 is_skip_button_pressed = False
 
 # ファイル指定
-wishYaml = yaml('wish.yaml')
 genshinYaml = yaml('genshin.yaml')
 genshinHYaml = yaml('genshinH.yaml')
-genshinStarYaml = yaml('genshin_ster.yaml')
 bannerIDYaml = yaml('wish_bannerID.yaml')
 wish_configYaml = yaml('wish_config.yaml')
 name_to_urlYaml = yaml('name_to_url.yaml')
 
 # ファイル初期化
-wishData = wishYaml.load_yaml()
 characterName = genshinYaml.load_yaml()
 characterTrans = genshinHYaml.load_yaml()
-bannerData = genshinStarYaml.load_yaml()
 banner_id = bannerIDYaml.load_yaml()
 wish_config = wish_configYaml.load_yaml()
 name_to_url = name_to_urlYaml.load_yaml()
 
 
-def get_wish_select_options():
-    # bot再起動しなくてもyaml更新できるようにするためにいちいち取得するようにする
-    bannerIDYaml = yaml('wish_bannerID.yaml')
-    banner_id = bannerIDYaml.load_yaml()
+def genshingen(name):
+    try:
+        resalt = urllib.parse.quote(characterName[name]["zh"])
+    except:
+        try:
+            return characterName[name]["url"]
+        except:
+            try:
+                resalt = urllib.parse.quote(
+                    characterName[characterTrans[name]["ja"]]["zh"])
+            except:
+                resalt = None
+    return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{resalt}/avatar.png"
 
+
+def get_wish_select_options():
     wish_select_options_1: list[discord.SelectOption] = []
     wish_select_options_2: list[discord.SelectOption] = []
     wish_select_options_3: list[discord.SelectOption] = []
@@ -47,13 +55,7 @@ def get_wish_select_options():
         elif v <= 100:
             wish_select_options_3.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-    return wish_select_options_1, wish_select_options_2, wish_select_options_3, banner_id
-
-
-def roofInit():
-    wishYaml = yaml('wish.yaml')
-    wishData = wishYaml.load_yaml()
-    return wishData
+    return wish_select_options_1, wish_select_options_2, wish_select_options_3
 
 
 changed_per = [20.627, 13.946, 9.429, 6.375, 4.306, 2.914,
@@ -81,10 +83,9 @@ def roofReset(id: int, roof: int):
     '''
     指定した天井の数値にするよ
     '''
-    hoge = roofInit()
-    hoge[id] = {"roof": roof, "banner": hoge[id]
-                ["banner"], "num": hoge[id]["num"]}
-    wishYaml.save_yaml(hoge)
+    hoge = sql.WishUser.get_wish_user(id=id)
+    sql.WishUser.update_wish_user(
+        id=id, char_roof=roof, weap_roof=hoge.weapon_loof, custom_id=hoge.wishnum)
     return
 
 
@@ -92,34 +93,11 @@ def roofGet(id: int, roof: int):
     '''
     idから天井を足して結果をintで返すよ
     '''
-    hoge = roofInit()
-    if id in hoge:
-        roof += hoge[id]["roof"]
-        banner = hoge[id]["banner"]
-        num = hoge[id]["num"]
-    else:
-        roof = 0
-        banner = 00000
-        num = 0
-    hoge[id] = {"roof": roof, "banner": banner, "num": num}
-    wishYaml.save_yaml(hoge)
+    hoge = sql.WishUser.get_wish_user(id=id)
+    roof += hoge.char_loof
+    sql.WishUser.update_wish_user(
+        id=id, char_roof=roof, weap_roof=hoge.weapon_loof, custom_id=hoge.wishnum)
     return roof
-
-
-def genshingen(name: str):
-    '''
-    名前（日本語名）からキャラの画像urlを返すよ
-    '''
-    if name in ["コレイ", "ティナリ", "旅人", "ニィロウ", "キャンディス", "セノ"]:
-        return characterName[name]["url"]
-    if name in characterName:
-        resalt = urllib.parse.quote(characterName[name]["zh"])
-    elif name in characterTrans:
-        resalt = urllib.parse.quote(
-            characterName[characterTrans[name]["ja"]]["zh"])
-    else:
-        resalt = None
-    return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{resalt}/avatar.png"
 
 
 def wish_list(roof: int, id: int):
@@ -172,29 +150,6 @@ def wish_list(roof: int, id: int):
     return "".join(tmpresalt)
 
 
-class probability_calculation():
-    def __init__(self, ctx: discord.interactions.Interaction, banner_id: int, pickup_char_roof: int):
-        self.ctx = ctx
-        self.banner = banner_id
-        self.roof = pickup_char_roof
-
-    def banner_display_embed(self):
-        """
-        画像を表示するEmbedを返します。
-        """
-        embed = discord.Embed(
-            title="ガチャ回数を指定してください。",
-            color=0x1e90ff,
-            description="バナーの切り替えなどは設定から行ってください。")
-        image_id = None
-        banner_name = None
-        embed.add_field(name="現在指定されているバナー名：", value=banner_name)
-        embed.add_field(name="現在引いた回数：", value=f"{str(self.roof)} 回")
-        embed.set_image(
-            url=f'https://cdn.discordapp.com/attachments/1034136716862296114/{image_id}/unknown.png')
-        return embed
-
-
 class Wish_bataCog(commands.Cog):
 
     def __init__(self, bot):
@@ -214,17 +169,20 @@ class Wish_bataCog(commands.Cog):
             self,
             ctx: discord.ApplicationContext):
 
-        await ctx.respond(content="えらぶんだもん", view=wish_banner_select_View())
+        await ctx.respond(content="祈願バナーを選択してください。", view=wish_banner_select_View())
 
     @wish.command(name="get_image", description="ガチャイラスト取得")
-    async def get_image(
+    async def character(
         self,
         ctx: discord.ApplicationContext,
-        character_name: str,
+        content: Option(str, required=True, description="キャラ名（ひらかなでもOK）", )
     ):
-        embed = discord.Embed(title=character_name, color=0x1e90ff)
-        embed.set_image(url=name_to_url[character_name])
-        await ctx.respond(content=character_name, embed=embed)
+        picture = genshingen(content)
+        if picture == "https://bbs.hoyolab.com/hoyowiki/picture/character/None/avatar.png":
+            content = f" \"{content}\" は原神データベースに存在しません。"
+        embed = discord.Embed(title=content, color=0x1e90ff,)
+        embed.set_image(url=picture)
+        await ctx.respond(embed=embed)
 
 
 class wish_main_system_value():
@@ -258,7 +216,7 @@ def get_wish_resalt_display_embed(DATA: wish_main_system_value):
         description=f"""
         祈願バナー: **{banner_DATA[banner_id]['name']}・{''.join(banner_DATA[banner_id]['pickup_5'])} ({banner_DATA[banner_id]['ver']})**
         引いた人: <@{DATA.id}>
-        現在のあなたの天井値: **{roof}**
+        現在のあなたの天井値: **{roof-1}**
         最終祈願の疑似星5確率: **{round(getPer(roof)*100, 2)}%**
         PU天井からの原石消費数: **{roof * 160}個**
         1原石2円としたときの消費金額: **{roof * 320}円**
@@ -368,7 +326,6 @@ class select_wish_modal(discord.ui.Modal):
         await interaction.response.edit_message(content="ローディング", view=None)
         try:
             hoge = int(self.num.value)
-            print(hoge)
             if hoge > 100:
                 raise
             await get_wish_resalt(self.interaction, hoge, self.banner_id)
@@ -379,9 +336,7 @@ class select_wish_modal(discord.ui.Modal):
 async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     id = interaction.user.id
     # まずこいつの天井、指定バナーを取得
-    roofGet(id, 0)
-    wishData = roofInit()
-    roof = wishData[id]["roof"]
+    roof = roofGet(id, 0)
 
     # とりあえず天井から結果num回を排出
     await interaction.edit_original_message(content="ガチャ結果読み込み中...")
@@ -389,7 +344,7 @@ async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     for n in range(num):
         resalt.append(wish_list(roof=roof, id=id))
         roof = roofGet(id, 1)
-    random.shuffle(resalt)
+    # random.shuffle(resalt)
 
     # 結果からキャラ名に変換
     await interaction.edit_original_message(content="ガチャ画面読み込み中...")
@@ -421,7 +376,6 @@ async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
         view = View()
         view.add_item(GotoNextButton(interaction, DATA, 1))
         view.add_item(GotoResultButton(interaction, DATA))
-        print(DATA.resalt[0])
         await interaction.edit_original_message(content=None, embed=get_wish_display_embed(DATA.final_resalt[0], DATA.resalt[0]), view=view)
 
 
@@ -485,9 +439,8 @@ class GotoNextButton(discord.ui.Button):
             view = View()
             view.add_item(Wish_again_Button(
                 self.interaction, self.DATA))
+            view.add_item(Wish_resetting_Button(self.interaction, self.DATA))
             await interaction.edit_original_message(content=None, embed=get_wish_resalt_display_embed(self.DATA), view=view)
-        print(
-            f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
 
 # 全部飛ばすボタン
 
@@ -503,6 +456,7 @@ class GotoResultButton(discord.ui.Button):
         view = View()
         view.add_item(Wish_again_Button(
             self.interaction, self.DATA))
+        view.add_item(Wish_resetting_Button(self.interaction, self.DATA))
         await interaction.edit_original_message(content=None, embed=get_wish_resalt_display_embed(self.DATA), view=view)
 
 # もう一回遊べるどん
@@ -517,6 +471,18 @@ class Wish_again_Button(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.edit_message(content="ローディング", view=None)
         await get_wish_resalt(interaction, len(self.DATA.resalt), self.DATA.banner_id)
+
+# 設定変えたい人用
+
+
+class Wish_resetting_Button(discord.ui.Button):
+    def __init__(self, interaction, DATA: wish_main_system_value):
+        super().__init__(label="違うガチャを引く", style=discord.ButtonStyle.gray)
+        self.interaction = interaction
+        self.DATA = DATA
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(content="祈願バナーを選択してください。", embed=None, view=wish_banner_select_View)
 
 
 def setup(bot):
