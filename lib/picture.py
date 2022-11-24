@@ -45,16 +45,17 @@ def add_text_to_image(img, text, font_size, font_color, height, width, max_lengt
 def getCharacterPicture(name):
     global words
     global jhwords
-    hoge = []
-    hoge.append(name)
-    if name in ["コレイ", "ティナリ", "旅人", "ニィロウ", "キャンディス", "セノ", "ナヒーダ", "レイラ"]:
-        return words[name]["url"]
-    if name in words:
+    try:
         resalt = urllib.parse.quote(words[name]["zh"])
-    elif name in jhwords:
-        resalt = urllib.parse.quote(words[jhwords[name]["ja"]]["zh"])
-    else:
-        resalt = None
+    except:
+        try:
+            return words[name]["url"]
+        except:
+            try:
+                resalt = urllib.parse.quote(
+                    words[jhwords[name]["ja"]]["zh"])
+            except:
+                resalt = None
     return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{resalt}/avatar.png"
 
 

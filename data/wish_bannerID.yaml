@@ -1,490 +1,490 @@
 0:
   name: フレアの止まり
   ver: ver1.0
-  image: 1034136756410404915
-    pickup_5:
+  image: '1034136756410404915'
+  pickup_5:
     - クレー
-    pickup_4:
+  pickup_4:
     - スクロース
     - 行秋
     - ノエル
 1:
   name: 冬国との別れ
   ver: ver1.1 前半
-  image: 1034136857316958340
-    pickup_5:
+  image: '1034136857316958340'
+  pickup_5:
     - タルタリヤ
-    pickup_4:
+  pickup_4:
     - 北斗
     - 凝光
     - ディオナ
 2:
   name: 大隠朝市
   ver: ver1.1 後半
-  image: 1034136918717378620
-    pickup_5:
+  image: '1034136918717378620'
+  pickup_5:
     - 鍾離
-    pickup_4:
+  pickup_4:
     - レザー
     - 重雲
     - 辛炎
 3:
   name: 神秘の生息
   ver: ver1.2 前半
-  image: 1034137004973236254
-    pickup_5:
+  image: '1034137004973236254'
+  pickup_5:
     - アルベド
-    pickup_4:
+  pickup_4:
     - ベネット
     - スクロース
     - フィッシュル
 4:
   name: 逸俗逡巡
   ver: ver1.2 後半
-  image: 1034137076003774524
-    pickup_5:
+  image: '1034137076003774524'
+  pickup_5:
     - 甘雨
-    pickup_4:
+  pickup_4:
     - 香菱
     - 行秋
     - ノエル
 5:
   name: 灯宴の招き
   ver: ver1.3 前半
-  image: 1034137150142296064
-    pickup_5:
+  image: '1034137150142296064'
+  pickup_5:
     - 魈
-    pickup_4:
+  pickup_4:
     - 辛炎
     - 北斗
     - ディオナ
 6:
   name: 魚龍灯昼
   ver: ver1.3 中間
-  image: 1034137226080165998
-    pickup_5:
+  image: '1034137226080165998'
+  pickup_5:
     - 刻晴
-    pickup_4:
+  pickup_4:
     - ベネット
     - 凝光
     - バーバラ
 7:
   name: 彼岸満開
   ver: ver1.3 後半
-  image: 1034137296762585118
-    pickup_5:
+  image: '1034137296762585118'
+  pickup_5:
     - 胡桃
-    pickup_4:
+  pickup_4:
     - 香菱
     - 重雲
     - 行秋
 8:
   name: 杯に注がれた詩
   ver: ver1.4 前半
-  image: 1034137628150345898
-    pickup_5:
+  image: '1034137628150345898'
+  pickup_5:
     - ウェンティ
-    pickup_4:
+  pickup_4:
     - ノエル
     - スクロース
     - レザー
 9:
   name: 冬国との別れ
   ver: ver1.4 後半
-  image: 1034137628150345898
-    pickup_5:
+  image: '1034137715660296342'
+  pickup_5:
     - タルタリヤ
-    pickup_4:
+  pickup_4:
     - ロサリア
     - バーバラ
     - フィッシュル
 10:
   name: 大隠朝市
   ver: ver1.5 前半
-  image: 1034137827748888636
-    pickup_5:
+  image: '1034137827748888636'
+  pickup_5:
     - 鍾離
-    pickup_4:
+  pickup_4:
     - 煙緋
     - ノエル
     - ディオナ
 11:
   name: 波折りの刹那
   ver: ver1.5 後半
-  image: 1034138007055368363
-    pickup_5:
+  image: '1034138007055368363'
+  pickup_5:
     - エウルア
-    pickup_4:
+  pickup_4:
     - 行秋
     - 北斗
     - 辛炎
 12:
   name: フレアの訪れ
   ver: ver1.6 前半
-  image: 1034138078115278858
-    pickup_5:
+  image: '1034138078115278858'
+  pickup_5:
     - クレー
-    pickup_4:
+  pickup_4:
     - バーバラ
     - スクロース
     - フィッシュル
 13:
   name: 辻風に舞う落葉
   ver: ver1.6 後半
-  image: 1034138146851528735
-    pickup_5:
+  image: '1034138146851528735'
+  pickup_5:
     - 楓原万葉
-    pickup_4:
+  pickup_4:
     - ロサリア
     - レザー
     - ベネット
 14:
   name: 白鷺の庭
   ver: ver2.0 前半
-  image: 1034138225347936256
-    pickup_5:
+  image: '1034138225347936256'
+  pickup_5:
     - 神里綾華
-    pickup_4:
+  pickup_4:
     - 凝光
     - 重雲
     - 煙緋
 15:
   name: 天の川に咲きし大輪
   ver: ver2.0 後半
-  image: 1034138289910853762
-    pickup_5:
+  image: '1034138289910853762'
+  pickup_5:
     - 宵宮
-    pickup_4:
+  pickup_4:
     - 早柚
     - 辛炎
     - ディオナ
 16:
   name: 影寂の天下人
   ver: ver2.1 前半
-  image: 1034138364116471828
-    pickup_5:
+  image: '1034138364116471828'
+  pickup_5:
     - 雷電将軍
-    pickup_4:
+  pickup_4:
     - 九条裟羅
     - 香菱
     - スクロース
 17:
   name: 海原に浮かぶ虹珠
   ver: ver2.1 後半
-  image: 1034138436883456070
-    pickup_5:
+  image: '1034138436883456070'
+  pickup_5:
     - 珊瑚宮心海
-    pickup_4:
+  pickup_4:
     - ロサリア
     - 北斗
     - 行秋
 18:
   name: 冬国との別れ
   ver: ver2.2 前半
-  image: 1034138500301332491
-    pickup_5:
+  image: '1034138500301332491'
+  pickup_5:
     - タルタリヤ
-    pickup_4:
+  pickup_4:
     - 煙緋
     - 凝光
     - 重雲
 19:
   name: 彼岸満開
   ver: ver2.2 後半
-  image: 1034138566114148382
-    pickup_5:
+  image: '1034138566114148382'
+  pickup_5:
     - 胡桃
-    pickup_4:
+  pickup_4:
     - トーマ
     - 早柚
     - ディオナ
 20:
   name: 深秘の生息
   ver: ver2.3 前半
-  image: 1034138630840651816
-    pickup_5:
+  image: '1034138630840651816'
+  pickup_5:
     - アルベド
-    pickup_4:
+  pickup_4:
     - ベネット
     - ノエル
     - ロサリア
 21:
   name: 波折りの刹那
   ver: ver2.3 前半
-  image: 1034138666869719121
-    pickup_5:
+  image: '1034138666869719121'
+  pickup_5:
     - エウルア
-    pickup_4:
+  pickup_4:
     - ベネット
     - ノエル
     - ロサリア
 22:
   name: 鬼門闘宴
   ver: ver2.3 後半
-  image: 1034138751804383333
-    pickup_5:
+  image: '1034138751804383333'
+  pickup_5:
     - 荒瀧一斗
-    pickup_4:
+  pickup_4:
     - 香菱
     - ゴロー
     - バーバラ
 23:
   name: 塵世に戻りし一鶴
   ver: ver2.4 前半
-  image: 1034138875326632077
-    pickup_5:
+  image: '1034138875326632077'
+  pickup_5:
     - 申鶴
-    pickup_4:
+  pickup_4:
     - 雲菫
     - 重雲
     - 凝光
 24:
   name: 灯宴の招き
   ver: ver2.4 前半
-  image: 1034138930334929016
-    pickup_5:
+  image: '1034138930334929016'
+  pickup_5:
     - 魈
-    pickup_4:
+  pickup_4:
     - 雲菫
     - 重雲
     - 凝光
 25:
   name: 大隠朝市
   ver: ver2.4 後半
-  image: 1034138960814952579
-    pickup_5:
+  image: '1034138960814952579'
+  pickup_5:
     - 鍾離
-    pickup_4:
+  pickup_4:
     - 煙緋
     - 行秋
     - 北斗
 26:
   name: 逸俗逡巡
   ver: ver2.4 後半
-  image: 1034138997175369738
-    pickup_5:
+  image: '1034138997175369738'
+  pickup_5:
     - 甘雨
-    pickup_4:
+  pickup_4:
     - 煙緋
     - 行秋
     - 北斗
 27:
   name: 華紫櫻緋
   ver: ver2.5 前半
-  image: 1034139042536771594
-    pickup_5:
+  image: '1034139042536771594'
+  pickup_5:
     - 八重神子
-    pickup_4:
+  pickup_4:
     - ディオナ
     - フィッシュル
     - トーマ
 28:
   name: 影寂の天下人
   ver: ver2.5 後半
-  image: 1034139108307644486
-    pickup_5:
+  image: '1034139108307644486'
+  pickup_5:
     - 雷電将軍
-    pickup_4:
+  pickup_4:
     - ベネット
     - 辛炎
     - 九条裟羅
 29:
   name: 海原に浮かぶ虹珠
   ver: ver2.5 後半
-  image: 1034139127513366669
-    pickup_5:
+  image: '1034139127513366669'
+  pickup_5:
     - 珊瑚宮心海
-    pickup_4:
+  pickup_4:
     - ベネット
     - 辛炎
     - 九条裟羅
 30:
   name: 花踏み歩む蒼流
   ver: ver2.6 前半
-  image: 1034139189660352645
-    pickup_5:
+  image: '1034139189660352645'
+  pickup_5:
     - 神里綾人
-    pickup_4:
+  pickup_4:
     - 香菱
     - スクロース
     - 雲菫
 31:
   name: 杯に注がれた詩
   ver: ver2.6 前半
-  image: 1034139215572770866
-    pickup_5:
+  image: '1034139215572770866'
+  pickup_5:
     - ウェンティ
-    pickup_4:
+  pickup_4:
     - 香菱
     - スクロース
     - 雲菫
 32:
   name: 白鷺の庭
   ver: ver2.6 後半
-  image: 1034139278151786536
-    pickup_5:
+  image: '1034139278151786536'
+  pickup_5:
     - 神里綾華
-    pickup_4:
+  pickup_4:
     - ロサリア
     - レザー
     - 早柚
 33:
   name: 天を諜知せし白袖
   ver: ver2.7 前半
-  image: 1034139428450471997
-    pickup_5:
+  image: '1034139428450471997'
+  pickup_5:
     - 夜蘭
-    pickup_4:
+  pickup_4:
     - 煙緋
     - ノエル
     - バーバラ
 34:
   name: 灯宴の招き
   ver: ver2.7 前半
-  image: 1034139457709936732
-    pickup_5:
+  image: '1034139457709936732'
+  pickup_5:
     - 魈
-    pickup_4:
+  pickup_4:
     - 煙緋
     - ノエル
     - バーバラ
 35:
   name: 鬼門闘宴
   ver: ver2.7 後半
-  image: 1034139525892546610
-    pickup_5:
+  image: '1034139525892546610'
+  pickup_5:
     - 荒瀧一斗
-    pickup_4:
+  pickup_4:
     - 重雲
     - ゴロー
     - 久岐忍
 36:
   name: 辻風に舞う落葉
   ver: ver2.8 前半
-  image: 1038464738767679548
-    pickup_5:
+  image: '1038464738767679548'
+  pickup_5:
     - 楓原万葉
-    pickup_4:
+  pickup_4:
     - 鹿野院平蔵
     - トーマ
     - 凝光
 37:
   name: フレアの訪れ
   ver: ver2.8 前半
-  image: 1038464604478636092
-    pickup_5:
+  image: '1038464604478636092'
+  pickup_5:
     - クレー
-    pickup_4:
+  pickup_4:
     - 鹿野院平蔵
     - トーマ
     - 凝光
 38:
   name: 天の川に咲きし大輪
   ver: ver2.8 後半
-  image: 1034139592330326106
-    pickup_5:
+  image: '1034139592330326106'
+  pickup_5:
     - 宵宮
-    pickup_4:
+  pickup_4:
     - 雲菫
     - 辛炎
     - ベネット
 39:
   name: 深き森の巡回者
   ver: ver3.0 前半
-  image: 1034139655144222740
-    pickup_5:
+  image: '1034139655144222740'
+  pickup_5:
     - ティナリ
-    pickup_4:
+  pickup_4:
     - コレイ
     - ディオナ
     - フィッシュル
 40:
   name: 大隠朝市
   ver: ver3.0 前半
-  image: 1034139685594857502
-    pickup_5:
-    - ティナリ
-    pickup_4:
+  image: '1034139685594857502'
+  pickup_5:
+    - 鍾離
+  pickup_4:
     - コレイ
     - ディオナ
     - フィッシュル
 41:
   name: 逸俗逡巡
   ver: ver3.0 後半
-  image: 1034139751319609465
-    pickup_5:
+  image: '1034139751319609465'
+  pickup_5:
     - 甘雨
-    pickup_4:
+  pickup_4:
     - ドリー
     - スクロース
     - 行秋
 42:
   name: 海原に浮かぶ虹珠
   ver: ver3.0 後半
-  image: 1034139776669986916
-    pickup_5:
+  image: '1034139776669986916'
+  pickup_5:
     - 珊瑚宮心海
-    pickup_4:
+  pickup_4:
     - ドリー
     - スクロース
     - 行秋
 43:
   name: 冥昼の裁定
   ver: ver3.1 前半
-  image: 1034139837336391760
-    pickup_5:
+  image: '1034139837336391760'
+  pickup_5:
     - セノ
-    pickup_4:
+  pickup_4:
     - キャンディス
     - 久岐忍
     - 早柚
 44:
   name: 杯に注がれた詩
   ver: ver3.1 前半
-  image: 1034139863412383744
-    pickup_5:
+  image: '1034139863412383744'
+  pickup_5:
     - ウェンティ
-    pickup_4:
+  pickup_4:
     - キャンディス
     - 久岐忍
     - 早柚
 45:
   name: 優々たる蓮歌の舞
   ver: ver3.1 後半
-  image: 1034139921654489208
-    pickup_5:
+  image: '1034139921654489208'
+  pickup_5:
     - ニィロウ
-    pickup_4:
+  pickup_4:
     - バーバラ
     - 北斗
     - 香菱
 46:
   name: 深秘の生息
   ver: ver3.1 後半
-  image: 1034139948875522098
-    pickup_5:
+  image: '1034139948875522098'
+  pickup_5:
     - アルベド
-    pickup_4:
+  pickup_4:
     - バーバラ
     - 北斗
     - 香菱
 47:
   name: 叡智を恵む月見草
   ver: ver3.2 前半
-  image: 1036558593496973342
-    pickup_5:
+  image: '1036558593496973342'
+  pickup_5:
     - ナヒーダ
-    pickup_4:
+  pickup_4:
     - ノエル
     - レザー
     - ベネット
-47:
+48:
   name: 天の川に咲きし大輪
   ver: ver3.2 前半
-  image: 1036558632248168478
-    pickup_5:
+  image: '1036558632248168478'
+  pickup_5:
     - 宵宮
-    pickup_4:
+  pickup_4:
     - ノエル
     - レザー
     - ベネット
