@@ -246,12 +246,36 @@ class WishUser:
         self.wishnum = wishnum
 
     def get_wish_user(id: int):
-        result: Tuple = database.load_data_sql(
-            execute="""
-            select *
-            from user_wish
-            where id = %s
+        try:
+            result: Tuple = database.load_data_sql(
+                sql="""
+                select *
+                from user_wish
+                where id = %s
+                """,
+                data=(id,),
+            )[0]
+            return WishUser(result[0], result[1], result[2], result[3])
+        except:
+            WishUser.add_wish_user(id)
+            WishUser.update_wish_user(
+                id=id, char_roof=0, weap_roof=0, custom_id=0)
+            return WishUser(id, 0, 0, 0)
+
+    def add_wish_user(id: int):
+        database.table_update_sql(
+            sql="""
+            insert into user_wish values(%s, %s, %s, %s) 
             """,
-            data=(id,),
-        )[0]
-        return WishUser(result[0], result[1], result[2], result[3])
+            data=(id, 0, 0, 0),
+        )
+        return
+
+    def update_wish_user(id: int, char_roof: int, weap_roof: int, custom_id: int):
+        database.table_update_sql(
+            sql="""
+            update user_wish set char_roof = %s, weap_roof = %s, custom_id = %s where id = %s
+            """,
+            data=(char_roof, weap_roof, custom_id, id),
+        )
+        return

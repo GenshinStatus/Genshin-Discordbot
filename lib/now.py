@@ -4,6 +4,7 @@ daily = 0
 weekly = 0
 hoyo = 0
 
+
 def init_reference_times():
     """
     daily, hoyolab, weeklyの基準時間を初期化します
@@ -21,6 +22,7 @@ def init_reference_times():
     hoyo = datetime(year=now.year, month=now.month, day=now.day, hour=1)
     if hoyo < now:
         hoyo += one_day
-    weekly = datetime(year=now.year, month=now.month, day=now.day, hour=5) + timedelta(days=(7-now.weekday())%7)
+    weekly = datetime(year=now.year, month=now.month, day=now.day,
+                      hour=5) + timedelta(days=(7-now.weekday()) % 7)
     if weekly < now:
         weekly += seven_days

@@ -29,8 +29,3 @@ class yaml:
         with open(self.path, 'w', encoding="utf-8_sig") as f:
             y.dump(data, f, default_flow_style=False, allow_unicode=True)
             return data
-
-
-test = yaml("test.yaml")
-
-test.save_yaml({"test": "yaml"})
