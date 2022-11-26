@@ -1,21 +1,21 @@
 0:
   day_of_week: 月曜日
-  url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1017422978226602046/monday.png'
+  url: 'https://cdn.discordapp.com/attachments/1045898031872098395/1045898210603974726/monday.png'
 1:
   day_of_week: 火曜日
-  url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1017422976897003531/Tuesday.png'
+  url: 'https://cdn.discordapp.com/attachments/1045898031872098395/1045898216295645275/tuesday.png'
 2:
   day_of_week: 水曜日
-  url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1017423284473704548/Wednesday.png'
+  url: 'https://cdn.discordapp.com/attachments/1045898031872098395/1045898216635379773/wednesday.png'
 3:
   day_of_week: 木曜日
-  url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1017422976595009587/Thursday.png'
+  url: 'https://cdn.discordapp.com/attachments/1045898031872098395/1045898211623182527/thursday.png'
 4:
   day_of_week: 金曜日
-  url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1017422977517764739/Friday.png'
+  url: 'https://cdn.discordapp.com/attachments/1045898031872098395/1045898210159370301/friday.png'
 5:
   day_of_week: 土曜日
-  url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1017423284834422814/Saturday.png'
+  url: 'https://cdn.discordapp.com/attachments/1045898031872098395/1045898211275051009/saturday.png'
 6:
   day_of_week: 日曜日
   url: 'https://cdn.discordapp.com/attachments/1016319206725263470/1016319826274308146/Sunday.png'
