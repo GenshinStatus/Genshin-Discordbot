@@ -348,3 +348,13 @@
   IconName: UI_AvatarIcon_Layla
   NameId: '2889777514'
   sideIconName: UI_AvatarIcon_Side_Layla
+'10000075':
+  Element: Wind
+  IconName: UI_AvatarIcon_Wanderer
+  NameId: '3230559562'
+  sideIconName: UI_AvatarIcon_Side_Wanderer
+'10000076':
+  Element: Wind
+  IconName: UI_AvatarIcon_Faruzan
+  NameId: '2387711994'
+  sideIconName: UI_AvatarIcon_Side_Faruzan
