@@ -2,7 +2,7 @@ import discord
 from discord.ui import Select, View
 from discord.ext import commands, tasks
 from discord.commands import Option, SlashCommandGroup
-import datetime
+from datetime import datetime, timedelta
 from lib.yamlutil import yaml
 import time
 
@@ -10,6 +10,18 @@ channelIdYaml = yaml(path='channelId.yaml')
 channelId = channelIdYaml.load_yaml()
 notificationYaml = yaml(path='notification.yaml')
 notificationData = notificationYaml.load_yaml()
+
+
+def datetime_to_unixtime(dt: datetime) -> int:
+    """datetime型からunix時間をintで返します。
+
+    Args:
+        dt (datetime): datetime型の時間
+
+    Returns:
+        int: unix時間
+    """
+    return round(int(time.mktime(dt.timetuple())), -1)
 
 
 class NotificationCog(commands.Cog):
@@ -34,42 +46,44 @@ class NotificationCog(commands.Cog):
                                   max_value=180,
                                   min_value=1,
                                   default=40)):
-        n = await ctx.respond(content="読みこみ中...", ephemeral=True)
+        await ctx.response.defer(ephemeral=True)  # deferのほうが良さそうなのでこっちに変更したい
         try:
             channelIdYaml = yaml(path='channelId.yaml')
             channelId = channelIdYaml.load_yaml()
             print(channelId[ctx.guild.id])
         except:
-            await n.edit_original_message(content="通知チャンネルが設定されていません。管理者に連絡して設定してもらってください。```/setting channel```で設定できます。")
+            await ctx.respond(content="通知チャンネルが設定されていません。管理者に連絡して設定してもらってください。```/setting channel```で設定できます。")
             return
 
-        hoge = 160 - times//8
-        hoge = hoge - resin
-        hoge = round(round(time.time()), -1) + hoge*8*60
+        # datetime型に直したほうが可読性が上がるので修正します
+        plan_time = datetime_to_unixtime(
+            datetime.now() + timedelta(minutes=1280 - times - (resin*8)))
 
-        notificationData[hoge] = {"userId": f"<@{ctx.author.id}>",
-                                  "channelId": channelId[ctx.guild.id]['channelid'], "time": times}
+        # 以下をSQLに変更します！
+        notificationData[plan_time] = {"userId": f"<@{ctx.author.id}>",
+                                       "channelId": channelId[ctx.guild.id]['channelid'], "time": times}
         notificationYaml.save_yaml(notificationData)
 
-        embed = discord.Embed(title=f"<t:{hoge}:R>に通知を以下のチャンネルから送信します", color=0x1e90ff,
+        embed = discord.Embed(title=f"<t:{plan_time}:R>に通知を以下のチャンネルから送信します", color=0x1e90ff,
                               description=f"チャンネル：<#{channelId[ctx.guild.id]['channelid']}>")
-        await n.edit_original_message(content="設定しました。", embed=embed)
+        await ctx.respond(content="設定しました。", embed=embed)
         print(
             f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nnotification_resin - set")
 
     @tasks.loop(seconds=10)
     async def slow_count(self):
+        # ここもSQLに変更します
         notificationYaml = yaml(path='notification.yaml')
         notificationData = notificationYaml.load_yaml()
         try:
-            hoge = notificationData[round(round(time.time()), -1)]
-            channel = self.bot.get_partial_messageable(hoge["channelId"])
+            plan_time = notificationData[round(round(time.time()), -1)]
+            channel = self.bot.get_partial_messageable(plan_time["channelId"])
 
-            huga = round(round(time.time()), -1) + hoge['time'] * 60
+            huga = round(round(time.time()), -1) + plan_time['time'] * 60
 
-            embed = discord.Embed(title=f"樹脂{hoge['time']}分前通知", color=0x1e90ff,
+            embed = discord.Embed(title=f"樹脂{plan_time['time']}分前通知", color=0x1e90ff,
                                   description=f"⚠あと約<t:{huga}:R>に樹脂が溢れます！")
-            await channel.send(content=f"{hoge['userId']}", embed=embed)
+            await channel.send(content=f"{plan_time['userId']}", embed=embed)
             notificationData.pop(round(round(time.time()), -1))
             notificationYaml.save_yaml(notificationData)
             print(f"notification_resin - 通知")
