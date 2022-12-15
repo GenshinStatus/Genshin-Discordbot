@@ -7,7 +7,7 @@ class Notification:
     """通知に関する構造体クラス
     """
 
-    def __init__(self, notification_id: int, type_id: int, type_name: str, bot_id: int, user_id: int, guild_id: int, notification_time: datetime):
+    def __init__(self, notification_id: int, type_id: int, type_name: str, bot_id: int, user_id: int, guild_id: int, notification_time: datetime, plan_time: datetime):
         self.notification_id = notification_id
         self.type_id = type_id
         self.type_name = type_name
@@ -15,6 +15,7 @@ class Notification:
         self.user_id = user_id
         self.guild_id = guild_id
         self.notification_time = notification_time
+        self.plan_time = plan_time
 
 
 def user_notifications_search(guild_id: int, user_id: int, bot_id: int) -> list[Notification]:
@@ -30,7 +31,7 @@ def user_notifications_search(guild_id: int, user_id: int, bot_id: int) -> list[
     """
     result: Tuple = database.load_data_sql(
         sql="""
-            select notification_id, type_id, type_name, bot_id, user_id, guild_id, notification_time
+            select notification_id, type_id, type_name, bot_id, user_id, guild_id, notification_time, plan_time
             from genshin_notification
             left join notification_type using(type_id)
             where guild_id =%s
@@ -39,7 +40,7 @@ def user_notifications_search(guild_id: int, user_id: int, bot_id: int) -> list[
             """,
         data=(guild_id, user_id, bot_id),
     )
-    return [Notification(v[0], v[1], v[2], v[3], v[4], v[5], v[6]) for v in result]
+    return [Notification(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]) for v in result]
 
 
 def executing_notifications_search(bot_id: int) -> Tuple[list[Notification], dict[int, int]]:
@@ -54,7 +55,7 @@ def executing_notifications_search(bot_id: int) -> Tuple[list[Notification], dic
     """
     result: Tuple = database.load_data_sql(
         sql="""
-            select notification_id, type_id, type_name, bot_id, user_id, guild_id, notification_time
+            select notification_id, type_id, type_name, bot_id, user_id, guild_id, notification_time, plan_time
             from genshin_notification
             left join notification_type using(type_id)
             where notification_time <= %s
@@ -62,7 +63,7 @@ def executing_notifications_search(bot_id: int) -> Tuple[list[Notification], dic
             """,
         data=(datetime.now(), bot_id),
     )
-    obj = [Notification(v[0], v[1], v[2], v[3], v[4], v[5], v[6])
+    obj = [Notification(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7])
            for v in result]
 
     if len(obj) == 0:
@@ -97,7 +98,7 @@ def delete_notifications(notification_ids: tuple[int]) -> None:
     )
 
 
-def add_notification(type_id: int, bot_id: int, user_id: int, guild_id: int, notification_time: datetime):
+def add_notification(type_id: int, bot_id: int, user_id: int, guild_id: int, notification_time: datetime, plan_time: datetime) -> None:
     """ユーザーが新規で通知を登録する為のデータ
 
     Args:
@@ -110,9 +111,9 @@ def add_notification(type_id: int, bot_id: int, user_id: int, guild_id: int, not
     database.table_update_sql(
         sql="""
         insert into genshin_notification
-        (type_id, bot_id, user_id, guild_id, notification_time)
+        (type_id, bot_id, user_id, guild_id, notification_time, plan_time)
         values
-        (%s,%s,%s,%s,%s)
+        (%s, %s, %s, %s, %s, %s)
         """,
         data=(
             type_id,
@@ -120,6 +121,7 @@ def add_notification(type_id: int, bot_id: int, user_id: int, guild_id: int, not
             user_id,
             guild_id,
             notification_time,
+            plan_time,
         )
     )
 

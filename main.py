@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from lib.sql import Guild
 import asyncio
+import yaml_trans
 
 bot = commands.Bot()
 # debug_guilds=[879288794560471050]
@@ -28,6 +29,7 @@ async def on_application_command_error(ctx: discord.ApplicationContext, error):
 @bot.event
 async def on_ready():
     print(f"Bot名:{bot.user} On ready!!")
+    yaml_trans.init(bot.user.id)
     await guildsCount()
 
 

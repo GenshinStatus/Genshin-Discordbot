@@ -50,18 +50,18 @@ class NotificationCog(commands.Cog):
 
         # datetime型に直したほうが可読性が上がるので修正します
         plan_time = datetime.now() + timedelta(minutes=1280 - (resin*8))
+        notification_time = (plan_time - timedelta(minutes=times))
 
         notification.add_notification(
             type_id=1,
             bot_id=ctx.bot.user.id,
             user_id=ctx.user.id,
             guild_id=ctx.guild_id,
-            notification_time=plan_time
+            notification_time=notification_time,
+            plan_time=plan_time,
         )
 
-        notification_time = (
-            plan_time - timedelta(minutes=times)).strftime('%Y/%m/%d %H:%M')
-        embed = discord.Embed(title=f"{notification_time}>に通知を以下のチャンネルから送信します", color=0x1e90ff,
+        embed = discord.Embed(title=f"{notification_time.strftime('%Y/%m/%d %H:%M')}>に通知を以下のチャンネルから送信します", color=0x1e90ff,
                               description=f"チャンネル：<#{channel}>")
         await ctx.respond(content="設定しました。", embed=embed)
         print(
@@ -73,19 +73,19 @@ class NotificationCog(commands.Cog):
             notification_times, notification_channel_dict = notification.executing_notifications_search(
                 self.bot.user.id)
         except ValueError as e:
-            print(e)
+            # print(e)
             return
 
         for notifi in notification_times:
             try:
                 channel = self.bot.get_partial_messageable(
                     id=notification_channel_dict[notifi.guild_id])
-                plan_time = datetime_to_unixtime(notifi.notification_time)
+                plan_time = datetime_to_unixtime(notifi.plan_time)
                 embed = discord.Embed(title=f"樹脂通知", color=0x1e90ff,
                                       description=f"⚠あと約<t:{plan_time}:R>に樹脂が溢れます！")
                 await channel.send(content=f"<@{notifi.user_id}>", embed=embed)
             except Exception as e:
-                print(e)
+                print("何かしらの原因で通知が行えていないかも", e)
                 pass
         notification.delete_notifications(
             notification_ids=tuple((
