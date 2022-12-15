@@ -122,14 +122,16 @@ def add_notification(type_id: int, bot_id: int, user_id: int, guild_id: int, not
     )
 
 
-def check_notification_channel(guild_id: int) -> bool:
+def get_notification_channel(guild_id: int) -> int:
     """通知チャンネルがそのギルドで登録されているかをチェックします
-
     Args:
         guild_id (int): GUILD ID
 
+    Raises:
+        ValueError: データベースに登録されていない場合エラーをraiseします
+
     Returns:
-        bool: 登録されている場合True
+        int: channel_idを返します
     """
     result = database.load_data_sql(
         sql="""
@@ -137,4 +139,6 @@ def check_notification_channel(guild_id: int) -> bool:
         """,
         data=(guild_id,),
     )
-    return len(result) >= 1
+    if len(result) == 0:
+        raise ValueError("channel not found")
+    return result[0][0]

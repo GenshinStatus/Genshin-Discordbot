@@ -41,7 +41,9 @@ class NotificationCog(commands.Cog):
                                   min_value=1,
                                   default=40)):
         await ctx.response.defer(ephemeral=True)  # deferのほうが良さそうなのでこっちに変更したい
-        if notification.check_notification_channel(ctx.guild_id):
+        try:
+            channel = notification.get_notification_channel(ctx.guild_id)
+        except ValueError as e:
             await ctx.respond(content="通知チャンネルが設定されていません。管理者に連絡して設定してもらってください。```/setting channel```で設定できます。")
             print(f"notification: channel: guild_id: {ctx.guild_id} -> 未登録")
             return
@@ -58,7 +60,7 @@ class NotificationCog(commands.Cog):
         )
 
         embed = discord.Embed(title=f"<t:{datetime_to_unixtime(plan_time)}:R>に通知を以下のチャンネルから送信します", color=0x1e90ff,
-                              description=f"チャンネル：<#{channelId[ctx.guild.id]['channelid']}>")
+                              description=f"チャンネル：<#{channel}>")
         await ctx.respond(content="設定しました。", embed=embed)
         print(
             f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nnotification_resin - set")
