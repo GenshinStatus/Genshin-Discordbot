@@ -65,6 +65,9 @@ def executing_notifications_search(bot_id: int) -> Tuple[list[Notification], dic
     obj = [Notification(v[0], v[1], v[2], v[3], v[4], v[5], v[6])
            for v in result]
 
+    if len(obj) == 0:
+        raise ValueError("Not found notification")
+
     col_size = ",".join(["%s"] * len(result))
 
     result: Tuple = database.load_data_sql(
@@ -73,7 +76,6 @@ def executing_notifications_search(bot_id: int) -> Tuple[list[Notification], dic
         """,
         data=(v.guild_id for v in obj)
     )
-
     obj2 = {v[0]: v[1] for v in result}
 
     return obj, obj2

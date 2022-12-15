@@ -67,8 +67,13 @@ class NotificationCog(commands.Cog):
 
     @tasks.loop(seconds=10)
     async def slow_count(self):
-        notification_times, notification_channel_dict = notification.executing_notifications_search(
-            self.bot.user.id)
+        try:
+            notification_times, notification_channel_dict = notification.executing_notifications_search(
+                self.bot.user.id)
+        except ValueError as e:
+            print(e)
+            return
+
         for notifi in notification_times:
             try:
                 channel = await self.bot.get_channel(id=notification_channel_dict[notifi.guild_id])
@@ -79,12 +84,11 @@ class NotificationCog(commands.Cog):
             except Exception as e:
                 print(e)
                 pass
-        if len(notification_times) != 0:
-            notification.delete_notifications(
-                notification_ids=(
-                    v.notification_id for v in notification_times),
-            )
-            print("notification_resin - 通知")
+        notification.delete_notifications(
+            notification_ids=(
+                v.notification_id for v in notification_times),
+        )
+        print("notification_resin - 通知")
 
     @slow_count.before_loop
     async def before_slow_count(self):
