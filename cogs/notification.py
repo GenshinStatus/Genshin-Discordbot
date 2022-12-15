@@ -49,7 +49,7 @@ class NotificationCog(commands.Cog):
             return
 
         # datetime型に直したほうが可読性が上がるので修正します
-        plan_time = datetime.now() + timedelta(minutes=1280 - times - (resin*8))
+        plan_time = datetime.now() + timedelta(minutes=1280 - (resin*8))
 
         notification.add_notification(
             type_id=1,
@@ -59,7 +59,9 @@ class NotificationCog(commands.Cog):
             notification_time=plan_time
         )
 
-        embed = discord.Embed(title=f"<t:{datetime_to_unixtime(plan_time)}:R>に通知を以下のチャンネルから送信します", color=0x1e90ff,
+        notification_time = (
+            plan_time - timedelta(minutes=times)).strftime('%Y/%m/%d %H:%M')
+        embed = discord.Embed(title=f"{notification_time}>に通知を以下のチャンネルから送信します", color=0x1e90ff,
                               description=f"チャンネル：<#{channel}>")
         await ctx.respond(content="設定しました。", embed=embed)
         print(
