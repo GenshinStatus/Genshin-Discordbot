@@ -76,7 +76,8 @@ class NotificationCog(commands.Cog):
 
         for notifi in notification_times:
             try:
-                channel = await self.bot.get_channel(id=notification_channel_dict[notifi.guild_id])
+                channel = self.bot.get_partial_messageable(
+                    id=notification_channel_dict[notifi.guild_id])
                 plan_time = datetime_to_unixtime(notifi.notification_time)
                 embed = discord.Embed(title=f"樹脂通知", color=0x1e90ff,
                                       description=f"⚠あと約<t:{plan_time}:R>に樹脂が溢れます！")
