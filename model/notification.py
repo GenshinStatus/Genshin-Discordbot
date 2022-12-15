@@ -74,7 +74,7 @@ def executing_notifications_search(bot_id: int) -> Tuple[list[Notification], dic
         sql=f"""
         select guild_id, channel_id from notification_channel where guild_id in({col_size})
         """,
-        data=(v.guild_id for v in obj)
+        data=tuple((v.guild_id for v in obj))
     )
     obj2 = {v[0]: v[1] for v in result}
 

@@ -85,8 +85,8 @@ class NotificationCog(commands.Cog):
                 print(e)
                 pass
         notification.delete_notifications(
-            notification_ids=(
-                v.notification_id for v in notification_times),
+            notification_ids=tuple((
+                v.notification_id for v in notification_times)),
         )
         print("notification_resin - 通知")
 
