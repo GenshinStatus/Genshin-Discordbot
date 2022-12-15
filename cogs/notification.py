@@ -79,10 +79,12 @@ class NotificationCog(commands.Cog):
             except Exception as e:
                 print(e)
                 pass
-        notification.delete_notifications(
-            notification_ids=(v.notification_id for v in notification_times),
-        )
-        print("notification_resin - 通知")
+        if len(notification_times) != 0:
+            notification.delete_notifications(
+                notification_ids=(
+                    v.notification_id for v in notification_times),
+            )
+            print("notification_resin - 通知")
 
     @slow_count.before_loop
     async def before_slow_count(self):
