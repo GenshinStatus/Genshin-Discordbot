@@ -33,9 +33,9 @@ def user_notifications_search(guild_id: int, user_id: int, bot_id: int) -> list[
             select notification_id, type_id, type_name, bot_id, user_id, guild_id, notification_time
             from genshin_notification
             left join notification_type using(type_id)
-            where guild_id =?
-            and user_id =?
-            and bot_id =?
+            where guild_id =%s
+            and user_id =%s
+            and bot_id =%s
             """,
         data=(guild_id, user_id, bot_id),
     )
@@ -57,15 +57,15 @@ def executing_notifications_search(bot_id: int) -> Tuple[list[Notification], dic
             select notification_id, type_id, type_name, bot_id, user_id, guild_id, notification_time
             from genshin_notification
             left join notification_type using(type_id)
-            where notification_time >= ?
-            and bot_id >= ?
+            where notification_time <= %s
+            and bot_id = %s
             """,
         data=(datetime.now(), bot_id),
     )
     obj = [Notification(v[0], v[1], v[2], v[3], v[4], v[5], v[6])
            for v in result]
 
-    col_size = ",".join(["?"] * len(result))
+    col_size = ",".join(["%s"] * len(result))
 
     result: Tuple = database.load_data_sql(
         sql=f"""
@@ -85,7 +85,7 @@ def delete_notifications(notification_ids: tuple[int]) -> None:
     Args:
         notification_ids (tuple[int]): 通知IDのリスト
     """
-    col_size = ",".join(["?"] * len(notification_ids))
+    col_size = ",".join(["%s"] * len(notification_ids))
     database.table_update_sql(
         sql=f"""
         delete from genshin_notification
@@ -110,7 +110,7 @@ def add_notification(type_id: int, bot_id: int, user_id: int, guild_id: int, not
         insert into genshin_notification
         (type_id, bot_id, user_id, guild_id, notification_time)
         values
-        (?,?,?,?,?)
+        (%s,%s,%s,%s,%s)
         """,
         data=(
             type_id,
@@ -135,7 +135,7 @@ def get_notification_channel(guild_id: int) -> int:
     """
     result = database.load_data_sql(
         sql="""
-        select channel_id from notification_channel where guild_id = ?
+        select channel_id from notification_channel where guild_id = %s
         """,
         data=(guild_id,),
     )

@@ -84,6 +84,11 @@ class NotificationCog(commands.Cog):
         )
         print("notification_resin - 通知")
 
+    @slow_count.before_loop
+    async def before_slow_count(self):
+        print('waiting...')
+        await self.bot.wait_until_ready()
+
 
 def setup(bot):
     bot.add_cog(NotificationCog(bot))
