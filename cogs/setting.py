@@ -1,19 +1,8 @@
 from calendar import c
 import discord
-from discord.ui import Select, View
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.commands import Option, SlashCommandGroup
-import datetime
-from lib.yamlutil import yaml
-import copy
-import lib.now as getTime
-import math
-import google.calendar as calendar
-import main
-import time
-
-channelIdYaml = yaml(path='channelId.yaml')
-channelId = channelIdYaml.load_yaml()
+from model import notification
 
 
 class SettingCog(commands.Cog):
@@ -36,9 +25,8 @@ class SettingCog(commands.Cog):
                   channel: Option(discord.TextChannel, required=True,
                                   description="通知を送るチャンネル")):
 
-        channelId[ctx.guild.id] = {
-            "channelid": channel.id, "guildname": ctx.guild.name, "channelname": channel.name}
-        channelIdYaml.save_yaml(channelId)
+        channel: discord.TextChannel = channel
+        notification.set_notification_channel(ctx.guild_id, channel.id)
 
         embed = discord.Embed(title="通知をこちらのチャンネルから送信します", color=0x1e90ff,
                               description=f"サーバー名：{ctx.guild.name}\nチャンネル名：{channel.name}")

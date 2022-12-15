@@ -144,3 +144,15 @@ def get_notification_channel(guild_id: int) -> int:
     if len(result) == 0:
         raise ValueError("channel not found")
     return result[0][0]
+
+
+def set_notification_channel(guild_id: int, channel_id: int) -> None:
+    database.table_update_sql(
+        sql="""
+        INSERT INTO notification_channel (guild_id, channel_id)
+        VALUES (%s, %s)
+        ON CONFLICT (guild_id)
+        DO UPDATE SET channel_id = %s
+        """,
+        data=(guild_id, channel_id, channel_id,),
+    )
