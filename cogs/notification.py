@@ -61,7 +61,7 @@ class NotificationCog(commands.Cog):
             plan_time=plan_time,
         )
 
-        embed = discord.Embed(title=f"{notification_time.strftime('%Y/%m/%d %H:%M')}>に通知を以下のチャンネルから送信します", color=0x1e90ff,
+        embed = discord.Embed(title=f"{notification_time.strftime('%Y/%m/%d %H:%M')}に通知を以下のチャンネルから送信します", color=0x1e90ff,
                               description=f"チャンネル：<#{channel}>")
         await ctx.respond(content="設定しました。", embed=embed)
         print(
