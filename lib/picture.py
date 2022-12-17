@@ -5,6 +5,7 @@ import requests
 import urllib
 import datetime
 import os
+import random
 
 NameUtilYaml = yaml(path='characters.yaml')
 NameUtil = NameUtilYaml.load_yaml()
@@ -174,6 +175,7 @@ async def getProfile(uid, resp):
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
-    img.save('picture/1.png')
+    filename = random.random()
+    img.save(f'picture/{filename}.png')
     os.remove(temp_1)
-    return "picture/1.png"
+    return f"picture/{filename}.png"

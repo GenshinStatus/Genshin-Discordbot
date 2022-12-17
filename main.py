@@ -2,14 +2,16 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
+import sys
 from lib.sql import Guild
 import asyncio
 import yaml_trans
 
 bot = commands.Bot()
 # debug_guilds=[879288794560471050]
+print(type(sys.argv[1]))
 load_dotenv()
-TOKEN = os.getenv('TOKEN')
+TOKEN = os.getenv(f"TOKEN{str(sys.argv[1])}")
 
 path = "./cogs"
 
