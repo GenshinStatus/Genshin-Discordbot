@@ -3,9 +3,7 @@ from discord.ui import Select, View, Button, Modal
 from discord.ext import commands
 from discord import Option, SlashCommandGroup
 import aiohttp
-from typing import List
 import lib.sql as SQL
-from urllib.error import HTTPError
 
 l: list[discord.SelectOption] = []
 

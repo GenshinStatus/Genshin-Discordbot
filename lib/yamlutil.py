@@ -1,4 +1,3 @@
-from email.policy import default
 import yaml as y
 
 basepath = "./data/"

@@ -10,7 +10,6 @@ import math
 import google.calendar as calendar
 import main
 import time
-import lib.sql as SQL
 
 l: list[discord.SelectOption] = []
 

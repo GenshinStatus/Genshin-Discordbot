@@ -1,11 +1,7 @@
-from ast import main
-from dis import disco
-from types import MappingProxyType
 import discord
 from discord.ui import Select, View
 from discord.ext import commands, tasks
 from discord.commands import Option, OptionChoice, SlashCommandGroup
-from lib.yamlutil import yaml
 import copy
 
 mainOption = {

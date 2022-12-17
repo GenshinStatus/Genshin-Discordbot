@@ -2,7 +2,6 @@ import discord
 import aiohttp
 from lib.yamlutil import yaml
 import lib.scoreCalculator as genshinscore
-from typing import List
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 import requests
 import urllib

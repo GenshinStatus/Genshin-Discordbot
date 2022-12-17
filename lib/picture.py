@@ -1,5 +1,4 @@
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
-import aiohttp
 from lib.yamlutil import yaml
 import requests
 import urllib

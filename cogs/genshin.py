@@ -1,4 +1,3 @@
-from http import server
 import discord
 from discord.ui import Select, View, Button
 from discord.ext import commands, tasks
