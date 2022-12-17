@@ -33,6 +33,11 @@ async def on_ready():
     await guildsCount()
 
 
+async def sendChannel(id) -> discord.PartialMessageable:
+    channel: discord.PartialMessageable = bot.get_partial_messageable(id)
+    return channel
+
+
 async def guildsCount():
     Guild.set_guilds(bot.guilds)
     await asyncio.sleep(10)  # 複数のBOTを同時に再起動するときにちょっとあけとく

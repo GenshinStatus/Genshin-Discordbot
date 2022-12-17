@@ -76,8 +76,7 @@ class helpselectView(View):
                 name=f"いわゆるガチャシミュレーターです。天井もユーザーごとにカウントされています。",
                 value=f"\
                     \n**・/wish character**\n原神のガチャ排出時に表示されるイラストを検索します。\
-                    \n**・/wish get**\n原神のガチャを10連分引きます。演出をするかしないか設定できます。\
-                    \n**・/wish get_n**\n原神のガチャを指定回数分（最大200回）連続で引きます。結果はまとめて表示します。\
+                    \n**・/wish get**\n原神のガチャを引きます。\
                     "
             )
         elif select.values[0] == "便利コマンド":
@@ -221,25 +220,24 @@ class ReportModal(discord.ui.Modal):
         await interaction.response.edit_message(content="読み込み中...")
         self.content = self.content.value
         self.resalt = self.resalt.value
-        bugListYaml = yaml(path='bug.yaml')
-        bugList = bugListYaml.load_yaml()
-        for n in range(50):
-            try:
-                temp = bugList[n]
-                continue
-            except:
-                hoge = n
-                break
         now = datetime.datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')
         try:
-            bugList[hoge] = {"select": self.select, "userId": interaction.user.id, "userName": interaction.user.name,
-                             "serverId": interaction.guild.id, "serverName": interaction.guild.name, "time": now, "content": self.content, "resalt": self.resalt}
-            bugListYaml.save_yaml(bugList)
-            await interaction.edit_original_message(content=f"不具合を送信しました！ご協力ありがとうございます！\nbugTrackNumber:00{hoge}\nbugTrackName:{self.content}")
+            embed = discord.Embed(
+                title=f"バグ報告", color=0x1e90ff, description=now)
+            embed.add_field(name="コマンド", value=self.select)
+            embed.add_field(
+                name="ユーザー", value=f"{interaction.user.name}\n{interaction.user.id}")
+            embed.add_field(
+                name="サーバー", value=f"{interaction.guild.name}\n{interaction.guild.id}")
+            embed.add_field(name="\n内容", value=self.content)
+            embed.add_field(name="詳細", value=f"```{self.resalt}```")
+            channel = await main.sendChannel(1021082211618930801)
+            await channel.send(embed=embed)
+            await interaction.edit_original_message(content=f"不具合を送信しました！ご協力ありがとうございます！\nbugTrackName:{self.content}", view=None)
             return
         except:
             print("おい管理者！エラーでてんぞこの野郎！！！！")
-            await interaction.edit_original_message(content=f"送信できませんでしたが、管理者にログを表示しました。修正までしばらくお待ちください")
+            await interaction.edit_original_message(content=f"送信できませんでしたが、管理者にログを表示しました。修正までしばらくお待ちください", view=None)
             raise
 
 
