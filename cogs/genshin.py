@@ -1,4 +1,3 @@
-from http import server
 import discord
 from discord.ui import Select, View, Button
 from discord.ext import commands, tasks
@@ -10,6 +9,7 @@ import lib.picture as getPicture
 from typing import List
 import lib.sql as SQL
 import cogs.uidlist as uidlist
+import os
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
@@ -44,13 +44,18 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             color=0x1e90ff,
         )
         embed.set_image(url=f"attachment://{str(self.dict[self.label])}.png")
-        getImage = await getStat.getCharacterImage(self.uid, id, interaction)
-        if type(getImage) is discord.embeds.Embed:
-            await interaction.edit_original_message(content=None, embed=getImage)
-            return
-        file = discord.File(
-            getImage, filename=f"{str(self.dict[self.label])}.png")
-        await interaction.edit_original_message(content=None, file=file, embed=embed, view=TicTacToe(self.data, self.uid))
+
+        try:
+            getImage = await getStat.getCharacterImage(self.uid, id, interaction)
+            if type(getImage) is discord.embeds.Embed:
+                await interaction.edit_original_message(content=None, embed=getImage)
+                return
+            file = discord.File(
+                getImage, filename=f"{str(self.dict[self.label])}.png")
+            await interaction.edit_original_message(content=None, file=file, embed=embed, view=TicTacToe(self.data, self.uid))
+        finally:
+            del file
+            os.remove(getImage)
 
 
 class TicTacToe(discord.ui.View):
@@ -138,8 +143,9 @@ async def uid_respond(self, interaction: discord.Interaction, ctx, uid):
     await interaction.edit_original_message(content="キャラ情報読み込み中...")
     embed = await GenshinCog.getApi(self, uid, resp)
     await interaction.edit_original_message(content="画像を生成中...")
-    hoge = discord.File(await getPicture.getProfile(uid, resp), f"{uid}.png")
     try:
+        file = await getPicture.getProfile(uid, resp)
+        hoge = discord.File(file, f"{uid}.png")
         for id in resp["playerInfo"]["showAvatarInfoList"]:
             resalt.append(id["avatarId"])
         await interaction.edit_original_message(content="ボタンを生成中...")
@@ -147,6 +153,9 @@ async def uid_respond(self, interaction: discord.Interaction, ctx, uid):
     except:
         embed.add_field(name="エラー", value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
         await interaction.edit_original_message(content=None, embed=embed, file=hoge)
+    finally:
+        del hoge
+        os.remove(file)
 
 
 class select_uid_pulldown(discord.ui.Select):

@@ -1,20 +1,26 @@
 import discord
-from discord.ui import Select, View
 from discord.ext import commands, tasks
 from discord.commands import Option, SlashCommandGroup
-import datetime
-from lib.yamlutil import yaml
+from datetime import datetime, timedelta
 import time
+from model import notification
 
-channelIdYaml = yaml(path='channelId.yaml')
-channelId = channelIdYaml.load_yaml()
-notificationYaml = yaml(path='notification.yaml')
-notificationData = notificationYaml.load_yaml()
+
+def datetime_to_unixtime(dt: datetime) -> int:
+    """datetime型からunix時間をintで返します。
+
+    Args:
+        dt (datetime): datetime型の時間
+
+    Returns:
+        int: unix時間
+    """
+    return round(int(time.mktime(dt.timetuple())), -1)
 
 
 class NotificationCog(commands.Cog):
 
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         print('Notification_initしたよ')
         self.bot = bot
         self.slow_count.start()
@@ -34,47 +40,63 @@ class NotificationCog(commands.Cog):
                                   max_value=180,
                                   min_value=1,
                                   default=40)):
-        n = await ctx.respond(content="読みこみ中...", ephemeral=True)
+        await ctx.response.defer(ephemeral=True)  # deferのほうが良さそうなのでこっちに変更したい
         try:
-            channelIdYaml = yaml(path='channelId.yaml')
-            channelId = channelIdYaml.load_yaml()
-            print(channelId[ctx.guild.id])
-        except:
-            await n.edit_original_message(content="通知チャンネルが設定されていません。管理者に連絡して設定してもらってください。```/setting channel```で設定できます。")
+            channel = notification.get_notification_channel(ctx.guild_id)
+        except ValueError as e:
+            await ctx.respond(content="通知チャンネルが設定されていません。管理者に連絡して設定してもらってください。```/setting channel```で設定できます。")
+            print(f"notification: channel: guild_id: {ctx.guild_id} -> 未登録")
             return
 
-        hoge = 160 - times//8
-        hoge = hoge - resin
-        hoge = round(round(time.time()), -1) + hoge*8*60
+        # datetime型に直したほうが可読性が上がるので修正します
+        plan_time = datetime.now() + timedelta(minutes=1280 - (resin*8))
+        notification_time = (plan_time - timedelta(minutes=times))
 
-        notificationData[hoge] = {"userId": f"<@{ctx.author.id}>",
-                                  "channelId": channelId[ctx.guild.id]['channelid'], "time": times}
-        notificationYaml.save_yaml(notificationData)
+        notification.add_notification(
+            type_id=1,
+            bot_id=ctx.bot.user.id,
+            user_id=ctx.user.id,
+            guild_id=ctx.guild_id,
+            notification_time=notification_time,
+            plan_time=plan_time,
+        )
 
-        embed = discord.Embed(title=f"<t:{hoge}:R>に通知を以下のチャンネルから送信します", color=0x1e90ff,
-                              description=f"チャンネル：<#{channelId[ctx.guild.id]['channelid']}>")
-        await n.edit_original_message(content="設定しました。", embed=embed)
+        embed = discord.Embed(title=f"{notification_time.strftime('%Y/%m/%d %H:%M')}に通知を以下のチャンネルから送信します", color=0x1e90ff,
+                              description=f"チャンネル：<#{channel}>")
+        await ctx.respond(content="設定しました。", embed=embed)
         print(
             f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nnotification_resin - set")
 
     @tasks.loop(seconds=10)
     async def slow_count(self):
-        notificationYaml = yaml(path='notification.yaml')
-        notificationData = notificationYaml.load_yaml()
         try:
-            hoge = notificationData[round(round(time.time()), -1)]
-            channel = self.bot.get_partial_messageable(hoge["channelId"])
-
-            huga = round(round(time.time()), -1) + hoge['time'] * 60
-
-            embed = discord.Embed(title=f"樹脂{hoge['time']}分前通知", color=0x1e90ff,
-                                  description=f"⚠あと約<t:{huga}:R>に樹脂が溢れます！")
-            await channel.send(content=f"{hoge['userId']}", embed=embed)
-            notificationData.pop(round(round(time.time()), -1))
-            notificationYaml.save_yaml(notificationData)
-            print(f"notification_resin - 通知")
-        except:
+            notification_times, notification_channel_dict = notification.executing_notifications_search(
+                self.bot.user.id)
+        except ValueError as e:
+            # print(e)
             return
+
+        for notifi in notification_times:
+            try:
+                channel = self.bot.get_partial_messageable(
+                    id=notification_channel_dict[notifi.guild_id])
+                plan_time = datetime_to_unixtime(notifi.plan_time)
+                embed = discord.Embed(title=f"樹脂通知", color=0x1e90ff,
+                                      description=f"⚠あと約<t:{plan_time}:R>に樹脂が溢れます！")
+                await channel.send(content=f"<@{notifi.user_id}>", embed=embed)
+            except Exception as e:
+                print("何かしらの原因で通知が行えていないかも", e)
+                pass
+        notification.delete_notifications(
+            notification_ids=tuple((
+                v.notification_id for v in notification_times)),
+        )
+        print("notification_resin - 通知")
+
+    @slow_count.before_loop
+    async def before_slow_count(self):
+        print('waiting...')
+        await self.bot.wait_until_ready()
 
 
 def setup(bot):
