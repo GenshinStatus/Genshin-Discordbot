@@ -1,3 +1,4 @@
+@echo off
 set WindowNameBase=GenshinStatusBot-
 set count=0
 
