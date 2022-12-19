@@ -1,5 +1,4 @@
 from datetime import datetime
-from email.policy import default
 from typing import Tuple
 from dotenv import load_dotenv
 import os

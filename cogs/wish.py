@@ -26,18 +26,22 @@ name_to_url = name_to_urlYaml.load_yaml()
 
 
 def genshingen(name):
-    try:
-        resalt = urllib.parse.quote(characterName[name]["zh"])
-    except:
-        try:
+    if name in characterName:
+        if "url" in characterName[name]:
             return characterName[name]["url"]
-        except:
-            try:
-                resalt = urllib.parse.quote(
-                    characterName[characterTrans[name]["ja"]]["zh"])
-            except:
-                resalt = None
-    return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{resalt}/avatar.png"
+
+        if "zh" in characterName[name]:
+            result = characterName[name]["zh"]
+        else:
+            raise ValueError()
+    elif name in characterTrans:
+        result = characterName[characterTrans[name]["ja"]]["zh"]
+    else:
+        raise ValueError()
+
+    result = urllib.parse.quote(result)
+
+    return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{result}/avatar.png"
 
 
 def get_wish_select_options():

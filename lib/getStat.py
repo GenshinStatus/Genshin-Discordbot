@@ -2,7 +2,6 @@ import discord
 import aiohttp
 from lib.yamlutil import yaml
 import lib.scoreCalculator as genshinscore
-from typing import List
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 import requests
 import urllib
@@ -536,7 +535,8 @@ async def getCharacterImage(uid, id, interaction):
                 img, player_name, font_size, font_color, height, width)
 
     await interaction.edit_original_message(content="```まもなく完了...```")
-    img.save('picture/2.png')
+    filename = random.random()
+    img.save(f'picture/{filename}.png')
     shutil.rmtree("temp")
     os.mkdir("temp")
-    return "picture/2.png"
+    return f'picture/{filename}.png'
