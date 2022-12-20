@@ -34,11 +34,11 @@ config = ConfigYaml.load_yaml()
 
 class CharacterStatus():
     def __init__(self, characterData, weaponData, artifactData):
-        self.characterData = characterData
-        self.weaponData = weaponData
-        self.artifactData = artifactData
+        self.character = characterData
+        self.weapon = weaponData
+        self.artifact = artifactData
 
-    async def getCharacterStatus(self, uid, id):
+    async def getCharacterStatus(uid, id):
         """
         uidからキャラクター情報を読み取ります。
         《self.character》
@@ -51,6 +51,7 @@ class CharacterStatus():
                 resp = await response.json()
         name = genshinTextHash[characters[id]["NameId"]]
         image = getCharacterPicture(name)
+        element = config[str(id)]['Element']
         ster = int(words[name]["ster"])
         try:
             # アバターインフォリストを回す。nにキャラ情報がすべて入る。
@@ -62,9 +63,9 @@ class CharacterStatus():
                 else:
                     continue
         except:
-            raise FileNotFoundError
+            raise FileNotFoundError()
 
-        # 凸情報。もし6凸、または0凸だった場合は、それに対応する日本語に変換する。
+            # 凸情報。もし6凸、または0凸だった場合は、それに対応する日本語に変換する。
         try:
             constellations = str(len(chara["talentIdList"]))
             if constellations == "6":
@@ -102,9 +103,10 @@ class CharacterStatus():
         }
 
         buf = 1
-        for key, name in ELEMENT_DAMAGE_TYPES.items():
+        elemental_name = None
+        elemental_value = None
+        for key, elemental_name in ELEMENT_DAMAGE_TYPES.items():
             if round(chara["fightPropMap"][key]*100) > 0:
-                elemental_name = name
                 elemental_value = f'{str(round(chara["fightPropMap"][key]*100))}%'
                 buf += round(chara["fightPropMap"][key])
                 break
@@ -122,6 +124,7 @@ class CharacterStatus():
         character_resalt = character(
             name,
             image,
+            element,
             ster,
             constellations,
             level,
@@ -141,6 +144,9 @@ class CharacterStatus():
             skill_list_level)
 
         artifact_resalt: list[artifact] = []
+        weapon_image = None
+        weapon_sub_name = None
+        weapon_sub_value = None
         for n in chara["equipList"]:
             artifact_status = []
             if 'weapon' in n:
@@ -159,6 +165,7 @@ class CharacterStatus():
 
                 weapon_name = genshinTextHash[n["flat"]["nameTextMapHash"]]
 
+                weapon_rank = None
                 try:
                     for z in n["weapon"]["affixMap"].values():
                         f = z
@@ -210,6 +217,7 @@ class character():
         self,
         name: str,
         image: str,
+        element: str,
         ster: int,
         constellations: str,
         level: str,
@@ -231,6 +239,7 @@ class character():
 
         self.name = name
         self.image = image
+        self.element = element
         self.ster = ster
         self.constellations = constellations
         self.level = level

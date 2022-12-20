@@ -6,6 +6,7 @@ import aiohttp
 from lib.yamlutil import yaml
 import lib.getStat as getStat
 import lib.picture as getPicture
+import lib.getStatusImage as getStatusImage
 from typing import List
 import lib.sql as SQL
 import cogs.uidlist as uidlist
@@ -46,7 +47,7 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         embed.set_image(url=f"attachment://{str(self.dict[self.label])}.png")
 
         try:
-            getImage = await getStat.getCharacterImage(self.uid, id, interaction)
+            getImage = await getStatusImage.getCharacterImage(self.uid, id, interaction)
             if type(getImage) is discord.embeds.Embed:
                 await interaction.edit_original_message(content=None, embed=getImage)
                 return
