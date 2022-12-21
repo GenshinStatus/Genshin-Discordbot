@@ -24,7 +24,7 @@ def downloadPicture(url):
     return f"temp/{file_name}"
 
 
-def add_text_to_image(img, text, font_size, font_color, height, width, max_length=740, anchor=None):
+def add_text_to_image(img, text, font_size, font_color, height, width, max_length=740, anchor=None, align=None):
     position = (width, height)
     font = ImageFont.truetype(
         font="C:\\Users\\Cinnamon\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ja-jp.ttf", size=font_size)
@@ -34,7 +34,8 @@ def add_text_to_image(img, text, font_size, font_color, height, width, max_lengt
             text = text[:-1]
         text = text + '…'
 
-    draw.text(position, text, font_color, font=font, anchor=anchor)
+    draw.text(position, text, font_color,
+              font=font, anchor=anchor, align=align)
     return img
 
 
@@ -103,17 +104,17 @@ async def getCharacterImage(uid, id, interaction):
     base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
     # バグ対策背景画像にアルファ合成
     for x in range(characterData.character.ster):
-        base_img_clear.paste(icon, (50+x*40, 130))
+        base_img_clear.paste(icon, (36+x*35, 667))
     # バグ対策できたんでちゃんと合成
     base_img = Image.alpha_composite(base_img, base_img_clear)
 
     await interaction.edit_original_message(content="```キャラ基本情報取得中...```")
     # ユーザー名文字追加
     player_name = characterData.character.name
-    font_size = 88
+    font_size = 80
     font_color = (255, 255, 255)
-    height = 23
-    width = 56
+    height = 564
+    width = 34
     img = add_text_to_image(base_img, player_name,
                             font_size, font_color, height, width)
 
@@ -121,147 +122,147 @@ async def getCharacterImage(uid, id, interaction):
     player_name = f'{characterData.character.level}Lv  {characterData.character.constellations}凸'
     font_size = 24
     font_color = (255, 255, 255)
-    height = 130
-    width = 50+x*40+40
+    height = 667
+    width = 36+x*35+80
     img = add_text_to_image(base_img, player_name,
                             font_size, font_color, height, width)
 
     # HP基礎　文字追加
     player_name = characterData.character.base_hp
-    font_size = 20
-    font_color = (255, 255, 255)
-    height = 211
-    width = 200
+    font_size = 18
+    font_color = (118, 255, 255)
+    height = 92
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # HP聖遺物　文字追加
     player_name = f'+{characterData.character.added_hp}'
-    font_size = 20
+    font_size = 18
     font_color = (169, 255, 0)
-    height = 211
-    width = 270
+    height = 92
+    width = 383
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # HP合計値　文字追加
     player_name = str(int(characterData.character.base_hp) +
                       int(characterData.character.added_hp))
-    font_size = 32
-    font_color = (118, 255, 255)
-    height = 175
-    width = 220
+    font_size = 26
+    font_color = (255, 255, 255)
+    height = 62
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 攻撃力基礎　文字追加
     player_name = characterData.character.base_attack
-    font_size = 20
-    font_color = (255, 255, 255)
-    height = 278
-    width = 200
+    font_size = 18
+    font_color = (118, 255, 255)
+    height = 158
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 攻撃力聖遺物　文字追加
     player_name = f'+{characterData.character.added_attack}'
-    font_size = 20
+    font_size = 18
     font_color = (169, 255, 0)
-    height = 278
-    width = 270
+    height = 158
+    width = 383
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 攻撃力合計値　文字追加
     player_name = str(int(characterData.character.base_attack) +
                       int(characterData.character.added_attack))
-    font_size = 32
-    font_color = (118, 255, 255)
-    height = 241
-    width = 220
+    font_size = 26
+    font_color = (255, 255, 255)
+    height = 128
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 防御力基礎　文字追加
     player_name = characterData.character.base_defense
-    font_size = 20
-    font_color = (255, 255, 255)
-    height = 345
-    width = 200
+    font_size = 18
+    font_color = (118, 255, 255)
+    height = 219
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 防御力聖遺物　文字追加
     player_name = f'+{characterData.character.added_defense}'
-    font_size = 20
+    font_size = 18
     font_color = (169, 255, 0)
-    height = 345
-    width = 270
+    height = 219
+    width = 383
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 防御力合計値　文字追加
     player_name = str(int(characterData.character.base_defense) +
                       int(characterData.character.added_defense))
-    font_size = 32
-    font_color = (118, 255, 255)
-    height = 307
-    width = 220
+    font_size = 26
+    font_color = (255, 255, 255)
+    height = 189
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 会心率　文字追加
     player_name = f'{characterData.character.critical_rate}%'
-    font_size = 32
-    font_color = (118, 255, 255)
-    height = 386
-    width = 220
+    font_size = 26
+    font_color = (255, 255, 255)
+    height = 315
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 会心ダメ　文字追加
     player_name = f'{characterData.character.critical_damage}%'
-    font_size = 32
-    font_color = (118, 255, 255)
-    height = 446
-    width = 220
+    font_size = 26
+    font_color = (255, 255, 255)
+    height = 383
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 元素チャージ　文字追加
     player_name = f'{characterData.character.charge_efficiency}%'
-    font_size = 32
-    font_color = (118, 255, 255)
-    height = 518
-    width = 220
+    font_size = 26
+    font_color = (255, 255, 255)
+    height = 452
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     # 元素熟知　文字追加
     player_name = characterData.character.elemental_mastery
-    font_size = 32
-    font_color = (118, 255, 255)
-    height = 583
-    width = 220
+    font_size = 26
+    font_color = (255, 255, 255)
+    height = 252
+    width = 313
     img = add_text_to_image(img, player_name, font_size,
                             font_color, height, width)
 
     if characterData.character.elemental_name != None:
         # 元素ダメバフ　文字追加
         player_name = characterData.character.elemental_name
-        font_size = 22
+        font_size = 20
         font_color = (277, 185, 128)
-        height = 655
-        width = 38
+        height = 517
+        width = 43
         img = add_text_to_image(
             img, player_name, font_size, font_color, height, width)
 
     if characterData.character.elemental_value != None:
         # 元素ダメバフ　文字追加
         player_name = characterData.character.elemental_value
-        font_size = 32
-        font_color = (118, 255, 255)
-        height = 650
+        font_size = 26
+        font_color = (255, 255, 255)
+        height = 517
         width = 220
         img = add_text_to_image(
             img, player_name, font_size, font_color, height, width)
@@ -273,10 +274,10 @@ async def getCharacterImage(uid, id, interaction):
         # 天賦アイコン追加
         temp_2 = downloadPicture(skill)
         icon = Image.open(temp_2).convert('RGBA').copy()
-        icon = icon.resize(size=(96, 96), resample=Image.ANTIALIAS)
+        icon = icon.resize(size=(100, 100), resample=Image.ANTIALIAS)
         base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
         # バグ対策背景画像にアルファ合成
-        base_img_clear.paste(icon, (1100, -50+hogehoge*101))
+        base_img_clear.paste(icon, (1025, -106+hogehoge*133))
         # バグ対策できたんでちゃんと合成
         img = Image.alpha_composite(img, base_img_clear)
 
@@ -284,10 +285,10 @@ async def getCharacterImage(uid, id, interaction):
         hogehoge += 1
         # 天賦　文字追加
         player_name = f"Lv.{level}"
-        font_size = 40
+        font_size = 50
         font_color = (255, 255, 255)
-        height = -10+hogehoge*102
-        width = 1215
+        height = -490+hogehoge*132
+        width = 1155
         img = add_text_to_image(
             img, player_name, font_size, font_color, height, width)
 
@@ -297,39 +298,41 @@ async def getCharacterImage(uid, id, interaction):
         # 武器アイコン追加
         temp_4 = downloadPicture(characterData.weapon.image)
         icon = Image.open(temp_4).convert('RGBA').copy()
-        icon = icon.resize(size=(225, 225), resample=Image.ANTIALIAS)
+        icon = icon.resize(size=(160, 160), resample=Image.ANTIALIAS)
         base_img_clear = Image.new(
             "RGBA", base_img.size, (255, 255, 255, 0))
         # バグ対策背景画像にアルファ合成
-        base_img_clear.paste(icon, (1100, 505))
+        base_img_clear.paste(icon, (720, 520))
         # バグ対策できたんでちゃんと合成
         img = Image.alpha_composite(img, base_img_clear)
 
-        player_name = f"{characterData.weapon.main_name} : {characterData.weapon.main_value}"
-        font_size = 25
-        font_color = (255, 255, 255)
-        height = 405 + 1*27
-        width = 1100
-        img = add_text_to_image(
-            img, player_name, font_size, font_color, height, width)
+        weapon_status = f"{characterData.weapon.main_name} : {characterData.weapon.main_value}"
 
         if characterData.weapon.sub_name != None:
-            player_name = f"{characterData.weapon.sub_name} : {characterData.weapon.sub_value}"
-            font_size = 25
-            font_color = (255, 255, 255)
-            height = 405 + 2*27
-            width = 1100
-            img = add_text_to_image(
-                img, player_name, font_size, font_color, height, width)
+            if "%" in characterData.weapon.sub_name or "会心" in characterData.weapon.sub_name or "チャ" in characterData.weapon.sub_name or "ダメージ" in characterData.weapon.sub_name:
+                weapon_sub_value = f'{characterData.weapon.sub_value}%'
+            else:
+                weapon_sub_value = characterData.weapon.sub_value
+            weapon_status = f"{weapon_status} // {characterData.weapon.sub_name} : {weapon_sub_value}"
+
+        player_name = weapon_status
+        font_size = 22
+        font_color = (255, 255, 255)
+        height = 632
+        width = 1305
+        img = add_text_to_image(
+            img, player_name, font_size, font_color, height, width, anchor='rm', align='right')
 
         # 武器名　文字追加
         player_name = characterData.weapon.name
-        font_size = 45
+        # 文字数に応じて、文字サイズを計算
+        char_width = 350 / len(characterData.weapon.name)
+        font_size = min(int(char_width / 0.6), 60)  # 0.6は、文字の幅を表す係数
         font_color = (255, 255, 255)
-        height = 370
-        width = 1100
+        height = 545
+        width = 1303
         img = add_text_to_image(
-            img, player_name, font_size, font_color, height, width)
+            img, player_name, font_size, font_color, height, width, anchor='ra', align='right')
 
         if characterData.weapon.rank != None:
             # 凸、レベル　文字追加
@@ -351,14 +354,14 @@ async def getCharacterImage(uid, id, interaction):
         # 聖遺物の土台アイコン追加
         icon = Image.open(
             f"Image/artifact/{artifactData.ster}.png").convert('RGBA').copy()
-        icon = icon.resize(size=(260, 260), resample=Image.ANTIALIAS)
+        icon = icon.resize(size=(230, 230), resample=Image.ANTIALIAS)
         base_img_clear = Image.new(
             "RGBA", base_img.size, (255, 255, 255, 0))
         # 円形用に合成
         #icon = mask_circle_transparent(icon, 2)
         icon = icon.rotate(random.randint(0, 360), resample=Image.BICUBIC)
         # バグ対策背景画像にアルファ合成
-        base_img_clear.paste(icon, (1260, -170+hogehoge*132))
+        base_img_clear.paste(icon, (1275, -82+hogehoge*120))
         # バグ対策できたんでちゃんと合成
         img = Image.alpha_composite(img, base_img_clear)
 
@@ -369,7 +372,7 @@ async def getCharacterImage(uid, id, interaction):
         base_img_clear = Image.new(
             "RGBA", base_img.size, (255, 255, 255, 0))
         # バグ対策背景画像にアルファ合成
-        base_img_clear.paste(icon, (1350, -80+hogehoge*132))
+        base_img_clear.paste(icon, (1352, -1+hogehoge*119))
         # バグ対策できたんでちゃんと合成
         img = Image.alpha_composite(img, base_img_clear)
 
@@ -382,7 +385,7 @@ async def getCharacterImage(uid, id, interaction):
             player_name = mainValue
         font_size = 40
         font_color = (255, 255, 255)
-        height = -50+hogehoge*132
+        height = 33+hogehoge*120
         width = 1450
         img = add_text_to_image(
             img, player_name, font_size, font_color, height, width)
@@ -391,7 +394,7 @@ async def getCharacterImage(uid, id, interaction):
         player_name = mainName
         font_size = 20
         font_color = (255, 255, 255)
-        height = -80+hogehoge*132
+        height = 3+hogehoge*120
         width = 1450
         img = add_text_to_image(
             img, player_name, font_size, font_color, height, width)
@@ -406,10 +409,13 @@ async def getCharacterImage(uid, id, interaction):
                 player_name = f'{mainValue}：{v}%'
             else:
                 player_name = f'{mainValue}：{v}'
-            font_size = 20
+            font_size = 15
             font_color = (255, 255, 255)
-            height = -110+hogehoge*132+foo
-            width = 1650
+            height = -18+hogehoge*120+foo
+            width = 1610
+            if foo > 50:
+                width = 1750
+                height = -18+hogehoge*120+(foo-50)
             img = add_text_to_image(
                 img, player_name, font_size, font_color, height, width)
 

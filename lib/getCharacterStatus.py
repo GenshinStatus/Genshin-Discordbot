@@ -103,10 +103,12 @@ class CharacterStatus():
         }
 
         buf = 1
+        fuga = None
         elemental_name = None
         elemental_value = None
-        for key, elemental_name in ELEMENT_DAMAGE_TYPES.items():
+        for key, fuga in ELEMENT_DAMAGE_TYPES.items():
             if round(chara["fightPropMap"][key]*100) > 0:
+                elemental_name = fuga
                 elemental_value = f'{str(round(chara["fightPropMap"][key]*100))}%'
                 buf += round(chara["fightPropMap"][key])
                 break
