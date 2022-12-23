@@ -6,7 +6,8 @@ import aiohttp
 from lib.yamlutil import yaml
 import lib.getStat as getStat
 import lib.picture as getPicture
-import lib.getStatusImage as getStatusImage
+# import lib.getStatusImage as getStatusImage
+import lib.getStatusImage_Bata as getStatusImage
 from typing import List
 import lib.sql as SQL
 import cogs.uidlist as uidlist
