@@ -7,18 +7,33 @@ import os
 import shutil
 
 
-def downloadPicture(url: str, dir: str, filename: str):
+def downloadPicture(url: str,  charaname: str, filename: str) -> str:
+    """キャラクター名とファイル名を指定して指定の画像がない場合データをAPIから取得します
+
+    Args:
+        url (str): image url
+        charaname (str): character name
+        filename (str): filename
+
+    Returns:
+        str: file path
+    """
 
     file_name = f"{filename}.png"
     response = requests.get(url)
     image = response.content
 
-    with open(f"temp/{dir}/{file_name}", "wb") as aaa:
-        aaa.write(image)
-    return f"temp/{dir}/{file_name}"
+    filepath = f"Image/character/{charaname}/{file_name}"
+
+    if not os.path.exists(filepath):
+        with open(filepath, "wb") as aaa:
+            aaa.write(image)
+
+    return filepath
 
 
 def create_background(hash: str, url: str):
+
     img = GImage(
         image_path="Image/status_bata/Electric.png",
         default_font_size=26,
