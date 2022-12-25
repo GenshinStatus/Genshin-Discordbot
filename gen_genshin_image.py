@@ -1,13 +1,16 @@
-import datetime
+from io import BytesIO
+from discord import File
 import requests
 from lib.GImage import GImage, Colors, Algin, Anchors, ImageAnchors
-from concurrent.futures import ThreadPoolExecutor
-import hashlib
+from concurrent.futures import ThreadPoolExecutor, Future
 import os
-import shutil
+from lib.getCharacterStatus import CharacterStatus, character, artifact
+from PIL import Image, ImageFilter, ImageDraw
+
+# TODO: 10013と10411だけはじいといてください
 
 
-def downloadPicture(url: str,  charaname: str, filename: str) -> str:
+def download_picture(url: str,  charaname: str, filename: str) -> str:
     """キャラクター名とファイル名を指定して指定の画像がない場合データをAPIから取得します
 
     Args:
@@ -19,11 +22,25 @@ def downloadPicture(url: str,  charaname: str, filename: str) -> str:
         str: file path
     """
 
+    return get_item_image(url=url, type=f"character/{charaname}", filename=filename)
+
+
+def get_item_image(url: str, type: str, filename: str):
+    """タイプとファイル名を指定して指定の画像がない場合データをAPIから取得します
+
+    Args:
+        url (str): image url
+        type (str): type name
+        filename (str): filename
+
+    Returns:
+        str: file path
+    """
     file_name = f"{filename}.png"
     response = requests.get(url)
     image = response.content
 
-    filepath = f"Image/character/{charaname}/{file_name}"
+    filepath = f"Image/{type}/{file_name}"
 
     if not os.path.exists(filepath):
         with open(filepath, "wb") as aaa:
@@ -32,101 +49,127 @@ def downloadPicture(url: str,  charaname: str, filename: str) -> str:
     return filepath
 
 
-def create_background(hash: str, url: str):
+def __create_background(element: str, charaname: str) -> GImage:
+    """キャラ画像を合成したバックグラウンドを生成します。
 
+    Args:
+        element (str): 属性の名前
+        charaname (str): キャラの名前
+
+    Returns:
+        GImage: 合成した画像
+    """
+    # 元素別の画像
     img = GImage(
-        image_path="Image/status_bata/Electric.png",
+        image_path=f"Image/status_bata/{element}.png",
         default_font_size=26,
     )
-
+    # キャラ画像
     img.add_image(
-        image_path=downloadPicture(
-            url=url, dir=hash, filename="character"),
-        box=(660, 360),
-        size=(1200, 820),
-        image_anchor=ImageAnchors.MIDDLE_MIDDLE
+        image_path=f"Image/character/{charaname}/character_image.png",
     )
-
+    # オーバーレイ画像
     img.add_image(image_path="Image/status_bata/base.png")
 
     return img
 
 
-def create_star_and_lv(quantity: int, lv: int, totu: int):
+def __create_star_and_lv(quantity: int, lv: int, totu: int) -> Image.Image:
+    """★とレベル、凸のイメージを作成します
+
+    Args:
+        quantity (int): ★の個数
+        lv (int): レベル
+        totu (int): 凸
+
+    Returns:
+        Image: 合成した画像
+    """
+
     img = GImage(
         box_size=(500, 30),
         default_font_size=30,
     )
+    # ★の合成
     for i in range(quantity):
         img.add_image(
             image_path="Image/ster.png",
             box=(i*35, 2),
         )
+    # レベルと凸
     img.draw_text(
         text=f'{lv}Lv  {totu}凸',
         position=(350, 2),
         align=Algin.RIGHT,
         anchor=Anchors.RIGHT_TOP
     )
-    return img
+
+    return img.get_image()
 
 
-def create_charactor_name(char_name: str):
-    img = GImage(
-        box_size=(800, 100)
-    )
-    img.draw_text(
-        text=char_name,
-        position=(0, 50),
-        anchor=Anchors.LEFT_MIDDLE,
-        font_size=80
-    )
-    return img
+def __create_status_add(base: int, add: int) -> Image.Image:
+    """キャラクターの個別のステータスの画像を取得します。これはHPなど合成数が利用されるもの専用です。
 
+    Args:
+        base (int): ベースの数値
+        add (int): 装備の数値
 
-def create_status_add(base: int, add: int):
+    Returns:
+        Image: キャラクターの個別のステータスの画像
+    """
     img = GImage(
         box_size=(300, 50),
         default_font_size=26,
     )
-
+    # ベース値の合成
     img.draw_text(
         text=str(base),
         position=(2, 50),
         anchor=Anchors.LEFT_DESCENDER,
         font_size=18,
-        font_color=Colors.CYAN,
+        font_color=Colors.GENSHIN_LIGHT_BLUE,
     )
-
+    # 追加値の合成
     img.draw_text(
         text=f"+ {add}",
         position=(65, 50),
         anchor=Anchors.LEFT_DESCENDER,
         font_size=18,
-        font_color=Colors.GREEN,
+        font_color=Colors.GENSHIN_GREEN,
     )
-
+    # 合成値の合成
     img.draw_text(
         text=str(base + add),
         position=(0, 0),
     )
 
-    return img
+    return img.get_image()
 
 
-def create_status(status: int, suffix="%"):
+def __create_status(status: int, suffix="%") -> Image.Image:
+    """キャラクターの個別のステータスの画像を取得します。suffixは％などの文字列です
+
+    Args:
+        status (int): ステータスの数値
+        suffix (str): 後ろにつける文字. Defaults to "%".
+
+    Returns:
+        Image.Image: キャラクターの個別のステータス画像
+    """
     img = GImage(
         box_size=(300, 30),
         default_font_size=26,
     )
+    # ステータスの合成
     img.draw_text(
         text=f"{status}{suffix}",
         position=(0, 0),
     )
-    return img
+
+    return img.get_image()
 
 
-def create_full_status(
+def __create_full_status(
     hp_base: int,
     hp_add: int,
     atk_base: int,
@@ -139,407 +182,415 @@ def create_full_status(
     mas_chg: int,
     elmt: str = None,
     elmt_dmg: int = None,
-):
+) -> Image.Image:
+    """すべてのステータスのデータを取得します。
+
+    Args:
+        hp_base (int): ベースHP
+        hp_add (int): 装備HP
+        atk_base (int): ベース攻撃
+        atk_add (int): 装備攻撃
+        df_base (int): ベース防御
+        df_add (int): 装備防御
+        mas (int): 元素熟知
+        cri (int): 会心率
+        cri_dmg (int): 会心ダメージ率
+        mas_chg (int): 元素チャージ
+        elmt (str, optional): 元素タイプ. Defaults to None.
+        elmt_dmg (int, optional): 元素倍率. Defaults to None.
+
+    Returns:
+        Image.Image: ステータスの画像
+    """
     img = GImage(
         box_size=(600, 1000),
         default_font_size=26,
     )
-    # img.add_image(image_path="image.png")
-    futures = []
-    with ThreadPoolExecutor(max_workers=20, thread_name_prefix="create_status") as pool:
-        futures.append(pool.submit(create_status_add, hp_base, hp_add))
-        futures.append(pool.submit(create_status_add, atk_base, atk_add))
-        futures.append(pool.submit(create_status_add, df_base, df_add))
-        futures.append(pool.submit(create_status, mas, ""))
-        futures.append(pool.submit(create_status, cri))
-        futures.append(pool.submit(create_status, cri_dmg))
-        futures.append(pool.submit(create_status, mas_chg))
+    futures: list[Future] = []
+    with ThreadPoolExecutor(max_workers=20, thread_name_prefix="__create_status") as pool:
+        # HP
+        futures.append(pool.submit(__create_status_add, hp_base, hp_add))
+        # 攻撃
+        futures.append(pool.submit(__create_status_add, atk_base, atk_add))
+        # 防御
+        futures.append(pool.submit(__create_status_add, df_base, df_add))
+        # 元素熟知
+        futures.append(pool.submit(__create_status, mas, ""))
+        # クリ率
+        futures.append(pool.submit(__create_status, cri))
+        # クリダメ
+        futures.append(pool.submit(__create_status, cri_dmg))
+        # 元チャ
+        futures.append(pool.submit(__create_status, mas_chg))
+        # 元素攻撃力
         if elmt is not None:
-            futures.append(pool.submit(create_status, elmt))
-    for i, f in enumerate(futures):
-        im: GImage = f.result()
-        img.paste(im=im, box=(300, 65*i))
+            futures.append(pool.submit(__create_status, elmt))
 
+    height = 0
+    for f in futures:
+        im: Image = f.result()
+        # 各画像を合成します
+        img.paste(im=im, box=(300, height))
+        height += 65
+    # 元素攻撃力系の名前
+    if elmt_dmg is not None:
+        img.draw_text(
+            text=elmt_dmg,
+            position=(0, height),
+        )
+
+    return img.get_image()
+
+
+def __create_skill(skill_icon: str, skill_lv: str, charaname: str, skill_name: str) -> Image.Image:
+    """個別のスキルの画像を生成します
+
+    Args:
+        skill_icon (str): スキルのアイコンurl
+        skill_lv (str): スキルレベルの文字列
+        charaname (str): キャラクター名
+        skill_name (str): スキルの名称
+
+    Returns:
+        Image.Image: スキル画像
+    """
+    DATA = {"skill_nomal": "通常攻撃", "skill_skill": "元素スキル", "skill_burst": "元素爆発"}
+    img = GImage(
+        box_size=(320, 100),
+        default_font_size=48,
+    )
+    icon = download_picture(
+        skill_icon,
+        charaname=charaname,
+        filename=skill_name
+    )
+    # スキルの画像を合成
+    img.add_image(image_path=icon, box=(60, 50), size=(
+        100, 100), image_anchor=ImageAnchors.MIDDLE_MIDDLE)
+    # スキルレベルの合成
+    img.draw_text(
+        text="Lv",
+        position=(165, 0),
+        anchor=Anchors.LEFT_ASCENDER
+    )
+    img.draw_text(
+        text=skill_lv,
+        position=(300, 0),
+        anchor=Anchors.RIGHT_ASCENDER
+    )
+    skill_type_base = Image.new(
+        mode="RGBA",
+        size=(120, 28),
+        color=(176, 116, 0, 0xff)
+    )
+    name_position = (235, 80)
+
+    img.paste(im=skill_type_base, box=name_position,
+              image_anchor=ImageAnchors.MIDDLE_MIDDLE)
+    img.draw_text(
+        text=DATA[skill_name],
+        position=name_position,
+        anchor=Anchors.MIDDLE_MIDDLE,
+        align=Algin.CENTER,
+        font_size=18
+    )
+    return img.get_image()
+
+
+def __create_skill_list(character: character) -> Image.Image:
+    """すべての天賦スキルをまとめた画像を生成します
+
+    Args:
+        character (character): キャラクターオブジェクト
+
+    Returns:
+        Image.Image: スキルをまとめた画像
+    """
+    # スキル名の定義
+    DATA = ["nomal", "skill", "burst"]
+    charaname = character.name
+    skill_icon_list = character.skill_list_image
+    skill_lv_list = character.skill_list_level
+
+    img = GImage(
+        box_size=(600, 1000),
+    )
+    futures: list[Future] = []
+    with ThreadPoolExecutor(max_workers=20, thread_name_prefix="__create_skill") as pool:
+        # 各スキル画像の生成
+        for i in range(3):
+            futures.append(
+                pool.submit(
+                    __create_skill,
+                    skill_icon_list[i],
+                    skill_lv_list[i],
+                    charaname,
+                    # 各スキル名で画像を保存します
+                    f"skill_{DATA[i]}"
+                )
+            )
+    # スキル画像の合成
+    for i, v in enumerate(futures):
+        im: Image = v.result()
+        img.paste(im=im, box=(0, 135*i))
+
+    return img.get_image()
+
+
+def __create_artifact(artifact: artifact, angle: int) -> Image.Image:
+    """個別の聖遺物の画像を生成します。
+
+    Args:
+        artifact (artifact): アーティファクトオブジェクト
+
+    Returns:
+        Image.Image: アーティファクトの画像
+    """
+    base_img = GImage(
+        box_size=(580, 140),
+        default_font_size=18
+    )
+    # 聖遺物の背景を合成
+    base_img.add_rotate_image(
+        image_path=f"Image/artifact/{artifact.ster}.png",
+        box=(70, 70),
+        size=(220, 220),
+        angle=angle,
+    )
+    # 聖遺物の画像を合成
+    base_img.add_image(
+        image_path=get_item_image(
+            url=artifact.image,
+            type="artifacts",
+            filename=artifact.image.split("/")[-1][:-4]
+        ),
+        size=(105, 105),
+        box=(70, 70),
+        image_anchor=ImageAnchors.MIDDLE_MIDDLE
+    )
+    img = GImage(
+        box_size=(560, 100),
+        default_font_size=16
+    )
+    # 聖遺物のメインステータス名を合成
+    img.draw_text(
+        text=artifact.main_name,
+        position=(140, 50),
+        anchor=Anchors.RIGHT_DESCENDER
+    )
+    # 聖遺物のメインのステータスを合成
+    img.draw_text(
+        text=artifact.main_value,
+        position=(140, 100),
+        font_size=46,
+        anchor=Anchors.RIGHT_DESCENDER
+    )
+    # 聖遺物のサブステータスを合成
+    for i in range(len(artifact.status)):
+        img.draw_text(
+            text=artifact.status[i][0],
+            position=(150+150*(i//2), 30*(i % 2)),
+            anchor=Anchors.LEFT_ASCENDER
+        )
+        img.draw_text(
+            text=str(artifact.status[i][1]),
+            position=(275+150*(i//2), 30*(i % 2)),
+            anchor=Anchors.RIGHT_ASCENDER
+        )
+    # 聖遺物スコアなどの背景合成
+    bg = Image.new(mode="RGBA", size=(187, 30), color=(176, 116, 0, 0xff))
+
+    img.paste(bg, box=(200, 80), image_anchor=ImageAnchors.LEFT_MIDDLE)
+    # 聖遺物のスコアを合成
+    img.draw_text(
+        text="スコア",
+        position=(280, 80),
+        anchor=Anchors.LEFT_MIDDLE
+    )
+    img.draw_text(
+        text=str(artifact.score),
+        position=(372, 80),
+        anchor=Anchors.RIGHT_MIDDLE
+    )
+    # 聖遺物のレベルを合成
+    img.draw_text(
+        text=f"+{artifact.level}",
+        position=(248, 80),
+        anchor=Anchors.RIGHT_MIDDLE
+    )
+    base_img.paste(im=img, box=(120, 20))
+    return base_img.get_image()
+
+
+def __create_artifact_list(artifact_list: list[artifact]) -> Image.Image:
+    """聖遺物の一覧の画像を生成します。
+
+    Args:
+        artifact_list (list[artifact]): アーティファクトオブジェクトの配列
+
+    Returns:
+        Image.Image: 聖遺物一覧画像
+    """
+    img = GImage(
+        box_size=(600, 720),
+    )
+    futures: list[Future] = []
+    # 各聖遺物のステータス画像の生成
+    with ThreadPoolExecutor(max_workers=20, thread_name_prefix="__create_artifact") as pool:
+        for i, v in enumerate(artifact_list):
+            futures.append(
+                pool.submit(
+                    __create_artifact,
+                    v,
+                    144*i
+                )
+            )
+    # 各ステータス画像の合成
+    for i, v in enumerate(futures):
+        im: Image = v.result()
+        img.paste(im=im, box=(0, 120*i))
+
+    return img.get_image()
+
+
+def __create_total_socre(artifact_list: list[artifact]) -> Image.Image:
+    """聖遺物のトータルスコアの画像を生成します
+
+    Args:
+        artifact_list (list[artifact]): 聖遺物の配列
+
+    Returns:
+        Image.Image: 聖遺物のトータルスコア画像
+    """
+    total_score = sum([v.score for v in artifact_list])
+    mask = Image.new(mode="L", size=(600, 50), color=0)
+    draw = ImageDraw.Draw(mask)
+    draw.rectangle(((30, 12), (570, 38)), fill=255)
+    mask = mask.filter(ImageFilter.GaussianBlur(6))
+    bg = Image.new(mode="RGBA", size=(600, 50), color=(0, 0, 0, 255))
+    bg.putalpha(mask)
+    color_bg = Image.new(
+        mode="RGBA",
+        color=(176, 116, 0, 0xff),
+        size=(540, 28)
+    )
+    img = GImage(box_size=(600, 80), default_font_size=40)
+    img.paste(bg, box=(0, 30))
+    img.paste(color_bg, box=(30, 40))
+    img.draw_text(
+        text="スコア合計",
+        position=(390, 40),
+        anchor=Anchors.RIGHT_MIDDLE
+    )
+    img.draw_text(
+        text=str(total_score),
+        position=(550, 40),
+        anchor=Anchors.RIGHT_MIDDLE
+    )
     return img
 
 
-def create_elemental_mastery(element: str):
-    pass
+def __create_image(char_data: CharacterStatus) -> Image.Image:
+    """キャラデータから画像を生成します。
 
+    Args:
+        char_data (CharacterStatus): キャラデータ
 
-def create_image(char_data):
-    username = "mikan"
-    h = hashlib.md5(
-        f"{datetime.datetime.now()}{username}".encode("utf-8")).hexdigest()
-    os.mkdir(f"./temp/{h}")
+    Returns:
+        Image.Image: キャラ画像
+    """
+    character = char_data.character
+    artifact = char_data.artifact
+    weapon = char_data.weapon
 
-    futures = []
-
-    with ThreadPoolExecutor(max_workers=20, thread_name_prefix="create") as pool:
-        futures.append(pool.submit(create_background, h,
-                       "https://enka.network/ui/UI_Gacha_AvatarImg_Nahida.png"))
-        futures.append(pool.submit(create_star_and_lv, 5, 80, 3))
-        futures.append(
-            pool.submit(
-                create_full_status,
-                100,
-                200,
-                300,
-                400,
-                500,
-                600,
-                700,
-                800,
-                900,
-                1000,
-                1100,
-            )
+    with ThreadPoolExecutor(max_workers=20, thread_name_prefix="__create") as pool:
+        # 背景画像の取得
+        bgf: Future = pool.submit(
+            __create_background,
+            character.element,
+            character.name
         )
-    bg: GImage = futures[0].result()
-    lv: GImage = futures[1].result()
-    status: GImage = futures[2].result()
+
+        # スターとレベル、凸の画像を取得
+        lvf: Future = pool.submit(__create_star_and_lv, 5, 80, 3)
+
+        # ステータスを取得
+        statusf: Future = pool.submit(
+            __create_full_status,
+            int(character.base_hp),
+            int(character.added_hp),
+            int(character.base_attack),
+            int(character.added_attack),
+            int(character.base_defense),
+            int(character.added_defense),
+            int(character.elemental_mastery),
+            int(character.critical_rate),
+            int(character.critical_damage),
+            int(character.charge_efficiency),
+            character.elemental_name,
+            character.elemental_value,
+        )
+
+        # 天賦を取得
+        skillf: Future = pool.submit(
+            __create_skill_list,
+            character
+        )
+
+        # 聖遺物画像の取得
+        artifactf: Future = pool.submit(
+            __create_artifact_list,
+            artifact
+        )
+
+        # 聖遺物のトータルスコアを取得
+        total_scoref: Future = pool.submit(
+            __create_total_socre,
+            artifact
+        )
+
+    # 各リザルトを取得
+    bg = bgf.result()
+    lv = lvf.result()
+    status = statusf.result()
+    skill = skillf.result()
+    artifact = artifactf.result()
+    total_score = total_scoref.result()
+
+    # ステータスを合成
     bg.paste(im=status, box=(50, 65))
-    bg.paste(im=lv, box=(0, 720), image_anchor=ImageAnchors.LEFT_BOTTOM)
+    # レベルなど合成
+    bg.paste(im=lv, box=(40, 692), image_anchor=ImageAnchors.LEFT_BOTTOM)
+    # 天賦を合成
+    bg.paste(im=skill, box=(1000, 50))
+    # 聖遺物を合成
+    bg.paste(
+        im=artifact,
+        box=(1920, 100),
+        image_anchor=ImageAnchors.RIGHT_TOP
+    )
+    # 聖遺物のトータルスコアを合成
+    bg.paste(im=total_score, box=(1320, 30))
+    # キャラ名を合成
+    bg.draw_text(
+        text=character.name,
+        font_size=86,
+        position=(38, 642),
+        anchor=Anchors.LEFT_DESCENDER
+    )
 
-    shutil.rmtree(f"./temp/{h}")
-
-    return bg
+    return bg.get_image()
 
 
-# create_full_status(
-#     100,
-#     200,
-#     300,
-#     400,
-#     500,
-#     600,
-#     700,
-#     800,
-#     900,
-#     1000,
-#     1100,
-# ).show()
+def get_character_image(character_status: CharacterStatus) -> tuple[File, str]:
 
-create_image(123).show()
-# create_status_add(1233, 123).show()
-# create_status(123).show()
+    image = __create_image(char_data=character_status)
+    fileio = BytesIO()
+    image.save(fileio, format="png")
+    fileio.seek(0)
+    filename = "status.png"
+    return (File(fileio, filename=filename), f"attachment://{filename}")
 
-# create_star_and_lv(4).show()
-# create_charactor_name("にかわみかん").show()
-# create_background().show()
 
-# async def getCharacterImage(uid, id, interaction):
-#     try:
-#         characterData: getCharacterData.CharacterStatus = await getCharacterData.CharacterStatus.getCharacterStatus(uid=uid, id=id)
-#     except FileNotFoundError:
-#         embed = discord.Embed(
-#             title="エラー",
-#             color=0x1e90ff,
-#             description=f"キャラ詳細が非公開です。原神の設定で公開設定にしてください。",
-#         )
-#         return embed
-#         # ここはキャラ詳細が非公開な旨を記述した画像を返す予定
-
-#     await interaction.edit_original_message(content="```準備中...```")
-#     # 読み込み準備中
-#     base_img = GImage(
-#         image_path=f"Image/status_bata/{characterData.character.element}.png",
-#         default_font_path="C:\\Users\\Cinnamon\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ja-jp.ttf",
-#         default_font_size=26,
-#         default_font_color=Colors.WHITE
-#     )
-
-#     # キャラ画像合成
-#     base_img.add_image(
-#         image_path=downloadPicture(characterData.character.image),
-#         box=(660, 360),
-#         size=(1200, 820),
-#         image_anchor=ImageAnchors.MIDDLE_MIDDLE
-#     )
-
-#     # テキスト画像でサンドイッチ
-#     base_img.add_image(
-#         image_path="Image/status_bata/base.png",
-#         box=(0, 0),
-#     )
-
-#     # 星の数だけ合成
-#     for x in range(characterData.character.ster):
-#         base_img.add_image(
-#             image_path="Image/ster.png",
-#             box=(36+x*35, 667),
-#         )
-
-#     await interaction.edit_original_message(content="```キャラ基本情報取得中...```")
-
-#     # ユーザー名文字追加
-#     base_img.draw_text(
-#         text=characterData.character.name,
-#         position=(34, 564),
-#         font_size=80
-#     )
-
-#     # レベル文字追加
-#     base_img.draw_text(
-#         text=f'{characterData.character.level}Lv  {characterData.character.constellations}凸',
-#         position=(36+x*35+80, 667),
-#         font_size=24
-#     )
-
-#     # HP基礎　文字追加
-#     base_img.draw_text(
-#         text=characterData.character.base_hp,
-#         position=(313, 92),
-#         font_size=18,
-#         font_color=Colors.CYAN
-#     )
-
-#     # HP聖遺物　文字追加
-#     base_img.draw_text(
-#         text=f'+{characterData.character.added_hp}',
-#         position=(383, 92),
-#         font_size=18,
-#         font_color=Colors.GREEN
-#     )
-
-#     # HP合計値　文字追加
-#     base_img.draw_text(
-#         text=str(int(characterData.character.base_hp) +
-#                  int(characterData.character.added_hp)),
-#         position=(313, 62),
-#     )
-
-#     # 攻撃力基礎　文字追加
-#     base_img.draw_text(
-#         text=characterData.character.base_attack,
-#         position=(313, 158),
-#         font_size=18,
-#         font_color=Colors.CYAN
-#     )
-
-#     # 攻撃力聖遺物　文字追加
-#     base_img.draw_text(
-#         text=f'+{characterData.character.added_attack}',
-#         position=(383, 158),
-#         font_size=18,
-#         font_color=Colors.GREEN
-#     )
-
-#     # 攻撃力合計値　文字追加
-#     base_img.draw_text(
-#         text=str(int(characterData.character.base_attack) +
-#                  int(characterData.character.added_attack)),
-#         position=(313, 128),
-#     )
-
-#     # 防御力基礎　文字追加
-#     base_img.draw_text(
-#         text=characterData.character.base_defense,
-#         position=(313, 219),
-#         font_size=18,
-#         font_color=Colors.CYAN
-#     )
-
-#     # 防御力聖遺物　文字追加
-#     base_img.draw_text(
-#         text=f'+{characterData.character.added_defense}',
-#         position=(383, 219),
-#         font_size=18,
-#         font_color=Colors.GREEN
-#     )
-
-#     # 防御力合計値　文字追加
-#     base_img.draw_text(
-#         text=str(int(characterData.character.base_defense) +
-#                  int(characterData.character.added_defense)),
-#         position=(313, 189),
-#     )
-
-#     # 会心率　文字追加
-#     base_img.draw_text(
-#         text=f'{characterData.character.critical_rate}%',
-#         position=(313, 315),
-#     )
-
-#     # 会心ダメ　文字追加
-#     base_img.draw_text(
-#         text=f'{characterData.character.critical_damage}%',
-#         position=(313, 383),
-#     )
-
-#     # 元素チャージ　文字追加
-#     base_img.draw_text(
-#         text=f'{characterData.character.charge_efficiency}%',
-#         position=(313, 452),
-#     )
-
-#     # 元素熟知　文字追加
-#     base_img.draw_text(
-#         text=characterData.character.elemental_mastery,
-#         position=(313, 252),
-#     )
-
-#     if characterData.character.elemental_name != None:
-#         # 元素ダメバフ　文字追加
-#         base_img.draw_text(
-#             text=characterData.character.elemental_name,
-#             position=(43, 517),
-#             font_size=20
-#         )
-
-#     if characterData.character.elemental_value != None:
-#         # 元素ダメバフ　文字追加
-#         base_img.draw_text(
-#             text=characterData.character.elemental_value,
-#             position=(220, 517),
-#         )
-
-#     await interaction.edit_original_message(content="```キャラ天賦情報取得中...```")
-#     hogehoge = 0
-#     for skill in characterData.character.skill_list_image:
-#         hogehoge += 1
-#         temp_2 = downloadPicture(skill)
-#         # 天賦アイコン追加
-#         base_img.add_image(
-#             image_path=temp_2,
-#             box=(1025, -106+hogehoge*133),
-#             size=(100, 100),
-#         )
-
-#     for level in characterData.character.skill_list_level:
-#         hogehoge += 1
-#         # 天賦　文字追加
-#         base_img.draw_text(
-#             text=f"Lv.{level}",
-#             position=(1155, -490+hogehoge*132),
-#             font_size=50,
-#         )
-
-#     await interaction.edit_original_message(content="```キャラ聖遺物情報取得中...```")
-
-#     if characterData.weapon.name != None:
-#         # 武器アイコン追加
-#         temp_4 = downloadPicture(characterData.weapon.image)
-#         base_img.add_image(
-#             image_path=temp_4,
-#             box=(720, 520),
-#             size=(160, 160),
-#         )
-
-#         weapon_status = f"{characterData.weapon.main_name} : {characterData.weapon.main_value}"
-
-#         if characterData.weapon.sub_name != None:
-#             if "%" in characterData.weapon.sub_name or "会心" in characterData.weapon.sub_name or "チャ" in characterData.weapon.sub_name or "ダメージ" in characterData.weapon.sub_name:
-#                 weapon_sub_value = f'{characterData.weapon.sub_value}%'
-#             else:
-#                 weapon_sub_value = characterData.weapon.sub_value
-#             weapon_status = f"{weapon_status} // {characterData.weapon.sub_name} : {weapon_sub_value}"
-
-#         base_img.draw_text(
-#             text=weapon_status,
-#             position=(1305, 632),
-#             font_size=22,
-#             anchor='rm',
-#             align='right'
-#         )
-
-#         # 武器名　文字追加
-#         # 文字数に応じて、文字サイズを計算
-#         char_width = 350 / len(characterData.weapon.name)
-#         font_size = min(int(char_width / 0.6), 60)  # 0.6は、文字の幅を表す係数
-#         base_img.draw_text(
-#             text=characterData.weapon.name,
-#             position=(1303, 545),
-#             font_size=font_size,
-#             anchor='ra',
-#             align='right'
-#         )
-
-#         if characterData.weapon.rank != None:
-#             # 凸、レベル　文字追加
-#             player_name = f'精錬ランク{characterData.weapon.rank}  {characterData.weapon.level}Lv'
-#         else:
-#             player_name = f'{characterData.weapon.level}Lv'
-#         base_img.draw_text(
-#             text=player_name,
-#             position=(1100, 420),
-#             font_size=28,
-#         )
-
-#     hogehoge = 0
-#     for artifactData in characterData.artifact:
-#         hogehoge += 1
-#         # 聖遺物の土台アイコン追加
-
-#         icon = Image.open(
-#             f"Image/artifact/{artifactData.ster}.png").convert('RGBA').copy()
-#         icon = icon.resize(size=(230, 230), resample=Image.ANTIALIAS)
-#         icon = icon.rotate(random.randint(0, 360), resample=Image.BICUBIC)
-#         base_img.add_image_object(
-#             im=icon,
-#             box=(1275, -82+hogehoge*120),
-#         )
-
-#         # 聖遺物UI追加
-#         temp_3 = downloadPicture(artifactData.image)
-#         base_img.add_image(
-#             image_path=temp_3,
-#             box=(1352, -1+hogehoge*119),
-#             size=(76, 76),
-#         )
-
-#         # メインステータス　文字追加
-#         mainName = artifactData.main_name
-#         mainValue = artifactData.main_value
-#         if "%" in mainName or "会心" in mainName or "チャ" in mainName or "ダメージ" in mainName:
-#             player_name = f'{mainValue}%'
-#         else:
-#             player_name = mainValue
-#         base_img.draw_text(
-#             text=player_name,
-#             position=(1450, 33+hogehoge*120),
-#             font_size=40,
-#         )
-
-#         # メインステージ名　文字追加
-#         base_img.draw_text(
-#             text=mainName,
-#             position=(1450, 3+hogehoge*120),
-#             font_size=20,
-#         )
-
-#         foo = 0
-#         for n in artifactData.status:
-#             for k, v in n.items():
-#                 mainValue = k
-#             foo += 25
-#             # スコア値　文字追加
-#             if "%" in mainValue or "会心" in mainValue or "チャ" in mainValue or "ダメージ" in mainValue:
-#                 player_name = f'{mainValue}：{v}%'
-#             else:
-#                 player_name = f'{mainValue}：{v}'
-#             if foo > 50:
-#                 width = 1750
-#                 height = -18+hogehoge*120+(foo-50)
-#             else:
-#                 height = -18+hogehoge*120+foo
-#                 width = 1610
-#             base_img.draw_text(
-#                 text=player_name,
-#                 position=(width, height),
-#                 font_size=15,
-#             )
-
-#         # スコア値　文字追加
-#         base_img.draw_text(
-#             text=f'+{artifactData.level}  スコア：{artifactData.score}',
-#             position=(1450, -5+hogehoge*132),
-#             font_size=20,
-#         )
-
-#     await interaction.edit_original_message(content="```まもなく完了...```")
-#     filename = random.random()
-#     base_img.save(f'picture/{filename}.png')
-#     shutil.rmtree("temp")
-#     os.mkdir("temp")
-#     return f'picture/{filename}.png'
+def debug_get_image(char_data: CharacterStatus) -> Image.Image:
+    return __create_image(char_data=char_data)

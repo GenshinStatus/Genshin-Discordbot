@@ -14,6 +14,8 @@ class Colors:
     WHITE = (0xff, 0xff, 0xff, 0xff)
     CLEAR = (0xff, 0xff, 0xff, 0x00)
     CLEAR_RED = (0xff, 0x00, 0x00, 0x7f)
+    GENSHIN_LIGHT_BLUE = (118, 255, 255, 0xff)
+    GENSHIN_GREEN = (169, 255, 0, 0xff)
 
 
 class Anchors:
@@ -72,7 +74,7 @@ class GImage:
         self,
         image_path: str = None,
         box_size: tuple[int, int] = None,
-        default_font_path: str = "uzura.ttf",
+        default_font_path: str = "ja-jp.ttf",
         default_font_size: int = 30,
         default_font_color: Colors = Colors.WHITE,
     ) -> None:
@@ -210,7 +212,7 @@ class GImage:
             box[0] - int(im.size[0]*image_anchor[0]),
             box[1] - int(im.size[1]*image_anchor[1])
         )
-        self.__image.paste(im=im, box=box, mask=im)
+        self.__image.alpha_composite(im=im, dest=box)
 
     def add_image(
         self,
@@ -227,7 +229,7 @@ class GImage:
             size (tuple[int, int], optional): 画像サイズ（縦横比を固定しているため、はみ出る部分の上限として考えてください）. Defaults to None.
             image_anchor (tuple[int, int], optional): 基準点. Defaults to ImageAnchors.LEFT_TOP.
         """
-        im = Image.open(image_path).convert('RGBA').copy()
+        im = Image.open(image_path).convert('RGBA')
         if size is not None:
             im.thumbnail(size=size)
 
@@ -235,7 +237,37 @@ class GImage:
             box[0] - int(im.size[0]*image_anchor[0]),
             box[1] - int(im.size[1]*image_anchor[1])
         )
-        self.__image.paste(im=im, box=box, mask=im)
+        self.__image.alpha_composite(im=im, dest=box)
+
+    def add_rotate_image(
+        self,
+        image_path: str,
+        box: tuple[int, int] = (0, 0),
+        size: tuple[int, int] = None,
+        image_anchor: tuple[int, int] = ImageAnchors.MIDDLE_MIDDLE,
+        angle: int = 0,
+    ) -> None:
+        """現在の画像にpngファイルなどの画像を読み込んで合成します。
+
+        Args:
+            image_path (str): 画像のPath
+            box (tuple[int, int], optional): 描画位置. Defaults to (0, 0).
+            size (tuple[int, int], optional): 画像サイズ（縦横比を固定しているため、はみ出る部分の上限として考えてください）. Defaults to None.
+            image_anchor (tuple[int, int], optional): 基準点. Defaults to ImageAnchors.LEFT_TOP.
+        """
+        im = Image.open(image_path).convert('RGBA')
+        if size is not None:
+            im.thumbnail(size=size)
+        bg = Image.new(mode="RGBA", size=(
+            im.size[0]*2, im.size[1]*2), color=Colors.CLEAR)
+        diff = (im.size[0]//2, im.size[1]//2)
+        bg.alpha_composite(im=im, dest=diff)
+        bg = bg.rotate(angle=angle, resample=Image.BICUBIC)
+        box = (
+            box[0] - int(im.size[0]*image_anchor[0])-diff[0],
+            box[1] - int(im.size[1]*image_anchor[1])-diff[1]
+        )
+        self.__image.alpha_composite(im=bg, dest=box)
 
     def show(self):
         """デバッグ用、出来上がった画像を表示します。
