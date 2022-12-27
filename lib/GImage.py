@@ -74,7 +74,7 @@ class GImage:
         self,
         image_path: str = None,
         box_size: tuple[int, int] = None,
-        default_font_path: str = "ja-jp.ttf",
+        default_font_path: str = "C:\\Users\\Cinnamon\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ja-jp.ttf",
         default_font_size: int = 30,
         default_font_color: Colors = Colors.WHITE,
     ) -> None:
@@ -231,7 +231,15 @@ class GImage:
         """
         im = Image.open(image_path).convert('RGBA')
         if size is not None:
-            im.thumbnail(size=size)
+            x = size[0]
+            y = size[1]
+            aspect_ratio = im.size[0] / im.size[1]
+            resize_ratio = x / y
+            if aspect_ratio > resize_ratio:
+                x = int(y*aspect_ratio)
+            else:
+                y = int(x*aspect_ratio)
+            im = im.resize(size=size)
 
         box = (
             box[0] - int(im.size[0]*image_anchor[0]),

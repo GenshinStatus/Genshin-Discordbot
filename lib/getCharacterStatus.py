@@ -36,6 +36,7 @@ config = ConfigYaml.load_yaml()
 class character():
     def __init__(
         self,
+        id,
         name: str,
         image: str,
         element: str,
@@ -58,6 +59,7 @@ class character():
         skill_list_level: list,
     ):
 
+        self.id = id
         self.name = name
         self.image = image
         self.element = element
@@ -204,6 +206,7 @@ class CharacterStatus():
             skill_list_level.pop(3)
 
         character_resalt = character(
+            id,
             name,
             image,
             element,
@@ -406,6 +409,7 @@ class CharacterStatus():
             skill_list_level.pop(3)
 
         character_resalt = character(
+            id,
             name,
             image,
             element,
@@ -478,8 +482,8 @@ class CharacterStatus():
                     n["flat"]["reliquaryMainstat"]["statValue"])
                 for b in n["flat"]["reliquarySubstats"]:
                     artifact_status.append(
-                        {genshinTextHash[b["appendPropId"]]: b["statValue"]})
-                artifact_status_score = await genshinscore.score(artifact_status)
+                        (genshinTextHash[b["appendPropId"]], b["statValue"]))
+                artifact_status_score = genshinscore.score(artifact_status)
                 aritifact_level = n["reliquary"]["level"]-1
 
                 artifact_resalt.append(

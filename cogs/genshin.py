@@ -48,7 +48,8 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             file, url = get_character_discord_file(
                 character_status=character_status
             )
-        except Exception as e:
+            print(url)
+        except ArithmeticError as e:
             # 失敗したときの処理かく
             # 例外によって種類わける
             pass
@@ -58,8 +59,9 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             title=f"{self.label}",
             color=0x1e90ff,
         )
+        print(url)
         embed.set_image(url=url)
-        await interaction.response.edit_message(
+        await interaction.edit_original_message(
             content=None,
             embed=embed,
             file=file,

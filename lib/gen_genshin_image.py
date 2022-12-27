@@ -74,13 +74,13 @@ def __create_background(element: str, charaname: str) -> GImage:
     return img
 
 
-def __create_star_and_lv(quantity: int, lv: int, totu: int) -> Image.Image:
+def __create_star_and_lv(quantity: int, lv: int, totu: str) -> Image.Image:
     """★とレベル、凸のイメージを作成します
 
     Args:
         quantity (int): ★の個数
         lv (int): レベル
-        totu (int): 凸
+        totu (str): 凸
 
     Returns:
         Image: 合成した画像
@@ -634,7 +634,7 @@ def __create_weapon(weapon: weapon, element_color: tuple[int, int, int]) -> Imag
         )
     # 凸情報などのテキストを合成
     img.draw_text(
-        text=f"{weapon.rank}凸 Lv {weapon.level}",
+        text=f"ランク{weapon.rank} Lv {weapon.level}",
         position=(550, 255), anchor=Anchors.RIGHT_DESCENDER,
         font_size=20
     )
@@ -687,7 +687,8 @@ def __create_image(char_data: CharacterStatus) -> Image.Image:
         )
 
         # スターとレベル、凸の画像を取得
-        lvf: Future = pool.submit(__create_star_and_lv, 5, 80, 3)
+        lvf: Future = pool.submit(
+            __create_star_and_lv, character.ster, character.level, character.constellations)
 
         # ステータスを取得
         statusf: Future = pool.submit(
@@ -789,6 +790,7 @@ def get_character_discord_file(character_status: CharacterStatus) -> tuple[File,
     image.save(fileio, format="png")
     fileio.seek(0)
     filename = "status.png"
+    print(f"attachment://{filename}")
     return (File(fileio, filename=filename), f"attachment://{filename}")
 
 
