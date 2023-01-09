@@ -205,7 +205,7 @@ class GenshinCog(commands.Cog):
 
     genshin = SlashCommandGroup('genshinstat', 'test')
 
-    @genshin.command(name="get", description="【自分だけが確認できる】UIDからキャラ情報を取得します")
+    @genshin.command(name="get", description="UIDからキャラ情報を取得し、画像を生成します")
     async def genshin_get(
             self,
             ctx: discord.ApplicationContext,

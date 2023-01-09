@@ -10,6 +10,21 @@ from PIL import Image, ImageFilter, ImageDraw
 # TODO: 10013と10411だけはじいといてください
 
 
+def add_persent(status: tuple):
+    """聖遺物のタプルから値にパーセントを付けて返します
+
+    Args:
+        status (tuple): artifact.status
+
+    Returns:
+        str: value
+    """
+    print(status)
+    if "会心" in status[0] or "チャ" in status[0] or "%" in status[0] or "元素ダメ" in status[0]:
+        return f"{status[1]}%"
+    return status[1]
+
+
 def __download_picture(url: str,  charaname: str, filename: str) -> str:
     """キャラクター名とファイル名を指定して指定の画像がない場合データをAPIから取得します
 
@@ -455,7 +470,7 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
             type="artifacts",
             filename=artifact.image.split("/")[-1][:-4]
         ),
-        size=(90, 90),
+        size=(70, 70),
         box=(70, 70),
         image_anchor=ImageAnchors.MIDDLE_MIDDLE
     )
@@ -466,14 +481,15 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
     # 聖遺物のメインステータス名を合成
     img.draw_text(
         text=artifact.main_name,
-        position=(140, 30),
+        position=(135, 30),
+        font_size=20,
         anchor=Anchors.RIGHT_DESCENDER
     )
     # 聖遺物のメインのステータスを合成
     img.draw_text(
-        text=artifact.main_value,
-        position=(140, 80),
-        font_size=46,
+        text=add_persent((artifact.main_name, artifact.main_value)),
+        position=(135, 70),
+        font_size=30,
         anchor=Anchors.RIGHT_DESCENDER
     )
     # 聖遺物のサブステータスを合成
@@ -484,7 +500,7 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
             anchor=Anchors.LEFT_ASCENDER
         )
         img.draw_text(
-            text=str(artifact.status[i][1]),
+            text=str(add_persent(artifact.status[i])),
             position=(275+150*(i//2), 30*(i % 2)),
             anchor=Anchors.RIGHT_ASCENDER
         )
@@ -623,18 +639,11 @@ def __create_weapon(weapon: weapon, element_color: tuple[int, int, int]) -> Imag
         font_size=20
     )
     # 凸情報などの背景を作成し合成
-    bg = Image.new(mode="RGBA", size=(400, 30), color=element_color)
+    bg = Image.new(mode="RGBA", size=(220, 30), color=element_color)
     img.paste(im=bg, box=(570, 255), image_anchor=ImageAnchors.RIGHT_BOTTOM)
-    # ★の数を合成
-    for i in range(5):
-        img.add_image(
-            image_path="Image/ster.png",
-            box=(320+i*-35, 255),
-            image_anchor=ImageAnchors.LEFT_BOTTOM
-        )
     # 凸情報などのテキストを合成
     img.draw_text(
-        text=f"ランク{weapon.rank} Lv {weapon.level}",
+        text=f"武器ランク{weapon.rank}  Lv {weapon.level}",
         position=(550, 255), anchor=Anchors.RIGHT_DESCENDER,
         font_size=20
     )
@@ -653,12 +662,12 @@ def __create_image(char_data: CharacterStatus) -> Image.Image:
     """
     ELEMENT_COLOR = {
         "Electric": (144, 89, 181),
-        "Fire": (204, 100, 86),
+        "Fire": (209, 89, 73),
         "Grass": (75, 150, 52),
         "Ice": (60, 145, 187),
         "Rock": (167, 120, 26),
-        "Water": (75, 118, 193),
-        "Wind": (84, 184, 137)
+        "Water": (53, 89, 166),
+        "Wind": (84, 157, 118)
     }
 
     ELEMENT_ICON = {
@@ -749,7 +758,7 @@ def __create_image(char_data: CharacterStatus) -> Image.Image:
     # レベルなど合成
     bg.paste(im=lv, box=(40, 687), image_anchor=ImageAnchors.LEFT_BOTTOM)
     # 天賦を合成
-    bg.paste(im=skill, box=(1000, 50))
+    bg.paste(im=skill, box=(1005, 45))
     # 聖遺物を合成
     bg.paste(
         im=artifact,
