@@ -11,6 +11,7 @@ import os
 import shutil
 import lib.getCharacterStatus as getCharacterData
 from lib.GImage import GImage, Colors, Algin, Anchors, ImageAnchors
+from lib.gen_genshin_image import get_character_discord_file
 
 
 def downloadPicture(url):
@@ -38,6 +39,7 @@ async def getCharacterImage(uid, id, interaction):
         # ここはキャラ詳細が非公開な旨を記述した画像を返す予定
 
     await interaction.edit_original_message(content="```準備中...```")
+    return get_character_discord_file(characterData)
     # 読み込み準備中
     base_img = GImage(
         image_path=f"Image/status_bata/{characterData.character.element}.png",
