@@ -4,12 +4,13 @@ from discord.ext import commands, tasks
 from discord import Option, SlashCommandGroup
 import aiohttp
 from lib.yamlutil import yaml
-import lib.getStat as getStat
 import lib.picture as getPicture
 from typing import List
 import lib.sql as SQL
 import cogs.uidlist as uidlist
 import os
+from lib.gen_genshin_image import get_character_discord_file
+from lib.getCharacterStatus import CharacterStatus
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
@@ -39,23 +40,33 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
         # await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
+        try:
+            # キャラクターのデータを取得します。
+            character_status = await CharacterStatus.getCharacterStatus(uid=self.uid, id=id)
+
+            # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
+            file, url = get_character_discord_file(
+                character_status=character_status
+            )
+            print(url)
+        except ArithmeticError as e:
+            # 失敗したときの処理かく
+            # 例外によって種類わける
+            pass
+
+        # 取得した画像でembed作成しれすぽんす
         embed = discord.Embed(
             title=f"{self.label}",
             color=0x1e90ff,
         )
-        embed.set_image(url=f"attachment://{str(self.dict[self.label])}.png")
-
-        try:
-            getImage = await getStat.getCharacterImage(self.uid, id, interaction)
-            if type(getImage) is discord.embeds.Embed:
-                await interaction.edit_original_message(content=None, embed=getImage)
-                return
-            file = discord.File(
-                getImage, filename=f"{str(self.dict[self.label])}.png")
-            await interaction.edit_original_message(content=None, file=file, embed=embed, view=TicTacToe(self.data, self.uid))
-        finally:
-            del file
-            os.remove(getImage)
+        print(url)
+        embed.set_image(url=url)
+        await interaction.edit_original_message(
+            content=None,
+            embed=embed,
+            file=file,
+            view=TicTacToe(self.data, self.uid)
+        )
 
 
 class TicTacToe(discord.ui.View):
@@ -194,7 +205,7 @@ class GenshinCog(commands.Cog):
 
     genshin = SlashCommandGroup('genshinstat', 'test')
 
-    @genshin.command(name="get", description="【自分だけが確認できる】UIDからキャラ情報を取得します")
+    @genshin.command(name="get", description="UIDからキャラ情報を取得し、画像を生成します")
     async def genshin_get(
             self,
             ctx: discord.ApplicationContext,
