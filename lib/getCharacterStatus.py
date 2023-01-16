@@ -212,8 +212,10 @@ class CharacterStatus():
 
         skill_list_level = [
             f"{myvalue}" for myvalue in chara["skillLevelMap"].values()]
-        if len(chara["skillLevelMap"]) == 4:
+        if id == "10000041":
             skill_list_level.pop(2)
+        if id == "10000002":
+            skill_list_level.pop(0)
 
         character_resalt = character(
             id,
