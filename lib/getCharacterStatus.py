@@ -213,18 +213,17 @@ class CharacterStatus():
                 buf += round(chara["fightPropMap"][key])
                 break
 
-        add_levels = {skill: 0 for skill in config[id]['SkillOrder']}
-        if "proudSkillExtraLevelMap" in character:
-            for key, level in character["proudSkillExtraLevelMap"].items():
-                add_levels[config[id]['ProudMap'][key]] = level
-
         skill_list_image = []
         skill_list_level = []
         for skill in config[id]['SkillOrder']:
             skill_list_image.append(
                 f"https://enka.network/ui/{config[id]['Skills'][str(skill)]}.png")
+            add_level = 0
+            key = str(config[id]["ProudMap"][str(skill)])
+            if "proudSkillExtraLevelMap" in chara and key in chara["proudSkillExtraLevelMap"]:
+                add_level = chara["proudSkillExtraLevelMap"][key]
             skill_list_level.append(
-                str(chara["skillLevelMap"][skill] + add_levels[skill]))
+                str(chara["skillLevelMap"][str(skill)] + add_level))
 
         character_resalt = character(
             id,
