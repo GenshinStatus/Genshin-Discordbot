@@ -412,7 +412,7 @@ def __create_skill_list(character: character, element_color: tuple[int, int, int
     """
     # スキル名の定義
     DATA = ["nomal", "skill", "burst"]
-    charaname = character.name
+    charaname = character.get_dir()
     skill_icon_list = character.skill_list_image
     skill_lv_list = character.skill_list_level
 
