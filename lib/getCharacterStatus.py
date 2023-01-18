@@ -5,9 +5,6 @@ import lib.scoreCalculator as genshinscore
 import urllib
 
 
-# TODO: リファクタリングを行う
-
-
 def getCharacterPicture(name):
     global words
     global genshinTextHash
@@ -138,25 +135,21 @@ class CharacterStatus():
         self.weapon = weaponData
         self.artifact = artifactData
 
-    async def getCharacterStatus(uid, id):
-        """
-        uidからキャラクター情報を読み取ります。
-        《self.character》
-        ・name キャラクター名
-
-        """
+    async def get_json(uid: int) -> dict:
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
+                if response.status != 200:
+                    return None
                 resp = await response.json()
-        name = genshinTextHash[characters[id]["NameId"]]
-        image = getCharacterPicture(name)
-        element = config[str(id)]['Element']
-        ster = int(words[name]["ster"])
+
+        return resp
+
+    def pop_character_data(json: list, id: int) -> dict:
         try:
             # アバターインフォリストを回す。nにキャラ情報がすべて入る。
             # もしキャラクター情報が公開されていない、表示できない場合はFileNotFoundErrorでraiseする。
-            for n in resp['avatarInfoList']:
+            for n in json['avatarInfoList']:
                 if n["avatarId"] == int(id):
                     chara = n
                     break
@@ -164,8 +157,23 @@ class CharacterStatus():
                     continue
         except:
             raise FileNotFoundError()
+        return chara
 
-            # 凸情報。もし6凸、または0凸だった場合は、それに対応する日本語に変換する。
+    def getCharacterStatus(json: dict, id: str):
+        """
+        uidからキャラクター情報を読み取ります。
+        《self.character》
+        ・name キャラクター名
+
+        """
+        chara = CharacterStatus.pop_character_data(json, id)
+
+        name = genshinTextHash[characters[id]["NameId"]]
+        image = getCharacterPicture(name)
+        element = config[str(id)]['Element']
+        ster = int(words[name]["ster"])
+
+        # 凸情報。もし6凸、または0凸だった場合は、それに対応する日本語に変換する。
         try:
             constellations = str(len(chara["talentIdList"]))
             if constellations == "6":
