@@ -5,6 +5,9 @@ import lib.scoreCalculator as genshinscore
 import urllib
 
 
+# TODO: リファクタリングを行う
+
+
 def getCharacterPicture(name):
     global words
     global genshinTextHash
@@ -80,6 +83,11 @@ class character():
         self.elemental_value = elemental_value
         self.skill_list_image = skill_list_image
         self.skill_list_level = skill_list_level
+
+    def get_dir(self):
+        if self.name == "旅人":
+            return f"{self.name}/{self.element}"
+        return self.name
 
 
 class artifact():
@@ -206,16 +214,16 @@ class CharacterStatus():
                 break
 
         skill_list_image = []
+        skill_list_level = []
         for skill in config[id]['SkillOrder']:
             skill_list_image.append(
                 f"https://enka.network/ui/{config[id]['Skills'][str(skill)]}.png")
-
-        skill_list_level = [
-            f"{myvalue}" for myvalue in chara["skillLevelMap"].values()]
-        if id == "10000041":
-            skill_list_level.pop(2)
-        if id == "10000002":
-            skill_list_level.pop(0)
+            add_level = 0
+            key = str(config[id]["ProudMap"][str(skill)])
+            if "proudSkillExtraLevelMap" in chara and key in chara["proudSkillExtraLevelMap"]:
+                add_level = chara["proudSkillExtraLevelMap"][key]
+            skill_list_level.append(
+                str(chara["skillLevelMap"][str(skill)] + add_level))
 
         character_resalt = character(
             id,
