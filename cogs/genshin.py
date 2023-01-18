@@ -148,7 +148,7 @@ async def uid_respond(self, interaction: discord.Interaction, ctx, uid):
         return
 
     if resp == {}:
-        await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
+        await interaction.edit_original_message(content="エラー：現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。")
         return
 
     await interaction.edit_original_message(content="キャラ情報読み込み中...")
