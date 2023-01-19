@@ -168,6 +168,9 @@ class CharacterStatus():
         """
         chara = CharacterStatus.pop_character_data(json, id)
 
+        if id == "10000007" or id == "10000005":
+            id += f"-{chara['skillDepotId']}"
+
         name = genshinTextHash[characters[id]["NameId"]]
         image = getCharacterPicture(name)
         element = config[str(id)]['Element']
