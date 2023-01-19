@@ -88,6 +88,7 @@ class helpselectView(View):
                     \n**・/genbot today**\n今日の日替わり秘境（天賦本や武器突破素材）や、デイリー更新まであと何分？を表示！\
                     \n**・/genbot report**\nバグ・不具合報告はこちらからよろしくお願いいたします...\
                     \n**・/genbot event**\n原神のイベントを確認できます。\
+                    \n**・/genbot code**\nワンボタンで原神報酬コードを使いたい方にどうぞっ！\
                 ")
         elif select.values[0] == "聖遺物スコア計算コマンド":
             print(
@@ -348,6 +349,11 @@ class GenbotCog(commands.Cog):
         embed.add_field(inline=True, name="開催予定のイベント\n", value=before)
         await hoge.edit_original_message(content=None, embed=embed)
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nevent - イベント確認")
+
+    @genbot.command(name='code', description='報酬コードがすでに入力された状態のURLを作成します')
+    async def code(self, ctx: discord.ApplicationContext, code: Option(input_type=str, description='報酬コードを入力してください', required=True)):
+        await ctx.respond(f"以下のリンクから報酬を取得してください。\nhttps://genshin.hoyoverse.com/ja/gift?code={code}")
+        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\ncode - コード生成")
 
     @genbot.command(name='dev', description='開発者用コマンドです。')
     async def dev(self, ctx: discord.ApplicationContext,):

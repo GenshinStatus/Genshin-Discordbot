@@ -45,6 +45,7 @@ def genshingen(name):
 
 
 def get_wish_select_options():
+    wish_select_options_0: list[discord.SelectOption] = []
     wish_select_options_1: list[discord.SelectOption] = []
     wish_select_options_2: list[discord.SelectOption] = []
     wish_select_options_3: list[discord.SelectOption] = []
@@ -56,10 +57,13 @@ def get_wish_select_options():
         elif v <= 38:
             wish_select_options_2.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v <= 100:
+        elif v < 100:
             wish_select_options_3.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-    return wish_select_options_1, wish_select_options_2, wish_select_options_3
+        elif v >= 100:
+            wish_select_options_0.append(
+                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
+    return wish_select_options_0, wish_select_options_1, wish_select_options_2, wish_select_options_3,
 
 
 changed_per = [20.627, 13.946, 9.429, 6.375, 4.306, 2.914,
@@ -262,8 +266,18 @@ class wish_banner_select_View(View):
         super().__init__(timeout=300, disable_on_timeout=True)
 
     @discord.ui.select(
-        placeholder="ガチャを指定（~ver1.6）",
+        placeholder="ガチャを指定（オリジナル祈願）",
         options=get_wish_select_options()[0]
+    )
+    async def select_callback_0(self, select: discord.ui.Select, interaction: discord.Interaction):
+        view = wish_select_View(banner_id=int(select.values[0]))
+        print(
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nオリジナル")
+        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
+
+    @discord.ui.select(
+        placeholder="ガチャを指定（~ver1.6）",
+        options=get_wish_select_options()[1]
     )
     async def select_callback_1(self, select: discord.ui.Select, interaction: discord.Interaction):
         view = wish_select_View(banner_id=int(select.values[0]))
@@ -273,7 +287,7 @@ class wish_banner_select_View(View):
 
     @discord.ui.select(
         placeholder="ガチャを指定（~ver2.8）",
-        options=get_wish_select_options()[1]
+        options=get_wish_select_options()[2]
     )
     async def select_callback_2(self, select: discord.ui.Select, interaction: discord.Interaction):
         view = wish_select_View(banner_id=int(select.values[0]))
@@ -283,7 +297,7 @@ class wish_banner_select_View(View):
 
     @discord.ui.select(
         placeholder="ガチャを指定（ver3.0~）",
-        options=get_wish_select_options()[2]
+        options=get_wish_select_options()[3]
     )
     async def select_callback_3(self, select: discord.ui.Select, interaction: discord.Interaction):
         view = wish_select_View(banner_id=int(select.values[0]))

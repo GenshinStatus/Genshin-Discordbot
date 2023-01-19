@@ -81,6 +81,11 @@ class character():
         self.skill_list_image = skill_list_image
         self.skill_list_level = skill_list_level
 
+    def get_dir(self):
+        if self.name == "旅人":
+            return f"{self.name}/{self.element}"
+        return self.name
+
 
 class artifact():
     def __init__(
@@ -130,25 +135,21 @@ class CharacterStatus():
         self.weapon = weaponData
         self.artifact = artifactData
 
-    async def getCharacterStatus(uid, id):
-        """
-        uidからキャラクター情報を読み取ります。
-        《self.character》
-        ・name キャラクター名
-
-        """
+    async def get_json(uid: int) -> dict:
         url = f"https://enka.network/u/{uid}/__data.json"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
+                if response.status != 200:
+                    return None
                 resp = await response.json()
-        name = genshinTextHash[characters[id]["NameId"]]
-        image = getCharacterPicture(name)
-        element = config[str(id)]['Element']
-        ster = int(words[name]["ster"])
+
+        return resp
+
+    def pop_character_data(json: list, id: int) -> dict:
         try:
             # アバターインフォリストを回す。nにキャラ情報がすべて入る。
             # もしキャラクター情報が公開されていない、表示できない場合はFileNotFoundErrorでraiseする。
-            for n in resp['avatarInfoList']:
+            for n in json['avatarInfoList']:
                 if n["avatarId"] == int(id):
                     chara = n
                     break
@@ -156,8 +157,26 @@ class CharacterStatus():
                     continue
         except:
             raise FileNotFoundError()
+        return chara
 
-            # 凸情報。もし6凸、または0凸だった場合は、それに対応する日本語に変換する。
+    def getCharacterStatus(json: dict, id: str):
+        """
+        uidからキャラクター情報を読み取ります。
+        《self.character》
+        ・name キャラクター名
+
+        """
+        chara = CharacterStatus.pop_character_data(json, id)
+
+        if id == "10000007" or id == "10000005":
+            id += f"-{chara['skillDepotId']}"
+
+        name = genshinTextHash[characters[id]["NameId"]]
+        image = getCharacterPicture(name)
+        element = config[str(id)]['Element']
+        ster = int(words[name]["ster"])
+
+        # 凸情報。もし6凸、または0凸だった場合は、それに対応する日本語に変換する。
         try:
             constellations = str(len(chara["talentIdList"]))
             if constellations == "6":
@@ -198,22 +217,25 @@ class CharacterStatus():
         fuga = None
         elemental_name = None
         elemental_value = None
-        for key, fuga in ELEMENT_DAMAGE_TYPES.items():
-            if round(chara["fightPropMap"][key]*100) > 0:
+        for n, fuga in ELEMENT_DAMAGE_TYPES.items():
+            if round(chara["fightPropMap"][n]*100) > 0:
+                print(n)
                 elemental_name = fuga
-                elemental_value = f'{str(round(chara["fightPropMap"][key]*100))}%'
-                buf += round(chara["fightPropMap"][key])
+                elemental_value = f'{str(round(chara["fightPropMap"][n]*100))}%'
+                buf += round(chara["fightPropMap"][n])
                 break
 
         skill_list_image = []
+        skill_list_level = []
         for skill in config[id]['SkillOrder']:
             skill_list_image.append(
                 f"https://enka.network/ui/{config[id]['Skills'][str(skill)]}.png")
-
-        skill_list_level = [
-            f"{myvalue}" for myvalue in chara["skillLevelMap"].values()]
-        if len(chara["skillLevelMap"]) == 4:
-            skill_list_level.pop(2)
+            add_level = 0
+            key = str(config[id]["ProudMap"][str(skill)])
+            if "proudSkillExtraLevelMap" in chara and key in chara["proudSkillExtraLevelMap"]:
+                add_level = chara["proudSkillExtraLevelMap"][key]
+            skill_list_level.append(
+                str(chara["skillLevelMap"][str(skill)] + add_level))
 
         character_resalt = character(
             id,

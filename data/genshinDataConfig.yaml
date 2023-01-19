@@ -1584,6 +1584,54 @@
       'SideIconName': 'UI_AvatarIcon_Side_Faruzan',
       'QualityType': 'QUALITY_PURPLE',
     },
+  '10000077':
+    {
+      'Element': 'Grass',
+      'Consts':
+        [
+          'UI_Talent_S_Yaoyao_01',
+          'UI_Talent_S_Yaoyao_02',
+          'UI_Talent_U_Yaoyao_01',
+          'UI_Talent_S_Yaoyao_03',
+          'UI_Talent_U_Yaoyao_02',
+          'UI_Talent_S_Yaoyao_04',
+        ],
+      'SkillOrder': [10771, 10772, 10775],
+      'Skills':
+        {
+          '10771': 'Skill_A_03',
+          '10772': 'Skill_S_Yaoyao_01',
+          '10775': 'Skill_E_Yaoyao_01',
+        },
+      'ProudMap': { '10771': 7731, '10772': 7732, '10775': 7739 },
+      'NameTextMapHash': 1732418482,
+      'SideIconName': 'UI_AvatarIcon_Side_Yaoyao',
+      'QualityType': 'QUALITY_PURPLE',
+    },
+  '10000078':
+    {
+      'Element': 'Grass',
+      'Consts':
+        [
+          'UI_Talent_S_Alhatham_01',
+          'UI_Talent_S_Alhatham_02',
+          'UI_Talent_U_Alhatham_02',
+          'UI_Talent_S_Alhatham_03',
+          'UI_Talent_U_Alhatham_01',
+          'UI_Talent_S_Alhatham_04',
+        ],
+      'SkillOrder': [10781, 10782, 10785],
+      'Skills':
+        {
+          '10781': 'Skill_A_Catalyst_MD',
+          '10782': 'Skill_S_Alhatham_01',
+          '10785': 'Skill_E_Alhatham_01',
+        },
+      'ProudMap': { '10781': 7831, '10782': 7832, '10785': 7839 },
+      'NameTextMapHash': 4002157418,
+      'SideIconName': 'UI_AvatarIcon_Side_Alhatham',
+      'QualityType': 'QUALITY_ORANGE',
+    },
   '10000005-501':
     {
       'Element': 'None',

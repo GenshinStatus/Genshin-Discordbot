@@ -358,3 +358,14 @@
   IconName: UI_AvatarIcon_Faruzan
   NameId: '2387711994'
   sideIconName: UI_AvatarIcon_Side_Faruzan
+'10000077':
+  Element: Grass
+  IconName: UI_AvatarIcon_Yaoyao
+  NameId: '1732418482'
+  sideIconName: UI_AvatarIcon_Side_Yaoyao
+'10000078':
+  Element: Grass
+  IconName: UI_AvatarIcon_Alhatham
+  NameId: '4002157418'
+  sideIconName: UI_AvatarIcon_Side_Alhatham
+

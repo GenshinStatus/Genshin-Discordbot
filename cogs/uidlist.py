@@ -34,7 +34,8 @@ class UidModal(discord.ui.Modal):
             await uid_set(self.ctx, self.uid)
         except Exception as e:
             print(e)
-            await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
+            # await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
+            await interaction.edit_original_message(content=f"UIDが無効か、EnkaNetworkがメンテナンス中です。", embed=None, view=None)
             return
         if is_first_registration == []:
             await interaction.edit_original_message(content=f"{self.uid}を登録します。\nUIDを公開すると、UIDリストに表示されるようになります\n※UIDを複数登録している場合は個別で設定することはできません。", view=view)

@@ -42,7 +42,9 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         # await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
         try:
             # キャラクターのデータを取得します。
-            character_status = await CharacterStatus.getCharacterStatus(uid=self.uid, id=id)
+            json = await CharacterStatus.get_json(uid=self.uid)
+            character_status = CharacterStatus.getCharacterStatus(
+                json=json, id=id)
 
             # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
             file, url = get_character_discord_file(
@@ -148,7 +150,7 @@ async def uid_respond(self, interaction: discord.Interaction, ctx, uid):
         return
 
     if resp == {}:
-        await interaction.edit_original_message(content="エラー：入力されたものが存在するUIDではありません")
+        await interaction.edit_original_message(content="エラー：現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。")
         return
 
     await interaction.edit_original_message(content="キャラ情報読み込み中...")
