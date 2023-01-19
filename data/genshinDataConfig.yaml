@@ -1599,9 +1599,9 @@
       'SkillOrder': [10771, 10772, 10775],
       'Skills':
         {
-          '10761': 'Skill_A_03',
-          '10762': 'Skill_S_Yaoyao_01',
-          '10765': 'Skill_E_Yaoyao_01',
+          '10771': 'Skill_A_03',
+          '10772': 'Skill_S_Yaoyao_01',
+          '10775': 'Skill_E_Yaoyao_01',
         },
       'ProudMap': { '10771': 7731, '10772': 7732, '10775': 7739 },
       'NameTextMapHash': 1732418482,
@@ -1623,9 +1623,9 @@
       'SkillOrder': [10781, 10782, 10785],
       'Skills':
         {
-          '10751': 'Skill_A_Catalyst_MD',
-          '10752': 'Skill_S_Alhatham_01',
-          '10755': 'Skill_E_Alhatham_01',
+          '10781': 'Skill_A_Catalyst_MD',
+          '10782': 'Skill_S_Alhatham_01',
+          '10785': 'Skill_E_Alhatham_01',
         },
       'ProudMap': { '10781': 7831, '10782': 7832, '10785': 7839 },
       'NameTextMapHash': 4002157418,

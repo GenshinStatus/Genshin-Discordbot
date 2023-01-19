@@ -214,11 +214,12 @@ class CharacterStatus():
         fuga = None
         elemental_name = None
         elemental_value = None
-        for key, fuga in ELEMENT_DAMAGE_TYPES.items():
-            if round(chara["fightPropMap"][key]*100) > 0:
+        for n, fuga in ELEMENT_DAMAGE_TYPES.items():
+            if round(chara["fightPropMap"][n]*100) > 0:
+                print(n)
                 elemental_name = fuga
-                elemental_value = f'{str(round(chara["fightPropMap"][key]*100))}%'
-                buf += round(chara["fightPropMap"][key])
+                elemental_value = f'{str(round(chara["fightPropMap"][n]*100))}%'
+                buf += round(chara["fightPropMap"][n])
                 break
 
         skill_list_image = []
