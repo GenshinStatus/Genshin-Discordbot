@@ -2,6 +2,7 @@ from discord.ext import commands
 from discord import SlashCommandGroup
 import discord
 import os
+from view.quiz.moderator import get_quiz_list_paginator
 
 # 環境変数にクイズなどの登録が可能なモデレーターが存在できるギルドを定義しておきます
 GUILDS = os.getenv("MODERAOR_GUILDS")
@@ -29,17 +30,9 @@ class Moderaor(commands.Cog):
         self,
         ctx: discord.ApplicationContext,
     ):
-        test = ctx.user.get_role(MODERAOR_ROLE) != None
+        paginator = get_quiz_list_paginator()
+        await paginator.respond(ctx.interaction, ephemeral=True)
 
-        if test != None:
-            print("もってる")
-        else:
-            print("もってない")
-
-        await ctx.response.send_message(f"ロールの判定が動作してるかを確認: {test}")
-
-        # TODO: Classを用意してゲームを作る
-        pass
 
 def setup(bot):
     bot.add_cog(Moderaor(bot))

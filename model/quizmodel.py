@@ -33,7 +33,7 @@ class QuizData:
 def guild_quiz_list(guild_id: int, auth_flg: bool) -> list[QuizData]:
     result: Tuple = database.load_data_sql(
         sql="""
-            select 
+            select
                 quiz_id,
                 user_id,
                 quiz_data,
@@ -52,13 +52,13 @@ def guild_quiz_list(guild_id: int, auth_flg: bool) -> list[QuizData]:
             """,
         data=(guild_id, auth_flg,),
     )
-    return [QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10]) for v in result]
+    return [QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]) for v in result]
 
 
-def global_quiz_list(global_auth_flg: bool) -> list[QuizData]:
+def get_quiz(quiz_id: int):
     result: Tuple = database.load_data_sql(
         sql="""
-            select 
+            select
                 quiz_id,
                 user_id,
                 quiz_data,
@@ -71,17 +71,18 @@ def global_quiz_list(global_auth_flg: bool) -> list[QuizData]:
             from
                 genshin_quiz
             where
-                global_auth_flg =%s
+                quiz_id = %s
             """,
-        data=(global_auth_flg,),
+            data=(quiz_id,),
     )
-    return [QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10]) for v in result]
+    v = result[0]
+    return QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8])
 
 
-def all_quiz_search(guild_id: int, auth_flg: bool) -> list[QuizData]:
+def global_quiz_list() -> list[QuizData]:
     result: Tuple = database.load_data_sql(
         sql="""
-            select 
+            select
                 quiz_id,
                 user_id,
                 quiz_data,
@@ -90,8 +91,30 @@ def all_quiz_search(guild_id: int, auth_flg: bool) -> list[QuizData]:
                 image_url,
                 created_at,
                 global_auth_flg,
-                global_auth_user_id 
-            from 
+                global_auth_user_id
+            from
+                genshin_quiz
+            inner join
+                quiz_auth_request using(quiz_id)
+            """,
+    )
+    return [QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]) for v in result]
+
+
+def all_quiz_search(guild_id: int, auth_flg: bool) -> list[QuizData]:
+    result: Tuple = database.load_data_sql(
+        sql="""
+            select
+                quiz_id,
+                user_id,
+                quiz_data,
+                answer,
+                options,
+                image_url,
+                created_at,
+                global_auth_flg,
+                global_auth_user_id
+            from
                 genshin_quiz
             left join
                 guild_own_quiz using(quiz_id)
@@ -102,11 +125,10 @@ def all_quiz_search(guild_id: int, auth_flg: bool) -> list[QuizData]:
             """,
         data=(guild_id, auth_flg,),
     )
-    return [QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10]) for v in result]
+    return [QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]) for v in result]
 
 
 def add_quiz(
-    guild_id: int,
     user_id: int,
     quiz_data: str,
     answer: str,
@@ -117,18 +139,16 @@ def add_quiz(
         sql="""
         insert into genshin_quiz
         (
-            guild_id,
             user_id,
             quiz_data,
             answer,
             options,
-            image_udl
+            image_url
         )
         values
-            (%s, %s, %s, %s, %s, %s)
+            (%s, %s, %s, %s, %s)
         """,
         data=(
-            guild_id,
             user_id,
             quiz_data,
             answer,
@@ -138,7 +158,7 @@ def add_quiz(
     )
 
 
-def guild_apporaval_application(guild_id: int, user_id: int):
+def guild_apporaval_request(quiz_id: int, guild_id: int):
     database.table_update_sql(
         sql="""
         insert into guilds_own_quiz
@@ -147,7 +167,51 @@ def guild_apporaval_application(guild_id: int, user_id: int):
             guild_id
         )
         values(%s, %s)
-        """
+        """,
+        data=(quiz_id, guild_id)
+    )
+
+
+def guild_cancel_request(quiz_id: int, guild_id: int):
+    database.table_update_sql(
+        sql="""
+        delete from guilds_own_quiz
+        where quiz_id = %s
+        """,
+        data=(quiz_id,),
+    )
+    database.table_update_sql(
+        sql="""
+        delete from quiz_auth_request
+        where quiz_id = %s,
+        and guild_id = %s
+        """,
+        data=(quiz_id, guild_id)
+    )
+
+
+def global_apporaval_request(quiz_id: int, guild_id: int, comment: str):
+    database.table_update_sql(
+        sql="""
+        insert into quiz_auth_request
+        (
+            quiz_id,
+            guild_id,
+            comment
+        )
+        values(%s, %s, %s)
+        """,
+        data=(quiz_id, guild_id, comment)
+    )
+
+
+def global_cancel_request(quiz_id: int):
+    database.table_update_sql(
+        sql="""
+        delete from quiz_auth_request
+        where quiz_id = %s
+        """,
+        data=(quiz_id,),
     )
 
 
@@ -159,13 +223,8 @@ def delete_quiz(quiz_id: int,):
         """,
         data=(quiz_id,),
     )
-    database.table_update_sql(
-        sql="""
-        delete from guilds_own_quiz
-        where quiz_id = %s
-        """,
-        data=(quiz_id,),
-    )
+    guild_cancel_request(quiz_id)
+    global_cancel_request(quiz_id)
 
 
 def update_quiz(
@@ -187,7 +246,7 @@ def update_quiz(
             global_auth_flg = false,
             global_auth_user_id = null
         where
-            quiz_id = %s 
+            quiz_id = %s
         """,
         data=(quiz_data, answer, options, image_url, quiz_id,),
     )
@@ -199,7 +258,7 @@ def update_quiz(
             auth_flg = false,
             auth_user_id = null
         where
-            quiz_id = %s 
+            quiz_id = %s
         """,
         data=(quiz_id,),
     )
@@ -208,12 +267,12 @@ def update_quiz(
 def get_quiz_channel(guild_id: int) -> int:
     result: Tuple = database.load_data_sql(
         sql="""
-            select 
-                channel_id 
-            from 
+            select
+                channel_id
+            from
                 quiz_channels
             where
-                guild_id = %s 
+                guild_id = %s
             """,
         data=(guild_id,),
     )
