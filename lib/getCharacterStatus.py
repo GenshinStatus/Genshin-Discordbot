@@ -309,9 +309,10 @@ class CharacterStatus():
                                                      ["reliquaryMainstat"]["mainPropId"]]
                 artifact_main_value = str(
                     n["flat"]["reliquaryMainstat"]["statValue"])
-                for b in n["flat"]["reliquarySubstats"]:
-                    artifact_status.append(
-                        (genshinTextHash[b["appendPropId"]], b["statValue"]))
+                if "reliquarySubstats" in n["flat"]:
+                    for b in n["flat"]["reliquarySubstats"]:
+                        artifact_status.append(
+                            (genshinTextHash[b["appendPropId"]], b["statValue"]))
                 artifact_status_score = genshinscore.score(artifact_status)
                 aritifact_level = n["reliquary"]["level"]-1
 
