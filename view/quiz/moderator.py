@@ -35,7 +35,7 @@ class QuizEmbed(Embed):
             fields=fields,
         )
         if image_url is not None:
-            self.set_image(image_url)
+            self.set_image(url=image_url)
 
 
 class QuizListEmbed(Embed):
@@ -79,12 +79,17 @@ class QuizListView(View):
 
 
 class ActiveButton(Button):
-    def __init__(self, style: ButtonStyle = ButtonStyle.green,):
-        super().__init__(style=style, label="有効化", custom_id="active", row=3)
+    def __init__(self, quiz_id: int):
+        super().__init__(style=ButtonStyle.green, label="有効化", custom_id="active", row=3, )
+        self.quiz_id = quiz_id
 
     async def callback(self, interaction: Interaction):
-        pagenator = get_quiz_list_paginator()
+        user_id = interaction.user.id
+        quiz_id = self.quiz_id
+        quizmodel.global_quiz_activation(quiz_id=quiz_id, user_id=user_id)
         print("有効化")
+        pagenator = get_quiz_list_paginator()
+
         await pagenator.respond(interaction=interaction, ephemeral=True)
 
 
@@ -93,7 +98,8 @@ class QuizListSelect(Select):
         super().__init__(placeholder="選択してください。", options=options)
 
     async def callback(self, interaction: Interaction):
-        quiz = quizmodel.get_quiz(int(self.values[0]))
+        quiz_id = int(self.values[0])
+        quiz = quizmodel.get_quiz(quiz_id=quiz_id)
         fields = [
             EmbedField(
                 name=quiz.ansewr,
@@ -112,10 +118,12 @@ class QuizListSelect(Select):
         embed = QuizEmbed(
             title=quiz.quiz_data,
             description=quiz.quiz_data,
-            fields=fields)
+            fields=fields,
+            image_url=quiz.image_url,
+        )
         view: QuizListView = self.view
         if view.get_item("active") is None:
-            view.add_item(ActiveButton())
+            view.add_item(ActiveButton(quiz_id=quiz_id))
             # view.add_item(BackButton())
         await interaction.response.edit_message(embed=embed, view=self.view)
 

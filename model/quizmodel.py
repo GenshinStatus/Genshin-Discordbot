@@ -96,6 +96,7 @@ def global_quiz_list() -> list[QuizData]:
                 genshin_quiz
             inner join
                 quiz_auth_request using(quiz_id)
+            order by quiz_id asc
             """,
     )
     return [QuizData(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]) for v in result]
@@ -270,7 +271,7 @@ def get_quiz_channel(guild_id: int) -> int:
             select
                 channel_id
             from
-                quiz_channels
+                quiz_channel
             where
                 guild_id = %s
             """,
@@ -283,7 +284,7 @@ def get_quiz_channel(guild_id: int) -> int:
 def set_quiz_channel(guild_id: int, channel_id: int):
     database.table_update_sql(
         sql="""
-        insert into quiz_channels(guid, channel_id)
+        insert into quiz_channel(guild_id, channel_id)
         values(%s, %s)
         on conflict (guild_id)
         do update set channel_id =%s
@@ -295,8 +296,29 @@ def set_quiz_channel(guild_id: int, channel_id: int):
 def remove_quiz_channel(guild_id: int):
     database.table_update_sql(
         sql="""
-        delete from quiz_channels
+        delete from quiz_channel
         where guild_id = %s
         """,
         data=(guild_id,),
+    )
+
+
+def global_quiz_activation(quiz_id: int, user_id: int):
+    database.table_update_sql(
+        sql="""
+        delete from quiz_auth_request
+        where quiz_id = %s
+        """,
+        data=(quiz_id,),
+    )
+    database.table_update_sql(
+        sql="""
+        update
+            genshin_quiz
+        set
+            global_auth_flg = true,
+            global_auth_user_id = %s
+        where quiz_id = %s
+        """,
+        data=(user_id, quiz_id,),
     )

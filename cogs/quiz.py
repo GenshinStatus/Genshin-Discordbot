@@ -3,6 +3,7 @@ from discord.ui import View, button, Button
 from discord import Option, OptionChoice, SlashCommandGroup, Interaction
 import discord
 from model import quizmodel
+from view.quiz import addquiz
 
 
 class QuickPushQuiz(commands.Cog):
@@ -13,6 +14,11 @@ class QuickPushQuiz(commands.Cog):
     _quiz_command = SlashCommandGroup(
         name="quiz",
         description="クイズ系のコマンドです",
+    )
+
+    _creation_quiz_command = _quiz_command.create_subgroup(
+        name="creation",
+        description="クイズの創作を行うグループです。"
     )
 
     _quiz_admin_command = SlashCommandGroup(
@@ -68,3 +74,24 @@ class QuickPushQuiz(commands.Cog):
     ):
         # TODO: Classを用意してゲームを作る
         pass
+
+    @_creation_quiz_command.command(
+        name="add",
+        description="クイズの追加処理を行います"
+    )
+    async def quiz_add(
+        self,
+        ctx: discord.ApplicationContext,
+        quantity: Option(
+            int,
+            description="誤答の数",
+            min_value=1,
+            max_value=3,
+            default=3
+        )
+    ):
+        await ctx.response.send_modal(addquiz.AddQuizModal(quantity=quantity))
+
+
+def setup(bot):
+    bot.add_cog(QuickPushQuiz(bot=bot))
