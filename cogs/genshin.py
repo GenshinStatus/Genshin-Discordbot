@@ -11,6 +11,7 @@ import cogs.uidlist as uidlist
 import os
 from lib.getCharacterStatus import CharacterStatus
 from enums.substatus import SubTypes
+from lib.gen_genshin_image import get_character_discord_file
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
