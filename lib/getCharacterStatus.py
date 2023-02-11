@@ -159,7 +159,7 @@ class CharacterStatus():
             raise FileNotFoundError()
         return chara
 
-    def getCharacterStatus(json: dict, id: str):
+    def getCharacterStatus(json: dict, id: str, build_type: str):
         """
         uidからキャラクター情報を読み取ります。
         《self.character》
@@ -313,7 +313,10 @@ class CharacterStatus():
                     for b in n["flat"]["reliquarySubstats"]:
                         artifact_status.append(
                             (genshinTextHash[b["appendPropId"]], b["statValue"]))
-                artifact_status_score = genshinscore.score(artifact_status)
+                artifact_status_score = genshinscore.score(
+                    artifact_status,
+                    build_type
+                )
                 aritifact_level = n["reliquary"]["level"]-1
 
                 artifact_resalt.append(
