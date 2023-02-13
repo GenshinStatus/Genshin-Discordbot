@@ -3,6 +3,7 @@ from discord.ui import Select, View
 from discord.ext import commands, tasks
 from discord.commands import Option, OptionChoice, SlashCommandGroup
 import copy
+from lib.log_output import log_output, log_output_interaction
 
 mainOption = {
     "花": ["HP"],
@@ -119,7 +120,7 @@ class ArtifactSuboptionValueModal(discord.ui.Modal):
             )
             self.add_item(self.contentA)
         except:
-            print(":)")
+            pass
         try:
             self.contentB = discord.ui.InputText(
                 label=f"{self.list[1]}（半角数字で小数点まで入力してください）",
@@ -129,7 +130,7 @@ class ArtifactSuboptionValueModal(discord.ui.Modal):
             )
             self.add_item(self.contentB)
         except:
-            print(":)")
+            pass
         try:
             self.contentC = discord.ui.InputText(
                 label=f"{self.list[2]}（半角数字で小数点まで入力してください）",
@@ -139,7 +140,7 @@ class ArtifactSuboptionValueModal(discord.ui.Modal):
             )
             self.add_item(self.contentC)
         except:
-            print(":)")
+            pass
         try:
             self.contentD = discord.ui.InputText(
                 label=f"{self.list[3]}（半角数字で小数点まで入力してください）",
@@ -149,26 +150,26 @@ class ArtifactSuboptionValueModal(discord.ui.Modal):
             )
             self.add_item(self.contentD)
         except:
-            print(":)")
+            pass
 
     async def callback(self, interaction: discord.Interaction) -> None:
         resalt = {}
         try:
             resalt[self.list[0]] = self.contentA.value
         except:
-            print(":)")
+            pass
         try:
             resalt[self.list[1]] = self.contentB.value
         except:
-            print(":)")
+            pass
         try:
             resalt[self.list[2]] = self.contentC.value
         except:
-            print(":)")
+            pass
         try:
             resalt[self.list[3]] = self.contentD.value
         except:
-            print(":)")
+            pass
         view = View()
         view.add_item(ArtifactScoreSelectView(resalt, self.mainType))
         await interaction.response.edit_message(content="スコア計算方法", view=view)
@@ -265,19 +266,17 @@ class ArtifactScoreSelectView(discord.ui.Select):
                 resalt /= 2
         except:
             await interaction.response.edit_message(content="エラー：入力された数値が正しくない数値だった可能性があります。数値は半角英数字で小数点第一位まで記入してください。", view=None, embed=None)
-            print(
-                f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nartifact_detail - エラー表示")
-            print(self.subDict)
+            log_output_interaction(
+                interaction=interaction, cmd="artifact_detail - エラー表示")
             return
-        print(str(round(resalt, 1)))
         embed = discord.Embed(title="聖遺物スコア計算結果", color=0x1e90ff,
                               description=str(round(resalt, 1)))
         # view=View()
         #view.add_item(isPicture(score=str(round(resalt, 1)), subDict=self.subDict, mainType=self.mainType))
         # await interaction.response.edit_message(content=str(round(resalt, 1)),view=view)
         await interaction.response.edit_message(content=None, view=None, embed=embed)
-        print(
-            f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nartifact_detail - 結果表示")
+        log_output_interaction(interaction=interaction,
+                               cmd="artifact_detail - 結果表示")
 
 
 class isPicture(discord.ui.Button):
@@ -323,11 +322,12 @@ class isMainOptionButton(discord.ui.Button):
         global globalOption
         globalOption = self.label
         await interaction.response.send_modal(mainOptionValueModal(self.label, self.score, self.subDict, self.mainType))
-        print(
-            f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nartifact - メインオプション数値入力")
-
+        log_output_interaction(interaction=interaction,
+                               cmd="artifact - メインオプション数値入力")
 
 # メインオプション数値入力モーダル
+
+
 class mainOptionValueModal(discord.ui.Modal):
     def __init__(self, mainOption: str, score: str, subDict: dict, mainType: str):
         super().__init__(title="メインオプション数値入力", timeout=300,)
@@ -372,8 +372,8 @@ class ArtifactNameSelect(discord.ui.Select):
         for n in self.values:
             resalt.append(n)
         await interaction.response.send_modal(ArtifactSuboptionValueModal(resalt, self.mainType))
-        print(
-            f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nartifact - サブオプション選択")
+        log_output_interaction(interaction=interaction,
+                               cmd="artifact - サブオプション選択")
 
 
 class ArtifactCog(commands.Cog):
@@ -387,8 +387,7 @@ class ArtifactCog(commands.Cog):
     @artifact.command(name='get_detail', description='より詳細に聖遺物スコアを計算します。')
     async def get_detail(self, ctx: discord.ApplicationContext,):
         await ctx.respond(content="聖遺物のタイプを選んでね", view=ArtifactBaseSelectView(), ephemeral=True)
-        print(
-            f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nartifact_detail - コマンド使用")
+        log_output(ctx=ctx, cmd="artifact_detail - コマンド使用")
 
     @artifact.command(name='get', description='手軽に聖遺物スコアを計算します。')
     async def get(
@@ -411,8 +410,7 @@ class ArtifactCog(commands.Cog):
             resalt = float(damage) + float(crper)*2 + float(crdamage)
         except:
             await ctx.respond(content="有効な数値を入力してください", ephemeral=True)
-            print(
-                f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nartifact_get - エラー表示")
+            log_output(ctx=ctx, cmd="artifact_get - エラー表示 - 以下無効な数値")
             print(damage)
             print(crper)
             print(crdamage)
@@ -422,8 +420,7 @@ class ArtifactCog(commands.Cog):
         embed.set_footer(
             text="HP基準計算など、他の計算方式を使う場合はは /artifact get_detail からやってね")
         await ctx.respond(embed=embed, ephemeral=True)
-        print(
-            f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nartifact_get - 結果表示")
+        log_output(ctx=ctx, cmd="artifact_get - 結果表示")
 
 
 def setup(bot):

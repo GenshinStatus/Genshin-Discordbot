@@ -81,7 +81,7 @@ def mask_circle_transparent(pil_img, blur_radius, offset=0):
 
 
 async def getCharacterImage(uid, id, interaction):
-    url = f"https://enka.network/u/{uid}/__data.json"
+    url = f"https://enka.network/api/uid/{uid}"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             resp = await response.json()

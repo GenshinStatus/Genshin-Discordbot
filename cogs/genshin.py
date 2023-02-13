@@ -11,6 +11,7 @@ import cogs.uidlist as uidlist
 import os
 from lib.gen_genshin_image import get_character_discord_file
 from lib.getCharacterStatus import CharacterStatus
+from lib.log_output import log_output, log_output_interaction
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
@@ -29,14 +30,15 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
         view: TicTacToe = self.view
+        print(self.uid)
 
         await interaction.response.edit_message(content="```読み込み中...（10秒ほどかかります）```", embed=None, view=None)
         self.style = discord.ButtonStyle.success
         # ラベル（名前）からIDを割り出す
         # 多分「名前：iD」ってなってるはず
         id = self.dict[self.label]
-        print(
-            f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nget - キャラ詳細")
+        log_output_interaction(interaction=interaction,
+                               cmd=f"genshinstat get キャラ取得 {self.uid}")
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
         # await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
@@ -50,7 +52,6 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             file, url = get_character_discord_file(
                 character_status=character_status
             )
-            print(url)
         except ArithmeticError as e:
             # 失敗したときの処理かく
             # 例外によって種類わける
@@ -61,7 +62,6 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             title=f"{self.label}",
             color=0x1e90ff,
         )
-        print(url)
         embed.set_image(url=url)
         await interaction.edit_original_message(
             content=None,
@@ -140,7 +140,7 @@ class UidButton(discord.ui.Button):
 async def uid_respond(self, interaction: discord.Interaction, ctx, uid):
     await interaction.response.edit_message(content="アカウント情報読み込み中...", view=None)
     try:
-        url = f"https://enka.network/u/{uid}/__data.json"
+        url = f"https://enka.network/api/uid/{uid}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 resp = await response.json()
@@ -193,15 +193,15 @@ class GenshinCog(commands.Cog):
                 title=f"{resp['playerInfo']['nickname']}",
                 color=0x1e90ff,
                 description=f"uid: {uid}",
-                url=f"https://enka.network/u/{uid}/__data.json"
+                url=f"https://enka.network/api/uid/{uid}"
             )
             embed.set_image(url=f"attachment://{uid}.png")
             return embed
         except:
             embed = discord.Embed(
-                title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{f'https://enka.network/u/{uid}/__data.json'}",
+                title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{f'https://enka.network/api/uid/{uid}'}",
                 color=0x1e90ff,
-                url=f"https://enka.network/u/{uid}/__data.json"
+                url=f"https://enka.network/api/uid/{uid}"
             )
             return embed
 
@@ -213,12 +213,12 @@ class GenshinCog(commands.Cog):
             ctx: discord.ApplicationContext,
     ):
         view = View(timeout=300, disable_on_timeout=True)
-        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nget - キャラ情報取得")
         select_options: list[discord.SelectOption] = []
         userData = SQL.User.get_user_list(ctx.author.id)
 
         #  登録してないときの処理
         if userData == []:
+            log_output(ctx=ctx, cmd="genshinstat get 未登録")
             view = View(timeout=300, disable_on_timeout=True)
             view.add_item(uidlist.UidModalButton(ctx))
             view.add_item(UidModalButton(ctx))
@@ -227,6 +227,7 @@ class GenshinCog(commands.Cog):
 
         #  1つだけ登録してたときの処理
         if len(userData) == 1:
+            log_output(ctx=ctx, cmd="genshinstat get 登録")
             view = View(timeout=300, disable_on_timeout=True)
             view.add_item(UidButton(ctx, userData[0].uid))
             view.add_item(UidModalButton(ctx))
@@ -237,6 +238,7 @@ class GenshinCog(commands.Cog):
         for v in userData:
             select_options.append(
                 discord.SelectOption(label=v.game_name, description=str(v.uid), value=str(v.uid)))
+        log_output(ctx=ctx, cmd="genshinstat get 複数登録")
         view = View(timeout=300, disable_on_timeout=True)
         view.add_item(select_uid_pulldown(ctx, select_options, v.game_name))
         view.add_item(UidModalButton(ctx))
