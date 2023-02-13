@@ -8,6 +8,7 @@ from view.quiz import addquiz
 
 class QuickPushQuiz(commands.Cog):
     def __init__(self, bot) -> None:
+        print("init")
         self.bot = bot
 
     # quiz系コマンド
