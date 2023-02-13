@@ -30,14 +30,15 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
         view: TicTacToe = self.view
+        print(self.uid)
 
         await interaction.response.edit_message(content="```読み込み中...（10秒ほどかかります）```", embed=None, view=None)
         self.style = discord.ButtonStyle.success
         # ラベル（名前）からIDを割り出す
         # 多分「名前：iD」ってなってるはず
         id = self.dict[self.label]
-        print(
-            f"\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nget - キャラ詳細")
+        log_output_interaction(interaction=interaction,
+                               cmd=f"genshinstat get キャラ取得 {self.uid}")
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
         # await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
@@ -51,7 +52,6 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             file, url = get_character_discord_file(
                 character_status=character_status
             )
-            print(url)
         except ArithmeticError as e:
             # 失敗したときの処理かく
             # 例外によって種類わける
@@ -62,7 +62,6 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             title=f"{self.label}",
             color=0x1e90ff,
         )
-        print(url)
         embed.set_image(url=url)
         await interaction.edit_original_message(
             content=None,
@@ -238,7 +237,6 @@ class GenshinCog(commands.Cog):
             ctx: discord.ApplicationContext,
     ):
         view = View(timeout=300, disable_on_timeout=True)
-        print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nget - キャラ情報取得")
         select_options: list[discord.SelectOption] = []
         userData = SQL.User.get_user_list(ctx.author.id)
 
