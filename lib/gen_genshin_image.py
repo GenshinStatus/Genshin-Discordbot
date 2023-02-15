@@ -459,7 +459,7 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
     # 聖遺物の背景を合成
     base_img.add_rotate_image(
         image_path=f"Image/artifact/{artifact.ster}.png",
-        box=(70, 70),
+        box=(66, 70),
         size=(220, 220),
         angle=angle,
     )
@@ -470,7 +470,7 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
             type="artifacts",
             filename=artifact.image.split("/")[-1][:-4]
         ),
-        size=(70, 70),
+        size=(66, 70),
         box=(70, 70),
         image_anchor=ImageAnchors.MIDDLE_MIDDLE
     )
@@ -478,17 +478,20 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
         box_size=(560, 100),
         default_font_size=16
     )
+    artifact_main_name_size = 20
+    if len(artifact.main_name) >= 7:
+        artifact_main_name_size = 15
     # 聖遺物のメインステータス名を合成
     img.draw_text(
         text=artifact.main_name,
-        position=(135, 30),
-        font_size=20,
+        position=(134, 30),
+        font_size=artifact_main_name_size,
         anchor=Anchors.RIGHT_DESCENDER
     )
     # 聖遺物のメインのステータスを合成
     img.draw_text(
         text=add_persent((artifact.main_name, artifact.main_value)),
-        position=(135, 70),
+        position=(134, 70),
         font_size=30,
         anchor=Anchors.RIGHT_DESCENDER
     )
