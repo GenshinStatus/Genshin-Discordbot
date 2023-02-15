@@ -22,11 +22,12 @@ l: list[discord.SelectOption] = []
 
 
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
-    def __init__(self, label: str, uid: str, dict, data):
+    def __init__(self, label: str, uid: str, dict, data, build_type: str):
         super().__init__(style=discord.ButtonStyle.secondary, label=label)
         self.dict = dict
         self.uid = uid
         self.data = data
+        self.build_type = build_type
 
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
@@ -40,6 +41,7 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         id = self.dict[self.label]
         log_output_interaction(interaction=interaction,
                                cmd=f"genshinstat get キャラ取得 {self.uid}")
+        build_type = self.view.build_type
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
         # await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
@@ -68,7 +70,7 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             content=None,
             embed=embed,
             file=file,
-            view=TicTacToe(self.data, self.uid)
+            view=TicTacToe(self.data, self.uid, build_type)
         )
 
 
@@ -88,7 +90,7 @@ class TicTacToe(discord.ui.View):
             dict.update({name: id})
         # 名前をラベル、ついでにdictとuidも送り付ける
         for v in names:
-            self.add_item(TicTacToeButton(v, uid, dict, data))
+            self.add_item(TicTacToeButton(v, uid, dict, data, build_type))
 
 # モーダルを表示させるボタン
 
