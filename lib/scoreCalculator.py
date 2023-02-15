@@ -20,7 +20,7 @@ def score(artifact_status: list[tuple[str, str]], build_type: str):
         elif k == SubTypes.CRITICAL_HURT:
             critical_hurt = Decimal(v)
     # forが終わったら計算
-    resalt = sum(special_status, critical, critical_hurt)
+    resalt = sum((special_status, critical, critical_hurt,))
     # 元素熟知の時のみ2で割って合わせます
     if build_type == SubTypes.ELEMENT_MASTERY:
         result /= Decimal(2)
