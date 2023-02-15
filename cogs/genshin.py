@@ -203,7 +203,7 @@ class BuildTypeSelecter(discord.ui.Select):
         view = self.view
         view.build_type = self.values[0]
 
-        interaction.response.edit_message(view=view)
+        await interaction.response.edit_message(view=view)
 
 
 class GenshinCog(commands.Cog):
