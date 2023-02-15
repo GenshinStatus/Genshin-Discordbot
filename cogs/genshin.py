@@ -12,6 +12,7 @@ import os
 from lib.getCharacterStatus import CharacterStatus
 from enums.substatus import SubTypes
 from lib.gen_genshin_image import get_character_discord_file
+from lib.log_output import log_output, log_output_interaction
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
