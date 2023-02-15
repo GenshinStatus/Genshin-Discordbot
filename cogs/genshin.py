@@ -143,7 +143,7 @@ class UidButton(discord.ui.Button):
 async def uid_respond(self, interaction: discord.Interaction, ctx, uid, build_type: str):
     await interaction.response.edit_message(content="アカウント情報読み込み中...", view=None)
     try:
-        url = f"https://enka.network/u/{uid}/__data.json"
+        url = f"https://enka.network/api/uid/{uid}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 resp = await response.json()
@@ -218,15 +218,15 @@ class GenshinCog(commands.Cog):
                 title=f"{resp['playerInfo']['nickname']}",
                 color=0x1e90ff,
                 description=f"uid: {uid}",
-                url=f"https://enka.network/u/{uid}/__data.json"
+                url=f"https://enka.network/api/uid/{uid}"
             )
             embed.set_image(url=f"attachment://{uid}.png")
             return embed
         except:
             embed = discord.Embed(
-                title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{f'https://enka.network/u/{uid}/__data.json'}",
+                title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{f'https://enka.network/api/uid/{uid}'}",
                 color=0x1e90ff,
-                url=f"https://enka.network/u/{uid}/__data.json"
+                url=f"https://enka.network/api/uid/{uid}"
             )
             return embed
 
