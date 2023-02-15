@@ -188,16 +188,16 @@ class BuildTypeSelecter(discord.ui.Select):
     def __init__(self) -> None:
         super().__init__(placeholder="ビルドタイプを選択してください。")
 
-        self.add_option(label=SubTypes.ATTACK_PERCENT,
-                        value=SubTypes.ATTACK_PERCENT)
-        self.add_option(label=SubTypes.CHARGE_EFFICIENCY,
-                        value=SubTypes.CHARGE_EFFICIENCY)
-        self.add_option(label=SubTypes.DEFENSE_PERCENT,
-                        value=SubTypes.DEFENSE_PERCENT)
-        self.add_option(label=SubTypes.HP_PERCENT,
-                        value=SubTypes.HP_PERCENT)
-        self.add_option(label=SubTypes.ELEMENT_MASTERY,
-                        value=SubTypes.ELEMENT_MASTERY)
+        self.add_option(label=SubTypes.ATTACK_PERCENT.value,
+                        value=SubTypes.ATTACK_PERCENT.value)
+        self.add_option(label=SubTypes.CHARGE_EFFICIENCY.value,
+                        value=SubTypes.CHARGE_EFFICIENCY.value)
+        self.add_option(label=SubTypes.DEFENSE_PERCENT.value,
+                        value=SubTypes.DEFENSE_PERCENT.value)
+        self.add_option(label=SubTypes.HP_PERCENT.value,
+                        value=SubTypes.HP_PERCENT.value)
+        self.add_option(label=SubTypes.ELEMENT_MASTERY.value,
+                        value=SubTypes.ELEMENT_MASTERY.value)
 
     async def callback(self, interaction: discord.Interaction):
         view = self.view
