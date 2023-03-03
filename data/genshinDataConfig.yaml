@@ -1623,7 +1623,7 @@
       'SkillOrder': [10781, 10782, 10785],
       'Skills':
         {
-          '10781': 'Skill_A_Catalyst_MD',
+          '10781': 'Skill_A_01',
           '10782': 'Skill_S_Alhatham_01',
           '10785': 'Skill_E_Alhatham_01',
         },
@@ -1631,6 +1631,54 @@
       'NameTextMapHash': 4002157418,
       'SideIconName': 'UI_AvatarIcon_Side_Alhatham',
       'QualityType': 'QUALITY_ORANGE',
+    },
+  '10000079':
+    {
+      'Element': 'Fire',
+      'Consts':
+        [
+          'UI_Talent_S_Dehya_01',
+          'UI_Talent_S_Dehya_02',
+          'UI_Talent_U_Dehya_01',
+          'UI_Talent_S_Dehya_03',
+          'UI_Talent_U_Dehya_02',
+          'UI_Talent_S_Dehya_04',
+        ],
+      'SkillOrder': [10791, 10792, 10795],
+      'Skills':
+        {
+          '10791': 'Skill_A_04',
+          '10792': 'Skill_S_Dehya_01',
+          '10795': 'Skill_E_Dehya_01',
+        },
+      'ProudMap': { '10791': 7931, '10792': 7932, '10795': 7939 },
+      'NameTextMapHash': 2360533154,
+      'SideIconName': 'UI_AvatarIcon_Side_Dehya',
+      'QualityType': 'QUALITY_ORANGE',
+    },
+  '10000080':
+    {
+      'Element': 'Ice',
+      'Consts':
+        [
+          'UI_Talent_S_Mika_01',
+          'UI_Talent_S_Mika_02',
+          'UI_Talent_U_Mika_01',
+          'UI_Talent_S_Mika_03',
+          'UI_Talent_U_Mika_02',
+          'UI_Talent_S_Mika_04',
+        ],
+      'SkillOrder': [10801, 10802, 10805],
+      'Skills':
+        {
+          '10801': 'Skill_A_03',
+          '10802': 'Skill_S_Mika_01',
+          '10805': 'Skill_E_Mika_01',
+        },
+      'ProudMap': { '10801': 8031, '10802': 8032, '10805': 8039 },
+      'NameTextMapHash': 231911858,
+      'SideIconName': 'UI_AvatarIcon_Side_Mika',
+      'QualityType': 'QUALITY_PURPLE',
     },
   '10000005-501':
     {

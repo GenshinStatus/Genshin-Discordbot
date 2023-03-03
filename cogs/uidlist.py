@@ -142,7 +142,7 @@ class isPabricEnterButton(discord.ui.Button):
 
 
 async def uid_set(ctx, uid):
-    url = f"https://enka.network/u/{uid}/__data.json"
+    url = f"https://enka.network/api/uid/{uid}"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             resp = await response.json()

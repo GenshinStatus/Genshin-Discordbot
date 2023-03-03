@@ -368,4 +368,13 @@
   IconName: UI_AvatarIcon_Alhatham
   NameId: '4002157418'
   sideIconName: UI_AvatarIcon_Side_Alhatham
-
+'10000079':
+  Element: Fire
+  IconName: UI_AvatarIcon_Dehya
+  NameId: '2360533154'
+  sideIconName: UI_AvatarIcon_Side_Dehya
+'10000080':
+  Element: Ice
+  IconName: UI_AvatarIcon_Mika
+  NameId: '231911858'
+  sideIconName: UI_AvatarIcon_Side_Mika
