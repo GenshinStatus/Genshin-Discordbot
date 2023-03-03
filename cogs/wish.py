@@ -185,9 +185,13 @@ class Wish_bataCog(commands.Cog):
         ctx: discord.ApplicationContext,
         content: Option(str, required=True, description="キャラ名（ひらかなでもOK）", )
     ):
-        picture = genshingen(content)
-        if picture == "https://bbs.hoyolab.com/hoyowiki/picture/character/None/avatar.png":
+        try:
+            picture = genshingen(content)
+        except:
             content = f" \"{content}\" は原神データベースに存在しません。"
+            embed = discord.Embed(title=content, color=0x1e90ff,)
+            await ctx.respond(embed=embed)
+            return
         embed = discord.Embed(title=content, color=0x1e90ff,)
         embed.set_image(url=picture)
         await ctx.respond(embed=embed)
@@ -430,8 +434,6 @@ class WishSkipButton(discord.ui.Button):
         view.add_item(GotoNextButton(self.interaction, self.DATA, 1))
         view.add_item(GotoResultButton(self.interaction, self.DATA))
         await interaction.response.edit_message(content=None, embed=get_wish_display_embed(self.DATA.final_resalt[0], self.DATA.resalt[0]), view=view)
-        print(
-            f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nwish get - スキップ")
 
 # 次のボタンを表示させるボタン
 

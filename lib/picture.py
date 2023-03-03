@@ -106,7 +106,7 @@ async def getProfile(uid, resp):
         img = add_text_to_image(
             img, player_name, font_size, font_color, height, width)
     except:
-        print("すてーたすめっせーじだよ")
+        pass
 
     # UID文字追加
     player_name = f"UID:{uid}"

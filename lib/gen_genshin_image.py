@@ -19,7 +19,6 @@ def add_persent(status: tuple):
     Returns:
         str: value
     """
-    print(status)
     if "会心" in status[0] or "チャ" in status[0] or "%" in status[0] or "元素ダメ" in status[0]:
         return f"{status[1]}%"
     return status[1]
@@ -802,7 +801,6 @@ def get_character_discord_file(character_status: CharacterStatus) -> tuple[File,
     image.save(fileio, format="png")
     fileio.seek(0)
     filename = "status.png"
-    print(f"attachment://{filename}")
     return (File(fileio, filename=filename), f"attachment://{filename}")
 
 
