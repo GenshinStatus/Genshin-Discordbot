@@ -565,7 +565,7 @@ def __create_artifact_list(artifact_list: list[artifact], element_color: tuple[i
     return img.get_image()
 
 
-def __create_total_socre(artifact_list: list[artifact], element_color: tuple[int, int, int, int]) -> Image.Image:
+def __create_total_socre(artifact_list: list[artifact], element_color: tuple[int, int, int, int], build_type: str) -> Image.Image:
     """聖遺物のトータルスコアの画像を生成します
 
     Args:
@@ -591,13 +591,14 @@ def __create_total_socre(artifact_list: list[artifact], element_color: tuple[int
     img.paste(bg, box=(0, 30))
     img.paste(color_bg, box=(30, 40))
     img.draw_text(
-        text="スコア合計",
-        position=(390, 40),
-        anchor=Anchors.RIGHT_MIDDLE
+        text=f"計算方式: {build_type}  スコア合計:",
+        position=(420, 40),
+        anchor=Anchors.RIGHT_MIDDLE,
+        font_size=25
     )
     img.draw_text(
         text=str(total_score),
-        position=(550, 40),
+        position=(550, 35),
         anchor=Anchors.RIGHT_MIDDLE
     )
     return img
@@ -654,7 +655,7 @@ def __create_weapon(weapon: weapon, element_color: tuple[int, int, int]) -> Imag
     return img.get_image()
 
 
-def __create_image(char_data: CharacterStatus) -> Image.Image:
+def __create_image(char_data: CharacterStatus, build_type: str) -> Image.Image:
     """キャラデータから画像を生成します。
 
     Args:
@@ -738,7 +739,8 @@ def __create_image(char_data: CharacterStatus) -> Image.Image:
         total_scoref: Future = pool.submit(
             __create_total_socre,
             artifact,
-            element_color
+            element_color,
+            build_type
         )
 
         weapon_dataf: Future = pool.submit(
@@ -787,7 +789,7 @@ def __create_image(char_data: CharacterStatus) -> Image.Image:
     return bg.get_image()
 
 
-def get_character_discord_file(character_status: CharacterStatus) -> tuple[File, str]:
+def get_character_discord_file(character_status: CharacterStatus, build_type: str) -> tuple[File, str]:
     """キャラクターステータスのオブジェクトからDiscord FileとPathを生成します。
 
     Args:
@@ -797,7 +799,7 @@ def get_character_discord_file(character_status: CharacterStatus) -> tuple[File,
         tuple[File, str]: Discord FileとPathの入ったTuple型
     """
 
-    image = __create_image(char_data=character_status)
+    image = __create_image(char_data=character_status, build_type=build_type)
     fileio = BytesIO()
     image.save(fileio, format="png")
     fileio.seek(0)
