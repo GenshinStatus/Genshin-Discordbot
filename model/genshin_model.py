@@ -15,6 +15,8 @@ from lib.gen_genshin_image import get_character_discord_file
 from lib.log_output import log_output, log_output_interaction
 from enums.ImageTypeEnums import ImageTypeEnums
 import view.genshin_view as genshin_view
+import lib.status_to_artifacter as status_to_artifacter
+import lib.Generater as Artifacter_gen
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
@@ -111,23 +113,22 @@ class GenshinUID():
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=image_overwrite_file)
         log_output_interaction(interaction=interaction,
                                cmd=f"genshinstat get キャラ取得 {self.uid} {button_data[label]}")
-        try:
-            # キャラクターのデータを取得します。
-            json = await CharacterStatus.get_json(uid=self.uid)
-            character_status = CharacterStatus.getCharacterStatus(
-                json=json, id=button_data[label], build_type=self.score_type)
+        # キャラクターのデータを取得します。
+        json = await CharacterStatus.get_json(uid=self.uid)
+        character_status = CharacterStatus.getCharacterStatus(
+            json=json, id=button_data[label], build_type=self.score_type)
 
-            embed = genshin_view.LoadingEmbed(description='画像を生成中...')
-            await interaction.edit_original_message(content=None, embed=embed, view=None)
-            # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
+        embed = genshin_view.LoadingEmbed(description='画像を生成中...')
+        await interaction.edit_original_message(content=None, embed=embed, view=None)
+
+        if self.image_type == "原神アーティファクター":
+            file, url = Artifacter_gen.get_character_discord_file(
+                status_to_artifacter.get_artifacter_data(uid=self.uid, data=character_status))
+        # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
+        else:
             file, url = get_character_discord_file(
                 character_status=character_status, build_type=self.score_type
             )
-        except ArithmeticError as e:
-            # 失敗したときの処理かく
-            # 例外によって種類わける
-            pass
-
         # 取得した画像でembed作成しれすぽんす
         embed = discord.Embed(
             title=f"{label}",
@@ -135,5 +136,6 @@ class GenshinUID():
         )
 
         embed.set_image(url=url)
+        embed.set_footer(text="軽量化のため、最初の画像生成から約5分後に操作ができなくなります。ご了承ください。")
 
         return embed, file
