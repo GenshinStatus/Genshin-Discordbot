@@ -249,6 +249,8 @@ class GenshinCog(commands.Cog):
         view.add_item(BuildTypeSelecter())
         #  登録してないときの処理
         if userData == []:
+            log_output(ctx=ctx, cmd="genshinstat get 未登録")
+            view = View(timeout=300, disable_on_timeout=True)
             view.add_item(uidlist.UidModalButton(ctx))
             view.add_item(UidModalButton(ctx))
             await ctx.respond(content="UIDが登録されていません。下のボタンから登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。", view=view, ephemeral=True)
@@ -256,6 +258,7 @@ class GenshinCog(commands.Cog):
 
         #  1つだけ登録してたときの処理
         if len(userData) == 1:
+            view = View(timeout=300, disable_on_timeout=True)
             view.add_item(UidButton(ctx, userData[0].uid))
             view.add_item(UidModalButton(ctx))
             await ctx.respond(content="UIDが登録されています。登録されているUIDを使うか、直接UIDを指定するか選んでください。", view=view, ephemeral=True)
@@ -265,6 +268,8 @@ class GenshinCog(commands.Cog):
         for v in userData:
             select_options.append(
                 discord.SelectOption(label=v.game_name, description=str(v.uid), value=str(v.uid)))
+        log_output(ctx=ctx, cmd="genshinstat get 複数登録")
+        view = View(timeout=300, disable_on_timeout=True)
         view.add_item(select_uid_pulldown(ctx, select_options, v.game_name))
         view.add_item(UidModalButton(ctx))
         await ctx.respond(content="UIDが複数登録されています。表示するUIDを選ぶか、ボタンから指定してください。", view=view, ephemeral=True)
