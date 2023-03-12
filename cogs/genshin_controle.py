@@ -19,17 +19,50 @@ import view.genshin_view as genshin_view
 
 
 async def get_profile(uid, interaction: discord.Interaction):
-    await interaction.response.edit_message(content='プロフィールをロード中...', view=None)
+    embed = genshin_view.LoadingEmbed(description='プロフィールをロード中...')
+    await interaction.response.edit_message(content=None, embed=embed, view=None)
     status = GenshinUID(str(uid))
-    status.data = await status.get_data()
+    try:
+        status.data = await status.get_data()
+    except FileNotFoundError:
+        embed = genshin_view.ErrorEmbed(
+            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。')
+        await interaction.edit_original_message(content=None, embed=embed)
+        return
+    except:
+        embed = genshin_view.ErrorEmbed(
+            description='現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。')
+        await interaction.edit_original_message(content=None, embed=embed)
+        return
+    if status.data == {}:
+        embed = genshin_view.ErrorEmbed(
+            description='現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。')
+        await interaction.edit_original_message(content=None, embed=embed)
+        return
+    if status.data == None:
+        embed = genshin_view.ErrorEmbed(
+            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。')
+        await interaction.edit_original_message(content=None, embed=embed)
+        return
+    embed = genshin_view.LoadingEmbed(description='キャラクターラインナップをロード中...')
+    await interaction.edit_original_message(content=None, embed=embed, view=None)
     status.character_list = status.get_character_list()
-    file = await status.get_profile_discord_file()
-    embed = status.get_profile_embed()
-    view = View(timeout=300, disable_on_timeout=True)
-    # view.add_item(genshin_view.ScoreTypeSelecter(status))
-    # view.add_item(genshin_view.ImageTypeSelecter(status))
-    view = status.get_character_button(view=view)
-    await interaction.edit_original_message(content=None, embed=embed, file=file, view=view)
+    embed = genshin_view.LoadingEmbed(description='画像を生成中...')
+    await interaction.edit_original_message(content=None, embed=embed, view=None)
+    try:
+        status = await status.get_profile_discord_file()
+        embed = status.get_profile_embed()
+        view = View(timeout=300, disable_on_timeout=True)
+        try:
+            view = status.get_character_button(view=view)
+        except:
+            embed.add_field(
+                name="エラー", value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
+            await interaction.edit_original_message(content=None, embed=embed, file=status.discord_file)
+            return
+        await interaction.edit_original_message(content=None, embed=embed, file=status.discord_file, view=view)
+    finally:
+        status.del_filepass()
 
 
 class UidModal(discord.ui.Modal):  # UIDを聞くモーダル
@@ -95,9 +128,12 @@ class GenshinCog(commands.Cog):
 
         #  登録してないときの処理
         if userData == []:
-            view.add_item(uidlist.UidModalButton())
+            view.add_item(uidlist.UidModalButton(ctx))
             view.add_item(UidModalButton())
-            await ctx.respond(content="UIDが登録されていません。下のボタンから登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。",
+            embed = genshin_view.MyEmbed(
+                title='UID選択', description='UIDが登録されていません。下のボタンから登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。')
+            await ctx.respond(content=None,
+                              embed=embed,
                               view=view,
                               ephemeral=True)
             return
@@ -106,7 +142,9 @@ class GenshinCog(commands.Cog):
         if len(userData) == 1:
             view.add_item(UidButton(userData[0].uid))
             view.add_item(UidModalButton())
-            await ctx.respond(content="UIDが登録されています。登録されているUIDを使うか、直接UIDを指定するか選んでください。", view=view, ephemeral=True)
+            embed = genshin_view.MyEmbed(
+                title='UID選択', description='UIDが登録されています。登録されているUIDを使うか、直接UIDを指定するか選んでください。')
+            await ctx.respond(content=None, embed=embed, view=view, ephemeral=True)
             return
 
         #  それ以外
@@ -115,7 +153,9 @@ class GenshinCog(commands.Cog):
                 discord.SelectOption(label=v.game_name, description=str(v.uid), value=str(v.uid)))
         view.add_item(select_uid_pulldown(select_options, v.game_name))
         view.add_item(UidModalButton())
-        await ctx.respond(content="UIDが複数登録されています。表示するUIDを選ぶか、ボタンから指定してください。", view=view, ephemeral=True)
+        embed = genshin_view.MyEmbed(
+            title='UID選択', description='UIDが複数登録されています。表示するUIDを選ぶか、ボタンから指定してください。')
+        await ctx.respond(content=None, embed=embed, view=view, ephemeral=True)
         return
 
 

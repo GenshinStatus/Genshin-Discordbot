@@ -43,6 +43,8 @@ class GenshinUID():
         url = f"https://enka.network/api/uid/{self.uid}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
+                if response.status == 400:
+                    raise FileNotFoundError
                 if response.status != 200:
                     return None
                 resp = await response.json()
@@ -57,7 +59,7 @@ class GenshinUID():
     async def get_profile_discord_file(self):
         self.file = await getPicture.getProfile(self.uid, self.data)
         self.discord_file = discord.File(self.file, f"{self.uid}.png")
-        return self.discord_file
+        return self
 
     def del_filepass(self):
         del self.discord_file
@@ -103,7 +105,10 @@ class GenshinUID():
         return view
 
     async def get_status_image(self, interaction: discord.Interaction, button_data, label):
-        await interaction.response.edit_message(content="```読み込み中...（10秒ほどかかります）```", embed=None, view=None)
+        image_overwrite_file = discord.File(
+            'Image/1x1.png', "image_overwrite_file.png")
+        embed = genshin_view.LoadingEmbed(description='キャラクターをロード中...')
+        await interaction.response.edit_message(content=None, embed=embed, view=None, file=image_overwrite_file)
         log_output_interaction(interaction=interaction,
                                cmd=f"genshinstat get キャラ取得 {self.uid} {button_data[label]}")
         try:
@@ -112,6 +117,8 @@ class GenshinUID():
             character_status = CharacterStatus.getCharacterStatus(
                 json=json, id=button_data[label], build_type=self.score_type)
 
+            embed = genshin_view.LoadingEmbed(description='画像を生成中...')
+            await interaction.edit_original_message(content=None, embed=embed, view=None)
             # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
             file, url = get_character_discord_file(
                 character_status=character_status, build_type=self.score_type
@@ -130,6 +137,3 @@ class GenshinUID():
         embed.set_image(url=url)
 
         return embed, file
-
-
-# class GenshinProfile():
