@@ -43,6 +43,7 @@ class character():
         ster: int,
         constellations: str,
         level: str,
+        love: int,
         base_hp: str,
         added_hp: str,
         base_attack: str,
@@ -66,6 +67,7 @@ class character():
         self.ster = ster
         self.constellations = constellations
         self.level = level
+        self.love = love
         self.base_hp = base_hp
         self.added_hp = added_hp
         self.base_attack = base_attack
@@ -97,6 +99,7 @@ class artifact():
         level: int,
         status: list[tuple[str, str]],
         score: Decimal,
+        artifact_set_name: str,
     ):
         self.main_name = main_name
         self.main_value = main_value
@@ -105,6 +108,7 @@ class artifact():
         self.level = level
         self.status = status
         self.score = score
+        self.artifact_set_name = artifact_set_name
 
 
 class weapon():
@@ -130,10 +134,11 @@ class weapon():
 
 
 class CharacterStatus():
-    def __init__(self, characterData: character, weaponData: weapon, artifactData: list[artifact]):
+    def __init__(self, characterData: character, weaponData: weapon, artifactData: list[artifact], build_type: str):
         self.character = characterData
         self.weapon = weaponData
         self.artifact = artifactData
+        self.build_type = build_type
 
     async def get_json(uid: int) -> dict:
         url = f"https://enka.network/api/uid/{uid}"
@@ -159,12 +164,11 @@ class CharacterStatus():
             raise FileNotFoundError()
         return chara
 
-    def getCharacterStatus(json: dict, id: str):
+    def getCharacterStatus(json: dict, id: str, build_type: str):
         """
         uidからキャラクター情報を読み取ります。
         《self.character》
         ・name キャラクター名
-
         """
         chara = CharacterStatus.pop_character_data(json, id)
 
@@ -201,6 +205,7 @@ class CharacterStatus():
         critical_damage = str(round(chara["fightPropMap"]["22"] * 100))
         charge_efficiency = str(round(chara["fightPropMap"]["23"] * 100))
         elemental_mastery = str(round(chara["fightPropMap"]["28"]))
+        love = int(round(chara["fetterInfo"]["expLevel"]))
 
         ELEMENT_DAMAGE_TYPES = {
             "30": "物理ダメージ",
@@ -245,6 +250,7 @@ class CharacterStatus():
             ster,
             constellations,
             level,
+            love,
             base_hp,
             added_hp,
             base_attack,
@@ -307,13 +313,18 @@ class CharacterStatus():
                 artifact_image = f'https://enka.network/ui/{n["flat"]["icon"]}.png'
                 artifact_main_name = genshinTextHash[n["flat"]
                                                      ["reliquaryMainstat"]["mainPropId"]]
+                artifact_set_name = genshinTextHash[n["flat"]
+                                                    ["setNameTextMapHash"]]
                 artifact_main_value = str(
                     n["flat"]["reliquaryMainstat"]["statValue"])
                 if "reliquarySubstats" in n["flat"]:
                     for b in n["flat"]["reliquarySubstats"]:
                         artifact_status.append(
                             (genshinTextHash[b["appendPropId"]], b["statValue"]))
-                artifact_status_score = genshinscore.score(artifact_status)
+                artifact_status_score = genshinscore.score(
+                    artifact_status,
+                    build_type
+                )
                 aritifact_level = n["reliquary"]["level"]-1
 
                 artifact_resalt.append(
@@ -325,6 +336,7 @@ class CharacterStatus():
                         aritifact_level,
                         artifact_status,
                         artifact_status_score,
+                        artifact_set_name,
                     ))
 
-        return CharacterStatus(character_resalt, weapon_resalt, artifact_resalt)
+        return CharacterStatus(character_resalt, weapon_resalt, artifact_resalt, build_type)

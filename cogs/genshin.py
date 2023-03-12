@@ -9,8 +9,9 @@ from typing import List
 import lib.sql as SQL
 import cogs.uidlist as uidlist
 import os
-from lib.gen_genshin_image import get_character_discord_file
 from lib.getCharacterStatus import CharacterStatus
+from enums.substatus import SubTypes
+from lib.gen_genshin_image import get_character_discord_file
 from lib.log_output import log_output, log_output_interaction
 
 charactersYaml = yaml(path='characters.yaml')
@@ -21,11 +22,12 @@ l: list[discord.SelectOption] = []
 
 
 class TicTacToeButton(discord.ui.Button["TicTacToe"]):
-    def __init__(self, label: str, uid: str, dict, data):
+    def __init__(self, label: str, uid: str, dict, data, build_type: str):
         super().__init__(style=discord.ButtonStyle.secondary, label=label)
         self.dict = dict
         self.uid = uid
         self.data = data
+        self.build_type = build_type
 
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
@@ -39,6 +41,7 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
         id = self.dict[self.label]
         log_output_interaction(interaction=interaction,
                                cmd=f"genshinstat get キャラ取得 {self.uid}")
+        build_type = self.view.build_type
         for child in self.view.children:
             child.style = discord.ButtonStyle.gray
         # await interaction.response.edit_message(content=content, embed=await getStat.get(self.uid, id), view=TicTacToe(self.data,self.uid))
@@ -46,7 +49,7 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             # キャラクターのデータを取得します。
             json = await CharacterStatus.get_json(uid=self.uid)
             character_status = CharacterStatus.getCharacterStatus(
-                json=json, id=id)
+                json=json, id=id, build_type=self.view.build_type)
 
             # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
             file, url = get_character_discord_file(
@@ -67,15 +70,16 @@ class TicTacToeButton(discord.ui.Button["TicTacToe"]):
             content=None,
             embed=embed,
             file=file,
-            view=TicTacToe(self.data, self.uid)
+            view=TicTacToe(self.data, self.uid, build_type)
         )
 
 
 class TicTacToe(discord.ui.View):
     children: List[TicTacToeButton]
 
-    def __init__(self, data, uid):
+    def __init__(self, data, uid, build_type: str):
         super().__init__(timeout=300, disable_on_timeout=True)
+        self.build_type = build_type
         names = []
         dict = {}
         # 入ってきたidを名前にしてリスト化
@@ -86,7 +90,7 @@ class TicTacToe(discord.ui.View):
             dict.update({name: id})
         # 名前をラベル、ついでにdictとuidも送り付ける
         for v in names:
-            self.add_item(TicTacToeButton(v, uid, dict, data))
+            self.add_item(TicTacToeButton(v, uid, dict, data, build_type))
 
 # モーダルを表示させるボタン
 
@@ -120,7 +124,7 @@ class UidModal(discord.ui.Modal):
     async def callback(self, interaction: discord.Interaction) -> None:
         uid = self.uid.value
         ctx = self.ctx
-        await uid_respond(self, interaction, ctx, uid)
+        await uid_respond(self, interaction, ctx, uid, self.view.build_type)
 
 # UIDを表示させるボタン
 
@@ -134,10 +138,11 @@ class UidButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         ctx = self.ctx
         uid = self.uid
-        await uid_respond(self, interaction, ctx, uid)
+        build_type = self.view.build_type
+        await uid_respond(self, interaction, ctx, uid, build_type)
 
 
-async def uid_respond(self, interaction: discord.Interaction, ctx, uid):
+async def uid_respond(self, interaction: discord.Interaction, ctx, uid, build_type: str):
     await interaction.response.edit_message(content="アカウント情報読み込み中...", view=None)
     try:
         url = f"https://enka.network/api/uid/{uid}"
@@ -162,7 +167,7 @@ async def uid_respond(self, interaction: discord.Interaction, ctx, uid):
         for id in resp["playerInfo"]["showAvatarInfoList"]:
             resalt.append(id["avatarId"])
         await interaction.edit_original_message(content="ボタンを生成中...")
-        await interaction.edit_original_message(content=None, embed=embed, view=TicTacToe(resalt, uid), file=hoge)
+        await interaction.edit_original_message(content=None, embed=embed, view=TicTacToe(resalt, uid, build_type), file=hoge)
     except:
         embed.add_field(name="エラー", value="キャラ情報を一切取得できませんでした。原神の設定を確認してください。")
         await interaction.edit_original_message(content=None, embed=embed, file=hoge)
@@ -178,7 +183,29 @@ class select_uid_pulldown(discord.ui.Select):
         self.game_name = game_name
 
     async def callback(self, interaction: discord.Interaction):
-        await uid_respond(self, interaction, self.ctx, self.values[0])
+        await uid_respond(self, interaction, self.ctx, self.values[0], self.view.build_type)
+
+
+class BuildTypeSelecter(discord.ui.Select):
+    def __init__(self) -> None:
+        super().__init__(placeholder="ビルドタイプを選択してください。")
+
+        self.add_option(label=SubTypes.ATTACK_PERCENT.value,
+                        value=SubTypes.ATTACK_PERCENT.value)
+        self.add_option(label=SubTypes.CHARGE_EFFICIENCY.value,
+                        value=SubTypes.CHARGE_EFFICIENCY.value)
+        self.add_option(label=SubTypes.DEFENSE_PERCENT.value,
+                        value=SubTypes.DEFENSE_PERCENT.value)
+        self.add_option(label=SubTypes.HP_PERCENT.value,
+                        value=SubTypes.HP_PERCENT.value)
+        self.add_option(label=SubTypes.ELEMENT_MASTERY.value,
+                        value=SubTypes.ELEMENT_MASTERY.value)
+
+    async def callback(self, interaction: discord.Interaction):
+        view = self.view
+        view.build_type = self.values[0]
+
+        await interaction.response.edit_message(view=view)
 
 
 class GenshinCog(commands.Cog):
@@ -216,6 +243,10 @@ class GenshinCog(commands.Cog):
         select_options: list[discord.SelectOption] = []
         userData = SQL.User.get_user_list(ctx.author.id)
 
+        view = View(timeout=300, disable_on_timeout=True)
+
+        view.build_type = SubTypes.ATTACK_PERCENT.value
+        view.add_item(BuildTypeSelecter())
         #  登録してないときの処理
         if userData == []:
             log_output(ctx=ctx, cmd="genshinstat get 未登録")
@@ -227,7 +258,6 @@ class GenshinCog(commands.Cog):
 
         #  1つだけ登録してたときの処理
         if len(userData) == 1:
-            log_output(ctx=ctx, cmd="genshinstat get 登録")
             view = View(timeout=300, disable_on_timeout=True)
             view.add_item(UidButton(ctx, userData[0].uid))
             view.add_item(UidModalButton(ctx))
