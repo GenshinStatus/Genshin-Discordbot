@@ -26,23 +26,31 @@ async def get_profile(uid, interaction: discord.Interaction):
         status.data = await status.get_data()
     except FileNotFoundError:
         embed = genshin_view.ErrorEmbed(
-            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。')
+            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。\n\n※Enka.network（データ提供元）のサーバーがダウンしている可能性もあります。最新の情報をご確認ください。')
         await interaction.edit_original_message(content=None, embed=embed)
+        log_output_interaction(interaction=interaction,
+                               cmd="/genshinstat get プロフィール UIDNotFound")
         return
     except:
         embed = genshin_view.ErrorEmbed(
             description='現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。')
         await interaction.edit_original_message(content=None, embed=embed)
+        log_output_interaction(interaction=interaction,
+                               cmd="/genshinstat get プロフィール メンテナンス")
         return
     if status.data == {}:
         embed = genshin_view.ErrorEmbed(
             description='現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。')
         await interaction.edit_original_message(content=None, embed=embed)
+        log_output_interaction(interaction=interaction,
+                               cmd="/genshinstat get プロフィール メンテナンス")
         return
     if status.data == None:
         embed = genshin_view.ErrorEmbed(
-            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。')
+            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。\n\n※Enka.network（データ提供元）のサーバーがダウンしている可能性もあります。最新の情報をご確認ください。')
         await interaction.edit_original_message(content=None, embed=embed)
+        log_output_interaction(interaction=interaction,
+                               cmd="/genshinstat get プロフィール UIDNotFound")
         return
     embed = genshin_view.LoadingEmbed(description='キャラクターラインナップをロード中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
@@ -63,6 +71,8 @@ async def get_profile(uid, interaction: discord.Interaction):
         await interaction.edit_original_message(content=None, embed=embed, file=status.discord_file, view=view)
     finally:
         status.del_filepass()
+    log_output_interaction(interaction=interaction,
+                           cmd="/genshinstat get プロフィールロード完了")
 
 
 class UidModal(discord.ui.Modal):  # UIDを聞くモーダル
@@ -136,6 +146,7 @@ class GenshinCog(commands.Cog):
                               embed=embed,
                               view=view,
                               ephemeral=True)
+            log_output(ctx=ctx, cmd="/genshinstat get 未登録")
             return
 
         #  1つだけ登録してたときの処理
@@ -145,6 +156,7 @@ class GenshinCog(commands.Cog):
             embed = genshin_view.MyEmbed(
                 title='UID選択', description='UIDが登録されています。登録されているUIDを使うか、直接UIDを指定するか選んでください。')
             await ctx.respond(content=None, embed=embed, view=view, ephemeral=True)
+            log_output(ctx=ctx, cmd="/genshinstat get 登録済")
             return
 
         #  それ以外
@@ -156,6 +168,7 @@ class GenshinCog(commands.Cog):
         embed = genshin_view.MyEmbed(
             title='UID選択', description='UIDが複数登録されています。表示するUIDを選ぶか、ボタンから指定してください。')
         await ctx.respond(content=None, embed=embed, view=view, ephemeral=True)
+        log_output(ctx=ctx, cmd="/genshinstat get 複数登録済")
         return
 
 

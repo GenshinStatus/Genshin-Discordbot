@@ -17,6 +17,7 @@ from enums.ImageTypeEnums import ImageTypeEnums
 import view.genshin_view as genshin_view
 import lib.status_to_artifacter as status_to_artifacter
 import lib.Generater as Artifacter_gen
+from lib.log_exception import LogException
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
@@ -109,26 +110,65 @@ class GenshinUID():
     async def get_status_image(self, interaction: discord.Interaction, button_data, label):
         image_overwrite_file = discord.File(
             'Image/1x1.png', "image_overwrite_file.png")
+
+        # ローディングメッセージ
         embed = genshin_view.LoadingEmbed(description='キャラクターをロード中...')
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=image_overwrite_file)
         log_output_interaction(interaction=interaction,
                                cmd=f"genshinstat get キャラ取得 {self.uid} {button_data[label]}")
+
         # キャラクターのデータを取得します。
         json = await CharacterStatus.get_json(uid=self.uid)
-        character_status = CharacterStatus.getCharacterStatus(
-            json=json, id=button_data[label], build_type=self.score_type)
 
+        try:
+            character_status = CharacterStatus.getCharacterStatus(
+                json=json, id=button_data[label], build_type=self.score_type)
+        except FileNotFoundError as e:
+            embed = genshin_view.ErrorEmbed(
+                description="キャラクターのステータスを取得できませんでした。\n原神の設定でキャラクター詳細を非公開にしていることが原因です。\nキャラクター詳細を公開設定に変更してからもう一度お試しください。")
+            embed.set_image(url="attachment://character_status_error.png")
+            file = discord.File("Image/character_status_error.png",
+                                filename="character_status_error.png")
+            log_output_interaction(
+                interaction=interaction, cmd="/genshinstat get 画像生成 非公開エラー")
+            return embed, file
+
+        # ローディングメッセージ
         embed = genshin_view.LoadingEmbed(description='画像を生成中...')
         await interaction.edit_original_message(content=None, embed=embed, view=None)
 
         if self.image_type == "原神アーティファクター":
-            file, url = Artifacter_gen.get_character_discord_file(
-                status_to_artifacter.get_artifacter_data(uid=self.uid, data=character_status))
+            try:
+                file, url = Artifacter_gen.get_character_discord_file(
+                    status_to_artifacter.get_artifacter_data(uid=self.uid, data=character_status))
+            except Exception as e:
+                embed = genshin_view.ErrorEmbed(
+                    description="何らかの原因で画像生成ができませんでした。\nお手数をおかけしますが、```/genbot report```から報告をお願い致します。")
+                embed.set_image(url="attachment://generate_status_error.png")
+                file = discord.File(
+                    'Image/1x1.png', filename="generate_status_error.png")
+                LogException(e)
+                log_output_interaction(
+                    interaction=interaction, cmd="/genshinstat get 画像生成 Artifacter エラー")
+                return embed, file
+
         # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
         else:
-            file, url = get_character_discord_file(
-                character_status=character_status, build_type=self.score_type
-            )
+            try:
+                file, url = get_character_discord_file(
+                    character_status=character_status, build_type=self.score_type
+                )
+            except Exception as e:
+                embed = genshin_view.ErrorEmbed(
+                    description="何らかの原因で画像生成ができませんでした。\nお手数をおかけしますが、```/genbot report```から報告をお願い致します。")
+                embed.set_image(url="attachment://generate_status_error.png")
+                file = discord.File(
+                    'Image/1x1.png', filename="generate_status_error.png")
+                LogException(e)
+                log_output_interaction(
+                    interaction=interaction, cmd="/genshinstat get 画像生成 Default エラー")
+                return embed, file
+
         # 取得した画像でembed作成しれすぽんす
         embed = discord.Embed(
             title=f"{label}",
@@ -138,4 +178,6 @@ class GenshinUID():
         embed.set_image(url=url)
         embed.set_footer(text="軽量化のため、最初の画像生成から約5分後に操作ができなくなります。ご了承ください。")
 
+        log_output_interaction(interaction=interaction,
+                               cmd=f"/genshinstat get 画像生成 完了 {self.image_type} {self.score_type}")
         return embed, file

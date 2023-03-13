@@ -219,7 +219,7 @@ def generation(data):
     def config_font(size): return ImageFont.truetype(
         f'{cwd}/artifacter/Assets/ja-jp.ttf', size)
 
-    Base = Image.open(f'{cwd}/artifacter/Base/{element}.png')
+    Base = Image.open(f'{cwd}/artifacter/Base/{element}.png').convert("RGBA")
 
     # キャラクター
     CharacterCostume = CharacterData.get('Costume')
@@ -350,7 +350,6 @@ def generation(data):
     disper = ['会心率', '会心ダメージ', '攻撃パーセンテージ', '防御パーセンテージ', 'HPパーセンテージ', '水元素ダメージ', '物理ダメージ', '風元素ダメージ',
               '岩元素ダメージ', '炎元素ダメージ', '与える治癒効果', '与える治療効果', '雷元素ダメージ', '氷元素ダメージ', '草元素ダメージ', '与える治癒効果', '元素チャージ効率']
     StateOP = ('HP', '攻撃力', "防御力", "元素熟知", "会心率", "会心ダメージ", "元素チャージ効率")
-    print(CharacterStatus)
     for k, v in CharacterStatus.items():
         if k in ['氷元素ダメージ', '水元素ダメージ', '岩元素ダメージ', '草元素ダメージ', '風元素ダメージ', '炎元素ダメージ', '物理ダメージ', '与える治癒効果', '雷元素ダメージ'] and v == 0:
             k = f'{element}元素ダメージ'
@@ -439,7 +438,6 @@ def generation(data):
     atftype = list()
     for i, parts in enumerate(['flower', "wing", "clock", "cup", "crown"]):
         details = ArtifactsData.get(parts)
-        print(details)
 
         if not details:
             continue
@@ -603,5 +601,4 @@ def get_character_discord_file(data) -> tuple[File, str]:
     image.save(fileio, format="png")
     fileio.seek(0)
     filename = "status.png"
-    print(f"attachment://{filename}")
     return (File(fileio, filename=filename), f"attachment://{filename}")
