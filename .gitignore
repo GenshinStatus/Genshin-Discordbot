@@ -2,6 +2,5 @@
 .vscode
 picture
 google
-Image
 *.pyc
 test.py
