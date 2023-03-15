@@ -143,7 +143,7 @@ class GenshinUID():
                     status_to_artifacter.get_artifacter_data(uid=self.uid, data=character_status))
             except Exception as e:
                 embed = genshin_view.ErrorEmbed(
-                    description="何らかの原因で画像生成ができませんでした。\nお手数をおかけしますが、```/genbot report```から報告をお願い致します。")
+                    description="何らかの原因で画像生成ができませんでした。\nお手数をおかけしますが、```/genbot report```から報告をお願い致します。\n\n**※Artifacter版画像生成では一部の原神のデータを使用できない場合があります（一部の新武器や新キャラ等）。ご理解下さい。**")
                 embed.set_image(url="attachment://generate_status_error.png")
                 file = discord.File(
                     'Image/1x1.png', filename="generate_status_error.png")

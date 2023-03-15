@@ -54,7 +54,17 @@ async def get_profile(uid, interaction: discord.Interaction):
         return
     embed = genshin_view.LoadingEmbed(description='キャラクターラインナップをロード中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
-    status.character_list = status.get_character_list()
+    try:
+        status.character_list = status.get_character_list()
+    except:
+        embed = genshin_view.ErrorEmbed(
+            description="キャラクターのリストを取得できませんでした。\n原神の設定でプロフィールにキャラクターを掲載していないことが原因です。\nプロフィールにキャラクターを掲載してからもう一度お試しください。")
+        embed.set_image(
+            url="https://cdn.discordapp.com/attachments/1069630896367480962/1069631267873751051/image.png")
+        await interaction.edit_original_message(content=None, embed=embed, view=None)
+        log_output_interaction(
+            interaction=interaction, cmd="/genshinstat get 画像生成 未掲載エラー")
+        return
     embed = genshin_view.LoadingEmbed(description='画像を生成中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
     try:
