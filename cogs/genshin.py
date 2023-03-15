@@ -83,7 +83,7 @@ async def get_profile(uid, interaction: discord.Interaction):
         status.del_filepass()
     log_output_interaction(interaction=interaction,
                            cmd="/genshinstat get プロフィールロード完了")
-
+                           
 
 class UidModal(discord.ui.Modal):  # UIDを聞くモーダル
     def __init__(self):
@@ -119,7 +119,6 @@ class UidButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await get_profile(self.uid, interaction)
 
-
 class select_uid_pulldown(discord.ui.Select):
     def __init__(self, selectOptions: list[discord.SelectOption], game_name):
         super().__init__(placeholder="表示するUIDを選択してください", options=selectOptions)
@@ -135,7 +134,7 @@ class GenshinCog(commands.Cog):
         print('genshin初期化')
         self.bot = bot
 
-    genshin = SlashCommandGroup('genshinstat', 'test')
+genshin = SlashCommandGroup('genshinstat', 'test')
 
     @genshin.command(name="get", description="UIDからキャラ情報を取得し、画像を生成します")
     async def genshin_get(
