@@ -224,7 +224,6 @@ class CharacterStatus():
         elemental_value = None
         for n, fuga in ELEMENT_DAMAGE_TYPES.items():
             if round(chara["fightPropMap"][n]*100) > 0:
-                print(n)
                 elemental_name = fuga
                 elemental_value = f'{str(round(chara["fightPropMap"][n]*100))}%'
                 buf += round(chara["fightPropMap"][n])

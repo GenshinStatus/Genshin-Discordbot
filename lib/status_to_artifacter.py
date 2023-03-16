@@ -9,8 +9,6 @@ TEXTFIX = {
 
 
 def text_fix(input_text):
-    if not isinstance(input_text, str):
-        raise ValueError("Input value must be a string.")
     return TEXTFIX.get(input_text, input_text)
 
 
@@ -48,6 +46,14 @@ def get_artifacter_data(uid, data):
     else:
         constellations = character.constellations
 
+    try:
+        elemental_buff_name = str(text_fix(character.elemental_name))
+        elemental_buff_value = float(
+            character.elemental_value.replace('%', ''))
+    except:
+        elemental_buff_name = ""
+        elemental_buff_value = ""
+
     result = {
         "uid": int(uid),
         "input": "",
@@ -64,8 +70,7 @@ def get_artifacter_data(uid, data):
                 "会心率": float(character.critical_rate),
                 "会心ダメージ": float(character.critical_damage),
                 "元素チャージ効率": float(character.charge_efficiency),
-                str(text_fix(character.elemental_name)): float(character.elemental_value.replace('%', '')),
-
+                elemental_buff_name: elemental_buff_value
             },
             "Talent": {
                 "通常": int(character.skill_list_level[0]),
