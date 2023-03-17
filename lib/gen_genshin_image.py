@@ -176,7 +176,7 @@ def __create_status_add(base: int, add: int, type: str, path: str) -> Image.Imag
     return img.get_image()
 
 
-def __create_status(status: int, type: str, path: str, suffix="%") -> Image.Image:
+def __create_status(status: float, type: str, path: str, suffix="%") -> Image.Image:
     """キャラクターの個別のステータスの画像を取得します。suffixは％などの文字列です
 
     Args:
@@ -222,9 +222,9 @@ def __create_full_status(
     df_base: int,
     df_add: int,
     mas: int,
-    cri: int,
-    cri_dmg: int,
-    mas_chg: int,
+    cri: float,
+    cri_dmg: float,
+    mas_chg: float,
     elmt: str = None,
     elmt_dmg: int = None,
     element_icon: str = None,
@@ -239,9 +239,9 @@ def __create_full_status(
         df_base (int): ベース防御
         df_add (int): 装備防御
         mas (int): 元素熟知
-        cri (int): 会心率
-        cri_dmg (int): 会心ダメージ率
-        mas_chg (int): 元素チャージ
+        cri (float): 会心率
+        cri_dmg (float): 会心ダメージ率
+        mas_chg (float): 元素チャージ
         elmt (str, optional): 元素タイプ. Defaults to None.
         elmt_dmg (int, optional): 元素倍率. Defaults to None.
 
@@ -712,9 +712,9 @@ def __create_image(char_data: CharacterStatus, build_type: str) -> Image.Image:
             int(character.base_defense),
             int(character.added_defense),
             int(character.elemental_mastery),
-            int(character.critical_rate),
-            int(character.critical_damage),
-            int(character.charge_efficiency),
+            float(character.critical_rate),
+            float(character.critical_damage),
+            float(character.charge_efficiency),
             character.elemental_name,
             character.elemental_value,
             ELEMENT_ICON[character.elemental_name]

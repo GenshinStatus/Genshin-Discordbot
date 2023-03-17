@@ -4,6 +4,16 @@ from lib.yamlutil import yaml
 import lib.scoreCalculator as genshinscore
 import urllib
 
+ELEMENT = {
+    "Wind": "風",
+    "Rock": "岩",
+    "Electric": "雷",
+    "Grass": "草",
+    "Water": "水",
+    "Fire": "炎",
+    "Ice": "氷"
+}
+
 
 def getCharacterPicture(name):
     global words
@@ -201,9 +211,9 @@ class CharacterStatus():
         added_defense = str(
             round(chara["fightPropMap"]["2002"]) - round(chara["fightPropMap"]["7"]))
 
-        critical_rate = str(round(chara["fightPropMap"]["20"] * 100))
-        critical_damage = str(round(chara["fightPropMap"]["22"] * 100))
-        charge_efficiency = str(round(chara["fightPropMap"]["23"] * 100))
+        critical_rate = str(round(chara["fightPropMap"]["20"] * 100, 1))
+        critical_damage = str(round(chara["fightPropMap"]["22"] * 100, 1))
+        charge_efficiency = str(round(chara["fightPropMap"]["23"] * 100, 1))
         elemental_mastery = str(round(chara["fightPropMap"]["28"]))
         love = int(round(chara["fetterInfo"]["expLevel"]))
 
@@ -218,16 +228,20 @@ class CharacterStatus():
             "46": "氷元素ダメージ"
         }
 
-        buf = 1
+        elemental_list = []
         fuga = None
         elemental_name = None
         elemental_value = None
         for n, fuga in ELEMENT_DAMAGE_TYPES.items():
             if round(chara["fightPropMap"][n]*100) > 0:
+                elemental_list.append(round(chara["fightPropMap"][n]*100))
                 elemental_name = fuga
-                elemental_value = f'{str(round(chara["fightPropMap"][n]*100))}%'
-                buf += round(chara["fightPropMap"][n])
-                break
+                elemental_value = f'{str(round(chara["fightPropMap"][n]*100 , 1))}%'
+
+        if len([x for x in elemental_list if x != 0]) >= 2:
+            reverse_dict = {v: k for k, v in ELEMENT_DAMAGE_TYPES.items()}
+            elemental_name = f"{ELEMENT[element]}元素ダメージ"
+            elemental_value = f'{str(round(chara["fightPropMap"][reverse_dict.get(elemental_name)]*100 , 1))}%'
 
         skill_list_image = []
         skill_list_level = []
