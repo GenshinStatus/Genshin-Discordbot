@@ -96,12 +96,12 @@ def get_artifacter_data(uid, data):
         },
         "Score": {
             "State": text_fix(data.build_type),
-            "total": float(round(total_score, 1)),
-            "flower": float(artifact[0].score),
-            "wing": float(artifact[1].score),
-            "clock": float(artifact[2].score),
-            "cup": float(artifact[3].score),
-            "crown": float(artifact[4].score)
+            "total": round(total_score, 1),
+            "flower": artifact[0].score,
+            "wing": artifact[1].score,
+            "clock": artifact[2].score,
+            "cup": artifact[3].score,
+            "crown": artifact[4].score
         },
         "Artifacts": {
             "flower": {

@@ -149,7 +149,7 @@ class GenshinUID():
                     'Image/1x1.png', filename="generate_status_error.png")
                 LogException(e)
                 log_output_interaction(
-                    interaction=interaction, cmd="/genshinstat get 画像生成 Artifacter エラー")
+                    interaction=interaction, cmd=f"/genshinstat get 画像生成 Artifacter エラー {self.score_type}")
                 return embed, file
 
         # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
@@ -166,7 +166,7 @@ class GenshinUID():
                     'Image/1x1.png', filename="generate_status_error.png")
                 LogException(e)
                 log_output_interaction(
-                    interaction=interaction, cmd="/genshinstat get 画像生成 Default エラー")
+                    interaction=interaction, cmd=f"/genshinstat get 画像生成 Default エラー {self.score_type}")
                 return embed, file
 
         # 取得した画像でembed作成しれすぽんす
