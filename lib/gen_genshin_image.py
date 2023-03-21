@@ -574,6 +574,7 @@ def __create_total_socre(artifact_list: list[artifact], element_color: tuple[int
     Returns:
         Image.Image: 聖遺物のトータルスコア画像
     """
+    build_type = build_type.replace(" ver2", "")
     total_score = sum([v.score for v in artifact_list])
     mask = Image.new(mode="L", size=(600, 50), color=0)
     draw = ImageDraw.Draw(mask)

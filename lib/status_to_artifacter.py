@@ -95,7 +95,7 @@ def get_artifacter_data(uid, data):
             }
         },
         "Score": {
-            "State": text_fix(data.build_type),
+            "State": text_fix(data.build_type.replace(" ver2", "")),
             "total": round(total_score, 1),
             "flower": artifact[0].score,
             "wing": artifact[1].score,
