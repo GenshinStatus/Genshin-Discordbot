@@ -137,11 +137,21 @@ class GenshinCog(commands.Cog):
 
     genshin = SlashCommandGroup('genshinstat', 'test')
 
+    @commands.slash_command(name="status", description="UIDからキャラ情報を取得し、画像を生成します")
+    async def status_command(
+            self,
+            ctx: discord.ApplicationContext
+    ):
+        await GenshinCog.input_uid(self, ctx)
+
     @genshin.command(name="get", description="UIDからキャラ情報を取得し、画像を生成します")
     async def genshin_get(
             self,
             ctx: discord.ApplicationContext,
     ):
+        await GenshinCog.input_uid(self, ctx)
+
+    async def input_uid(self, ctx):
         view = View(timeout=300, disable_on_timeout=True)
         select_options: list[discord.SelectOption] = []
         userData = SQL.User.get_user_list(ctx.author.id)
