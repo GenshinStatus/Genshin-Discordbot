@@ -231,6 +231,7 @@ class ReportModal(discord.ui.Modal):
                 name="サーバー", value=f"{interaction.guild.name}\n{interaction.guild.id}")
             embed.add_field(name="\n内容", value=self.content)
             embed.add_field(name="詳細", value=f"```{self.resalt}```")
+
             channel = await main.sendChannel(1021082211618930801)
             await channel.send(embed=embed)
             await interaction.edit_original_message(content=f"不具合を送信しました！ご協力ありがとうございます！\nbugTrackName:{self.content}", view=None)

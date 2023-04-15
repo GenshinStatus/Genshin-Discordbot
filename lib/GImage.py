@@ -74,7 +74,7 @@ class GImage:
         self,
         image_path: str = None,
         box_size: tuple[int, int] = None,
-        default_font_path: str = "C:\\Users\\Cinnamon\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ja-jp.ttf",
+        default_font_path: str = "./fonts/ja-jp.ttf",
         default_font_size: int = 30,
         default_font_color: Colors = Colors.WHITE,
     ) -> None:

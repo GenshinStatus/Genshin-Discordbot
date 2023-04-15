@@ -31,7 +31,7 @@ def downloadPicture(url):
 def add_text_to_image(img, text, font_size, font_color, height, width, max_length=740):
     position = (width, height)
     font = ImageFont.truetype(
-        font="C:\\Users\\Cinnamon\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ja-jp.ttf", size=font_size)
+        font="./fonts/ja-jp.ttf", size=font_size)
     draw = ImageDraw.Draw(img)
     if draw.textsize(text, font=font)[0] > max_length:
         while draw.textsize(text + '…', font=font)[0] > max_length:
@@ -79,7 +79,7 @@ async def getProfile(uid, resp):
     base_img = Image.open("Image/ProfileImage.png").convert('RGBA').copy()
     # バグ対策に背景を完全透過させたものを生成
     base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
-    #base_img.paste(icon, (80, 134), icon)
+    # base_img.paste(icon, (80, 134), icon)
 
     # アイコン合成
     # バグ対策背景画像にアルファ合成

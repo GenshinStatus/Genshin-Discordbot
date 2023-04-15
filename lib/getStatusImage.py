@@ -27,7 +27,7 @@ def downloadPicture(url):
 def add_text_to_image(img, text, font_size, font_color, height, width, max_length=740, anchor=None, align=None):
     position = (width, height)
     font = ImageFont.truetype(
-        font="C:\\Users\\Cinnamon\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ja-jp.ttf", size=font_size)
+        font="./fonts/ja-jp.ttf", size=font_size)
     draw = ImageDraw.Draw(img)
     if draw.textsize(text, font=font)[0] > max_length:
         while draw.textsize(text + '…', font=font)[0] > max_length:
@@ -78,7 +78,7 @@ async def getCharacterImage(uid, id, interaction):
         f"Image/status_bata/{characterData.character.element}.png").convert('RGBA').copy()
     # バグ対策に背景を完全透過させたものを生成
     base_img_clear = Image.new("RGBA", base_img.size, (255, 255, 255, 0))
-    #base_img.paste(icon, (80, 134), icon)
+    # base_img.paste(icon, (80, 134), icon)
 
     # アイコン合成
     # 背景の画像サイズを/2して中心座標を取得したものから、アイコンのサイズ/2を引く
@@ -358,7 +358,7 @@ async def getCharacterImage(uid, id, interaction):
         base_img_clear = Image.new(
             "RGBA", base_img.size, (255, 255, 255, 0))
         # 円形用に合成
-        #icon = mask_circle_transparent(icon, 2)
+        # icon = mask_circle_transparent(icon, 2)
         icon = icon.rotate(random.randint(0, 360), resample=Image.BICUBIC)
         # バグ対策背景画像にアルファ合成
         base_img_clear.paste(icon, (1275, -82+hogehoge*120))

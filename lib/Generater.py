@@ -235,7 +235,7 @@ def generation(data):
                 f'{cwd}/artifacter/character/{CharacterName}/avatar.png').convert("RGBA")
 
     Shadow = Image.open(
-        f'{cwd}/artifacter/Assets/shadow.png').resize(Base.size)
+        f'{cwd}/artifacter/Assets/Shadow.png').resize(Base.size)
     CharacterImage = CharacterImage.crop((289, 0, 1728, 1024))
     CharacterImage = CharacterImage.resize(
         (int(CharacterImage.width*0.75), int(CharacterImage.height*0.75)))
@@ -358,29 +358,33 @@ def generation(data):
         except:
             i = 7
             D.text((844, 67+i*70), k, font=config_font(26))
-            opicon = Image.open(
-                f'{cwd}/artifacter/emotes/{k}.png').resize((40, 40))
-            oppaste = Image.new('RGBA', Base.size, (255, 255, 255, 0))
-            opmask = opicon.copy()
-            oppaste.paste(opicon, (789, 65+i*70))
-            Base = Image.alpha_composite(Base, oppaste)
+            try:
+                opicon = Image.open(
+                    f'{cwd}/artifacter/emotes/{k}.png').resize((40, 40))
+                oppaste = Image.new('RGBA', Base.size, (255, 255, 255, 0))
+                opmask = opicon.copy()
+                oppaste.paste(opicon, (789, 65+i*70))
+                Base = Image.alpha_composite(Base, oppaste)
+            except:
+                pass
             D = ImageDraw.Draw(Base)
 
-        if k not in disper:
-            statelen = D.textlength(format(v, ","), config_font(26))
-            D.text((1360-statelen, 67+i*70),
-                   format(v, ","), font=config_font(26))
-        else:
-            statelen = D.textlength(f'{float(v)}%', config_font(26))
-            D.text((1360-statelen, 67+i*70),
-                   f'{float(v)}%', font=config_font(26))
+        if k != "":
+            if k not in disper:
+                statelen = D.textlength(format(v, ","), config_font(26))
+                D.text((1360-statelen, 67+i*70),
+                       format(v, ","), font=config_font(26))
+            else:
+                statelen = D.textlength(f'{float(v)}%', config_font(26))
+                D.text((1360-statelen, 67+i*70),
+                       f'{float(v)}%', font=config_font(26))
 
-        if k in ['HP', '防御力', '攻撃力']:
-            HPpls, HPbase, HPsize, HPbsize = genbasetext(k)
-            D.text((1360-HPsize, 97+i*70), HPpls,
-                   fill=(0, 255, 0, 180), font=config_font(12))
-            D.text((1360-HPsize-HPbsize-1, 97+i*70), HPbase,
-                   font=config_font(12), fill=(255, 255, 255, 180))
+            if k in ['HP', '防御力', '攻撃力']:
+                HPpls, HPbase, HPsize, HPbsize = genbasetext(k)
+                D.text((1360-HPsize, 97+i*70), HPpls,
+                       fill=(0, 255, 0, 180), font=config_font(12))
+                D.text((1360-HPsize-HPbsize-1, 97+i*70), HPbase,
+                       font=config_font(12), fill=(255, 255, 255, 180))
 
     D.text((1582, 47), WeaponName, font=config_font(26))
     wlebellen = D.textlength(f'Lv.{WeaponLevel}', font=config_font(24))

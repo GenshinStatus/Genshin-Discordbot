@@ -12,19 +12,36 @@ class ScoreTypeSelecter(discord.ui.Select):
 
         self.add_option(label=SubTypes.ATTACK_PERCENT.value,
                         value=SubTypes.ATTACK_PERCENT.value,
-                        description='攻撃力% + 会心率×2 + 会心ダメージ')
+                        description='攻撃力% + 会心率×2 + 会心ダメージ',
+                        emoji="<:ATTACK_PERCENT:971462863338213396>")
         self.add_option(label=SubTypes.CHARGE_EFFICIENCY.value,
                         value=SubTypes.CHARGE_EFFICIENCY.value,
-                        description='元チャ効率% + 会心率×2 + 会心ダメージ')
+                        description='元チャ効率% + 会心率×2 + 会心ダメージ',
+                        emoji="<:CHARGE_EFFICIENCY:971462863229190154>")
+        self.add_option(label=f"{SubTypes.CHARGE_EFFICIENCY.value} ver2",
+                        value=f"{SubTypes.CHARGE_EFFICIENCY.value} ver2",
+                        description='元チャ効率%×0.9 + 会心率×2 + 会心ダメージ',
+                        emoji="<:CHARGE_EFFICIENCY:971462863229190154>")
         self.add_option(label=SubTypes.DEFENSE_PERCENT.value,
                         value=SubTypes.DEFENSE_PERCENT.value,
-                        description='防御力% + 会心率×2 + 会心ダメージ')
+                        description='防御力% + 会心率×2 + 会心ダメージ',
+                        emoji="<:DEFENSE_PERCENT:971462863250153502>")
+        self.add_option(label=f"{SubTypes.DEFENSE_PERCENT.value} ver2",
+                        value=f"{SubTypes.DEFENSE_PERCENT.value} ver2",
+                        description='防御力%×0.8 + 会心率×2 + 会心ダメージ',
+                        emoji="<:DEFENSE_PERCENT:971462863250153502>")
         self.add_option(label=SubTypes.HP_PERCENT.value,
                         value=SubTypes.HP_PERCENT.value,
-                        description='HP% + 会心率×2 + 会心ダメージ')
+                        description='HP% + 会心率×2 + 会心ダメージ',
+                        emoji="<:HP_PERCENT:971462863334035466>")
         self.add_option(label=SubTypes.ELEMENT_MASTERY.value,
                         value=SubTypes.ELEMENT_MASTERY.value,
-                        description='（元素熟知 + 会心率×2 + 会心ダメージ）÷2')
+                        description='（元素熟知 + 会心率×2 + 会心ダメージ）÷2',
+                        emoji="<:ELEMENT_MASTERY:971462862948151358>")
+        self.add_option(label=f"{SubTypes.ELEMENT_MASTERY.value} ver2",
+                        value=f"{SubTypes.ELEMENT_MASTERY.value} ver2",
+                        description='元素熟知×0.25 + 会心率×2 + 会心ダメージ',
+                        emoji="<:ELEMENT_MASTERY:971462862948151358>")
         self.status = status
 
     async def callback(self, interaction: discord.Interaction):

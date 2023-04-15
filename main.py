@@ -1,17 +1,13 @@
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 import os
-import sys
 from lib.sql import Guild
 import asyncio
 import yaml_trans
 
-bot = commands.Bot()
+bot = commands.AutoShardedBot()
 # debug_guilds=[879288794560471050]
-print(type(sys.argv[1]))
-load_dotenv()
-TOKEN = os.getenv(f"TOKEN{str(sys.argv[1])}")
+TOKEN = os.getenv(f"TOKEN")
 
 path = "./cogs"
 
@@ -44,7 +40,7 @@ async def guildsCount():
     Guild.set_guilds(bot.guilds)
     await asyncio.sleep(10)  # 複数のBOTを同時に再起動するときにちょっとあけとく
     count = Guild.get_count()
-    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {count}サーバーで稼働中",))
+    await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {count}サーバーで稼働中(累計)",))
 
 bot.load_extensions(
     # 'cogs.wish_bata',
