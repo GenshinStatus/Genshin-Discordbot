@@ -16,7 +16,7 @@ from lib.log_output import log_output, log_output_interaction
 from enums.ImageTypeEnums import ImageTypeEnums
 import view.genshin_view as genshin_view
 import lib.status_to_artifacter as status_to_artifacter
-import lib.Generater as Artifacter_gen
+import lib.airtifacter.Generater as Artifacter_gen
 from lib.log_exception import LogException
 
 charactersYaml = yaml(path='characters.yaml')
