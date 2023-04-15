@@ -49,6 +49,7 @@ def get_wish_select_options():
     wish_select_options_1: list[discord.SelectOption] = []
     wish_select_options_2: list[discord.SelectOption] = []
     wish_select_options_3: list[discord.SelectOption] = []
+    wish_select_options_4: list[discord.SelectOption] = []
 
     for v, n in banner_id.items():
         if v <= 13:
@@ -57,8 +58,11 @@ def get_wish_select_options():
         elif v <= 38:
             wish_select_options_2.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 100:
+        elif v < 61:
             wish_select_options_3.append(
+                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
+        elif v < 100:
+            wish_select_options_4.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
         elif v >= 100:
             wish_select_options_0.append(
@@ -280,7 +284,7 @@ class wish_banner_select_View(View):
         await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
 
     @discord.ui.select(
-        placeholder="ガチャを指定（~ver1.6）",
+        placeholder="ガチャを指定（ver1.0~）",
         options=get_wish_select_options()[1]
     )
     async def select_callback_1(self, select: discord.ui.Select, interaction: discord.Interaction):
@@ -290,7 +294,7 @@ class wish_banner_select_View(View):
         await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
 
     @discord.ui.select(
-        placeholder="ガチャを指定（~ver2.8）",
+        placeholder="ガチャを指定（ver2.0~）",
         options=get_wish_select_options()[2]
     )
     async def select_callback_2(self, select: discord.ui.Select, interaction: discord.Interaction):
@@ -308,7 +312,16 @@ class wish_banner_select_View(View):
         print(
             f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nver3.0")
         await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
-
+    
+    @discord.ui.select(
+        placeholder="ガチャを指定（ver3.6~）",
+        options=get_wish_select_options()[4]
+    )
+    async def select_callback_3(self, select: discord.ui.Select, interaction: discord.Interaction):
+        view = wish_select_View(banner_id=int(select.values[0]))
+        print(
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nver3.6")
+        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
 
 class wish_select_View(View):
     def __init__(self, banner_id: int):
