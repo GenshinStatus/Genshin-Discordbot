@@ -378,3 +378,13 @@
   IconName: UI_AvatarIcon_Mika
   NameId: '231911858'
   sideIconName: UI_AvatarIcon_Side_Mika
+'10000081':
+  Element: Grass
+  IconName: UI_AvatarIcon_Kaveh
+  NameId: '466355514'
+  sideIconName: UI_AvatarIcon_Side_Kaveh
+'10000082':
+  Element: Grass
+  IconName: UI_AvatarIcon_Baizhuer
+  NameId: '2984815066'
+  sideIconName: UI_AvatarIcon_Side_Baizhuer
