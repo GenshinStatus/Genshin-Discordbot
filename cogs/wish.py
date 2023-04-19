@@ -67,7 +67,7 @@ def get_wish_select_options():
         elif v >= 100:
             wish_select_options_0.append(
                 discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-    return wish_select_options_0, wish_select_options_1, wish_select_options_2, wish_select_options_3,
+    return wish_select_options_0, wish_select_options_1, wish_select_options_2, wish_select_options_3,wish_select_options_4
 
 
 changed_per = [20.627, 13.946, 9.429, 6.375, 4.306, 2.914,
