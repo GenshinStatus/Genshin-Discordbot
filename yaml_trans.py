@@ -9,7 +9,7 @@ from datetime import datetime
 # ややこしくなるのでコンバート終了後ファイルごと削除してください
 
 
-def init(bot: discord.Bot):
+def init(bot: discord.AutoShardedBot):
     channels: dict = yaml("channelId.yaml").load_yaml()
 
     for k, v in channels.items():

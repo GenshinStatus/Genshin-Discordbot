@@ -20,7 +20,7 @@ def datetime_to_unixtime(dt: datetime) -> int:
 
 class NotificationCog(commands.Cog):
 
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: discord.AutoShardedBot):
         print('Notification_initしたよ')
         self.bot = bot
         self.slow_count.start()

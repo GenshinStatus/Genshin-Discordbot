@@ -43,7 +43,7 @@ async def getCharacterImage(uid, id, interaction):
     # 読み込み準備中
     base_img = GImage(
         image_path=f"Image/status_bata/{characterData.character.element}.png",
-        default_font_path="C:\\Users\\Cinnamon\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ja-jp.ttf",
+        default_font_path="./fonts/ja-jp.ttf",
         default_font_size=26,
         default_font_color=Colors.WHITE
     )
