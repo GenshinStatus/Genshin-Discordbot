@@ -1680,6 +1680,54 @@
       'SideIconName': 'UI_AvatarIcon_Side_Mika',
       'QualityType': 'QUALITY_PURPLE',
     },
+  '10000081':
+    {
+      'Element': 'Grass',
+      'Consts':
+        [
+          'UI_Talent_S_Kaveh_01',
+          'UI_Talent_S_Kaveh_02',
+          'UI_Talent_U_Kaveh_02',
+          'UI_Talent_S_Kaveh_03',
+          'UI_Talent_U_Kaveh_01',
+          'UI_Talent_S_Kaveh_04',
+        ],
+      'SkillOrder': [10811, 10812, 10815],
+      'Skills':
+        {
+          '10811': 'Skill_A_04',
+          '10812': 'Skill_S_Kaveh_01',
+          '10815': 'Skill_E_Kaveh_01',
+        },
+      'ProudMap': { '10811': 8131, '10812': 8132, '10815': 8139 },
+      'NameTextMapHash': 466355514,
+      'SideIconName': 'UI_AvatarIcon_Side_Kaveh',
+      'QualityType': 'QUALITY_PURPLE',
+    },
+  '10000082':
+    {
+      'Element': 'Grass',
+      'Consts':
+        [
+          'UI_Talent_S_Baizhuer_01',
+          'UI_Talent_S_Baizhuer_02',
+          'UI_Talent_U_Baizhuer_01',
+          'UI_Talent_S_Baizhuer_03',
+          'UI_Talent_U_Baizhuer_02',
+          'UI_Talent_S_Baizhuer_04',
+        ],
+      'SkillOrder': [10821, 10822, 10825],
+      'Skills':
+        {
+          '10821': 'Skill_A_Catalyst_MD',
+          '10822': 'Skill_S_Baizhuer_01',
+          '10825': 'Skill_E_Baizhuer_01',
+        },
+      'ProudMap': { '10821': 8231, '10822': 8232, '10825': 8239 },
+      'NameTextMapHash': 2984815066,
+      'SideIconName': 'UI_AvatarIcon_Side_Baizhuer',
+      'QualityType': 'QUALITY_ORANGE',
+    },
   '10000005-501':
     {
       'Element': 'None',

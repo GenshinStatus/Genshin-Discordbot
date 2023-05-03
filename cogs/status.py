@@ -5,7 +5,7 @@ from lib.sql import Guild
 
 class Time(commands.Cog):
 
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: discord.AutoShardedBot):
         print('Status_init')
         self.bot = bot
         self.slow_count.start()
@@ -23,5 +23,5 @@ class Time(commands.Cog):
         await self.bot.wait_until_ready()
 
 
-def setup(bot: discord.Bot):
+def setup(bot: discord.AutoShardedBot):
     bot.add_cog(Time(bot))

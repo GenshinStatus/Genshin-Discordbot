@@ -16,7 +16,7 @@ from lib.log_output import log_output, log_output_interaction
 from enums.ImageTypeEnums import ImageTypeEnums
 import view.genshin_view as genshin_view
 import lib.status_to_artifacter as status_to_artifacter
-import lib.Generater as Artifacter_gen
+import lib.artifacter.Generater as Artifacter_gen
 from lib.log_exception import LogException
 
 charactersYaml = yaml(path='characters.yaml')
@@ -143,13 +143,13 @@ class GenshinUID():
                     status_to_artifacter.get_artifacter_data(uid=self.uid, data=character_status))
             except Exception as e:
                 embed = genshin_view.ErrorEmbed(
-                    description="何らかの原因で画像生成ができませんでした。\nお手数をおかけしますが、```/genbot report```から報告をお願い致します。")
+                    description="何らかの原因で画像生成ができませんでした。\nお手数をおかけしますが、```/genbot report```から報告をお願い致します。\n\n**※Artifacter版画像生成では一部の原神のデータを使用できない場合があります（一部の新武器や新キャラ等）。ご理解下さい。**")
                 embed.set_image(url="attachment://generate_status_error.png")
                 file = discord.File(
                     'Image/1x1.png', filename="generate_status_error.png")
                 LogException(e)
                 log_output_interaction(
-                    interaction=interaction, cmd="/genshinstat get 画像生成 Artifacter エラー")
+                    interaction=interaction, cmd=f"/genshinstat get 画像生成 Artifacter エラー {self.score_type}")
                 return embed, file
 
         # 画像データを取得し、DiscordのFileオブジェクトとしてurlとfileを取得します。
@@ -166,7 +166,7 @@ class GenshinUID():
                     'Image/1x1.png', filename="generate_status_error.png")
                 LogException(e)
                 log_output_interaction(
-                    interaction=interaction, cmd="/genshinstat get 画像生成 Default エラー")
+                    interaction=interaction, cmd=f"/genshinstat get 画像生成 Default エラー {self.score_type}")
                 return embed, file
 
         # 取得した画像でembed作成しれすぽんす

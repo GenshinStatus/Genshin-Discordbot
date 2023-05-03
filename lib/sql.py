@@ -1,24 +1,21 @@
 from datetime import datetime
 from typing import Tuple
-from dotenv import load_dotenv
 import os
 import psycopg2
-from psycopg2 import Error
 import discord
 
 
 # 予め定数として接続先を定義しておきます
-load_dotenv()
 print(os.getenv('SQL'))
 
 
 class database:
     __DSN = 'postgresql://{user}:{password}@{host}:{port}/{dbname}'.format(
-        user=os.getenv('USER'),  # ユーザ
-        password=os.getenv('SQL'),  # パスワード
+        user=os.getenv('POSTGRES_USER'),  # ユーザ
+        password=os.getenv('POSTGRES_PASSWORD'),  # パスワード
         host=os.getenv('HOST'),  # ホスト名
         port=os.getenv('PORT'),  # ポート
-        dbname=os.getenv('DNAME'))  # データベース名
+        dbname=os.getenv('POSTGRES_DB'))  # データベース名
 
     def __connection():
         return psycopg2.connect(database.__DSN)

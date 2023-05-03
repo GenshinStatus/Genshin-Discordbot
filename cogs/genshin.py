@@ -54,7 +54,17 @@ async def get_profile(uid, interaction: discord.Interaction):
         return
     embed = genshin_view.LoadingEmbed(description='キャラクターラインナップをロード中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
-    status.character_list = status.get_character_list()
+    try:
+        status.character_list = status.get_character_list()
+    except:
+        embed = genshin_view.ErrorEmbed(
+            description="キャラクターのリストを取得できませんでした。\n原神の設定でプロフィールにキャラクターを掲載していないことが原因です。\nプロフィールにキャラクターを掲載してからもう一度お試しください。")
+        embed.set_image(
+            url="https://cdn.discordapp.com/attachments/1069630896367480962/1069631267873751051/image.png")
+        await interaction.edit_original_message(content=None, embed=embed, view=None)
+        log_output_interaction(
+            interaction=interaction, cmd="/genshinstat get 画像生成 未掲載エラー")
+        return
     embed = genshin_view.LoadingEmbed(description='画像を生成中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
     try:
@@ -73,7 +83,7 @@ async def get_profile(uid, interaction: discord.Interaction):
         status.del_filepass()
     log_output_interaction(interaction=interaction,
                            cmd="/genshinstat get プロフィールロード完了")
-                           
+
 
 class UidModal(discord.ui.Modal):  # UIDを聞くモーダル
     def __init__(self):
@@ -109,6 +119,7 @@ class UidButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await get_profile(self.uid, interaction)
 
+
 class select_uid_pulldown(discord.ui.Select):
     def __init__(self, selectOptions: list[discord.SelectOption], game_name):
         super().__init__(placeholder="表示するUIDを選択してください", options=selectOptions)
@@ -124,13 +135,23 @@ class GenshinCog(commands.Cog):
         print('genshin初期化')
         self.bot = bot
 
-genshin = SlashCommandGroup('genshinstat', 'test')
+    genshin = SlashCommandGroup('genshinstat', 'test')
+
+    @commands.slash_command(name="status", description="UIDからキャラ情報を取得し、画像を生成します")
+    async def status_command(
+            self,
+            ctx: discord.ApplicationContext
+    ):
+        await GenshinCog.input_uid(self, ctx)
 
     @genshin.command(name="get", description="UIDからキャラ情報を取得し、画像を生成します")
     async def genshin_get(
             self,
             ctx: discord.ApplicationContext,
     ):
+        await GenshinCog.input_uid(self, ctx)
+
+    async def input_uid(self, ctx):
         view = View(timeout=300, disable_on_timeout=True)
         select_options: list[discord.SelectOption] = []
         userData = SQL.User.get_user_list(ctx.author.id)
