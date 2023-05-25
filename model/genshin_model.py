@@ -1,23 +1,18 @@
 import discord
-from discord.ui import Select, View, Button
-from discord.ext import commands, tasks
-from discord import Option, SlashCommandGroup
-import aiohttp
+from discord.ui import View
 from lib.yamlutil import yaml
 import lib.picture as getPicture
-from typing import List
-import lib.sql as SQL
-import cogs.uidlist as uidlist
 import os
 from lib.getCharacterStatus import CharacterStatus
 from enums.substatus import SubTypes
 from lib.gen_genshin_image import get_character_discord_file
-from lib.log_output import log_output, log_output_interaction
+from lib.log_output import  log_output_interaction
 from enums.ImageTypeEnums import ImageTypeEnums
 import view.genshin_view as genshin_view
 import lib.status_to_artifacter as status_to_artifacter
 import lib.artifacter.Generater as Artifacter_gen
 from lib.log_exception import LogException
+from lib import enkaconnecter
 
 charactersYaml = yaml(path='characters.yaml')
 characters = charactersYaml.load_yaml()
@@ -43,15 +38,7 @@ class GenshinUID():
         return self
 
     async def get_data(self):
-        url = f"https://enka.network/api/uid/{self.uid}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 400:
-                    raise FileNotFoundError
-                if response.status != 200:
-                    return None
-                resp = await response.json()
-        return resp
+        return await enkaconnecter.get_data(self.uid)
 
     def get_character_list(self):
         character_list = []
@@ -74,15 +61,15 @@ class GenshinUID():
                 title=f"{self.data['playerInfo']['nickname']}",
                 color=0x1e90ff,
                 description=f"uid: {self.uid}",
-                url=f"https://enka.network/api/uid/{self.uid}"
+                url=f"https://enka.network/u/{self.uid}"
             )
             embed.set_image(url=f"attachment://{self.uid}.png")
             return embed
         except:
             embed = discord.Embed(
-                title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{f'https://enka.network/api/uid/{self.uid}'}",
+                title=f"エラーが発生しました。APIを確認してからもう一度お試しください。\n{f'https://enka.network/u/{self.uid}'}",
                 color=0x1e90ff,
-                url=f"https://enka.network/api/uid/{self.uid}"
+                url=f"https://enka.network/u/{self.uid}"
             )
             return embed
 
