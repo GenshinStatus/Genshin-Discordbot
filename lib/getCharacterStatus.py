@@ -3,6 +3,7 @@ import aiohttp
 from lib.yamlutil import yaml
 import lib.scoreCalculator as genshinscore
 import urllib
+from lib import enkaconnecter
 
 ELEMENT = {
     "Wind": "風",
@@ -151,13 +152,7 @@ class CharacterStatus():
         self.build_type = build_type
 
     async def get_json(uid: int) -> dict:
-        url = f"https://enka.network/api/uid/{uid}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status != 200:
-                    return None
-                resp = await response.json()
-
+        resp = await enkaconnecter.get_data(uid)
         return resp
 
     def pop_character_data(json: list, id: int) -> dict:

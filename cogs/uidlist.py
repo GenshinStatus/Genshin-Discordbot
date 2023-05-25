@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord import Option, SlashCommandGroup
 import aiohttp
 import lib.sql as SQL
+from lib import enkaconnecter
 
 l: list[discord.SelectOption] = []
 
@@ -142,11 +143,7 @@ class isPabricEnterButton(discord.ui.Button):
 
 
 async def uid_set(ctx, uid):
-    url = f"https://enka.network/api/uid/{uid}"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            resp = await response.json()
-    serverId = ctx.guild.id
+    resp = await enkaconnecter.get_data(uid)
     print(ctx.guild.name)
     name = resp['playerInfo']['nickname']
     print(name)
