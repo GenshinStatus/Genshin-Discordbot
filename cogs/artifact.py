@@ -4,6 +4,7 @@ from discord.ext import commands, tasks
 from discord.commands import Option, OptionChoice, SlashCommandGroup
 import copy
 from lib.log_output import log_output, log_output_interaction
+import lib.sql as sql
 
 mainOption = {
     "花": ["HP"],
@@ -386,7 +387,7 @@ class ArtifactCog(commands.Cog):
 
     @artifact.command(name='get_detail', description='より詳細に聖遺物スコアを計算します。')
     async def get_detail(self, ctx: discord.ApplicationContext,):
-        await ctx.respond(content="聖遺物のタイプを選んでね", view=ArtifactBaseSelectView(), ephemeral=True)
+        await ctx.respond(content="聖遺物のタイプを選んでね", view=ArtifactBaseSelectView(), ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
         log_output(ctx=ctx, cmd="artifact_detail - コマンド使用")
 
     @artifact.command(name='get', description='手軽に聖遺物スコアを計算します。')
@@ -409,7 +410,7 @@ class ArtifactCog(commands.Cog):
         try:
             resalt = float(damage) + float(crper)*2 + float(crdamage)
         except:
-            await ctx.respond(content="有効な数値を入力してください", ephemeral=True)
+            await ctx.respond(content="有効な数値を入力してください", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
             log_output(ctx=ctx, cmd="artifact_get - エラー表示 - 以下無効な数値")
             print(damage)
             print(crper)
@@ -419,7 +420,7 @@ class ArtifactCog(commands.Cog):
                               description=str(round(resalt, 1)))
         embed.set_footer(
             text="HP基準計算など、他の計算方式を使う場合はは /artifact get_detail からやってね")
-        await ctx.respond(embed=embed, ephemeral=True)
+        await ctx.respond(embed=embed, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
         log_output(ctx=ctx, cmd="artifact_get - 結果表示")
 
 

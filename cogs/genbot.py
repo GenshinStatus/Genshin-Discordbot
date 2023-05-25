@@ -10,6 +10,7 @@ import math
 import google.calendar as calendar
 import main
 import time
+import lib.sql as sql
 
 l: list[discord.SelectOption] = []
 
@@ -299,7 +300,7 @@ class GenbotCog(commands.Cog):
         ")
         view = helpselectView(timeout=300, disable_on_timeout=True)
         # レスポンスで定義したボタンを返す
-        await ctx.respond("確認したいコマンドのジャンルを選択してね", embed=embed, view=view, ephemeral=True)
+        await ctx.respond("確認したいコマンドのジャンルを選択してね", embed=embed, view=view, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
     @genbot.command(name='today', description='今日の日替わり秘境などをまとめて確認！')
     async def today(self, ctx):
@@ -307,7 +308,7 @@ class GenbotCog(commands.Cog):
         view = weekselectView()
         weekday = view.weekday
         embed = DATA.EMBEDS[weekday].get_embed()
-        await ctx.respond(embed=embed, view=view, ephemeral=True)
+        await ctx.respond(embed=embed, view=view, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
         print(
             f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\ntoday - 今日の日替わり秘境")
 
@@ -315,12 +316,12 @@ class GenbotCog(commands.Cog):
     async def report(self, ctx):
 
         view = bugselectView()
-        await ctx.respond(view=view, ephemeral=True)
+        await ctx.respond(view=view, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nreport - 不具合報告")
 
     @genbot.command(name='event', description='開催中のイベントなどをまとめて確認！')
     async def event(self, ctx):
-        hoge = await ctx.respond("読み込み中...", ephemeral=True)
+        hoge = await ctx.respond("読み込み中...", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
         embed = discord.Embed(title=f"本日開催中のイベントはこちら", color=0x1e90ff)
         event = calendar.get()
         now = "```ありません```"
@@ -353,16 +354,15 @@ class GenbotCog(commands.Cog):
 
     @genbot.command(name='code', description='報酬コードがすでに入力された状態のURLを作成します')
     async def code(self, ctx: discord.ApplicationContext, code: Option(input_type=str, description='報酬コードを入力してください', required=True)):
-        await ctx.respond(f"以下のリンクから報酬を取得してください。\nhttps://genshin.hoyoverse.com/ja/gift?code={code}")
+        await ctx.respond(f"以下のリンクから報酬を取得してください。\nhttps://genshin.hoyoverse.com/ja/gift?code={code}", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\ncode - コード生成")
 
     @genbot.command(name='dev', description='開発者用コマンドです。')
     async def dev(self, ctx: discord.ApplicationContext,):
         if ctx.author.id == 698127042977333248 or ctx.author.id == 751697679721168986 or ctx.author.id == 802066206529028117:
-            file = discord.File('log.txt', filename='log.txt')
-            await ctx.respond("Github: https://github.com/CinnamonSea2073/Genshin-Discordbot", file=file)
+            await ctx.respond("Github: https://github.com/CinnamonSea2073/Genshin-Discordbot", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id)) 
         else:
-            await ctx.respond("管理者限定コマンドです。", ephemeral=True)
+            await ctx.respond("管理者限定コマンドです。", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
     @tasks.loop(time=[datetime.time(hour=get_jst(5), second=1), datetime.time(hour=get_jst(1), second=1)])
     async def slow_count(self):

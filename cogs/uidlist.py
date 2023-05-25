@@ -222,7 +222,7 @@ class uidListCog(commands.Cog):
         try:
             for v in uidList:
                 if v.d_name == ctx.author.name:
-                    await ctx.respond(embed=embed, ephemeral=True)
+                    await ctx.respond(embed=embed, ephemeral=SQL.Ephemeral.is_ephemeral(ctx.guild.id))
                     print(
                         f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidlist - 取得")
                     return
@@ -230,7 +230,7 @@ class uidListCog(commands.Cog):
             print(ctx.guild.name)
         button = UidModalButton(ctx)
         view.add_item(button)
-        await ctx.respond(embed=embed, view=view, ephemeral=True)
+        await ctx.respond(embed=embed, view=view, ephemeral=SQL.Ephemeral.is_ephemeral(ctx.guild.id))
         print(
             f"==========\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nuidlist - 未登録取得")
 
