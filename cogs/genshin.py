@@ -16,7 +16,7 @@ from lib.gen_genshin_image import get_character_discord_file
 from lib.log_output import log_output, log_output_interaction
 from model.genshin_model import GenshinUID
 import view.genshin_view as genshin_view
-
+from aiohttp import client_exceptions
 
 async def get_profile(uid, interaction: discord.Interaction):
     embed = genshin_view.LoadingEmbed(description='プロフィールをロード中...')
@@ -24,34 +24,30 @@ async def get_profile(uid, interaction: discord.Interaction):
     status = GenshinUID(str(uid))
     try:
         status.data = await status.get_data()
-    except FileNotFoundError:
+    except client_exceptions.ClientResponseError as e:
+        status_code = e.status
+
+        messages ={
+            400: "UIDのフォーマットが間違っています。\nフォーマットがあっているかを試してみてください",
+            404: "入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。",
+            424: "ゲームメンテナンスやアップデートの影響により\nデータ取得もとのEnka.networkがデータを返却していない状態です。\nこのエラーはしばらく時間をおいてから試すと回復している可能性が高いです。",
+            429: "リミットレートの制限に引っかかっています。\n開発者に対してコンタクトをとってください。",
+            500: "データ取得もとのEnkaNetWorkのサーバーにエラーが発生しています。\n開発者もお手上げかもしれないです。",
+            503: "データ取得もとのEnkaNetWorkサーバーの一時停止中です。\n一時なので恐らく復旧します。（開発者はこれについて確認ぐらいしか取れないです）"
+        }
         embed = genshin_view.ErrorEmbed(
-            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。\n\n※Enka.network（データ提供元）のサーバーがダウンしている可能性もあります。最新の情報をご確認ください。')
+            description=messages[status_code])
         await interaction.edit_original_message(content=None, embed=embed)
         log_output_interaction(interaction=interaction,
-                               cmd="/genshinstat get プロフィール UIDNotFound")
+                               cmd=f"/genshinstat get プロフィール HTTP Error code: {status_code}")
         return
-    except:
+    except Exception as e:
         embed = genshin_view.ErrorEmbed(
-            description='現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。')
+            description='原因不明なエラーが発生しています。\n開発者に問い合わせください。')
         await interaction.edit_original_message(content=None, embed=embed)
         log_output_interaction(interaction=interaction,
-                               cmd="/genshinstat get プロフィール メンテナンス")
-        return
-    if status.data == {}:
-        embed = genshin_view.ErrorEmbed(
-            description='現在、EnkaNetworkはメンテナンス中です。復旧までしばらくお待ちください。')
-        await interaction.edit_original_message(content=None, embed=embed)
-        log_output_interaction(interaction=interaction,
-                               cmd="/genshinstat get プロフィール メンテナンス")
-        return
-    if status.data == None:
-        embed = genshin_view.ErrorEmbed(
-            description='入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。\n\n※Enka.network（データ提供元）のサーバーがダウンしている可能性もあります。最新の情報をご確認ください。')
-        await interaction.edit_original_message(content=None, embed=embed)
-        log_output_interaction(interaction=interaction,
-                               cmd="/genshinstat get プロフィール UIDNotFound")
-        return
+                               cmd="/genshinstat get プロフィール 不明なエラー")
+        raise e
     embed = genshin_view.LoadingEmbed(description='キャラクターラインナップをロード中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
     try:
