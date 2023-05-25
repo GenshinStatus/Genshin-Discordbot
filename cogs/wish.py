@@ -181,7 +181,7 @@ class Wish_bataCog(commands.Cog):
             self,
             ctx: discord.ApplicationContext):
 
-        await ctx.respond(content="祈願バナーを選択してください。", view=wish_banner_select_View())
+        await ctx.respond(content="祈願バナーを選択してください。", view=wish_banner_select_View(), ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
     @wish.command(name="get_image", description="ガチャイラスト取得")
     async def character(
@@ -194,11 +194,11 @@ class Wish_bataCog(commands.Cog):
         except:
             content = f" \"{content}\" は原神データベースに存在しません。"
             embed = discord.Embed(title=content, color=0x1e90ff,)
-            await ctx.respond(embed=embed)
+            await ctx.respond(embed=embed, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
             return
         embed = discord.Embed(title=content, color=0x1e90ff,)
         embed.set_image(url=picture)
-        await ctx.respond(embed=embed)
+        await ctx.respond(embed=embed, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
 
 class wish_main_system_value():

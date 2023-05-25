@@ -213,6 +213,37 @@ class PermitID:
             data=(guild_id, user_id,)
         )
 
+class Ephemeral:
+    def __init__(self, guild_id: int, ephemeral: bool):
+        self.guild_id = guild_id
+        self.ephemeral = ephemeral
+
+    def is_ephemeral(guild_id: int):
+        """
+        そのサーバーでephemeralが有効かどうか取得する関数です。
+        各コマンドのephemeral制御のために利用します。
+        """
+        result = database.load_data_sql(
+            sql="""
+            select is_ephemeral
+            from public_server_config
+            where serverid = %s
+            """,
+            data=(guild_id,))
+
+        return result[0][0]
+
+    def set_ephemeral(guild_id: int, ephemeral: bool):
+        """
+        Ephemeralを指定したboolにする処理です。
+        """
+        database.table_update_sql(
+            sql="""
+            update public_server_config 
+            set is_ephemeral = %s
+            where serverid = %s
+            """,
+            data=(ephemeral, guild_id))
 
 class channel:
     def __init__(self, guilt_id: int, channel_id: int):

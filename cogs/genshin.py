@@ -17,7 +17,6 @@ from lib.log_output import log_output, log_output_interaction
 from model.genshin_model import GenshinUID
 import view.genshin_view as genshin_view
 from aiohttp import client_exceptions
-
 async def get_profile(uid, interaction: discord.Interaction):
     embed = genshin_view.LoadingEmbed(description='プロフィールをロード中...')
     await interaction.response.edit_message(content=None, embed=embed, view=None)
@@ -160,8 +159,8 @@ class GenshinCog(commands.Cog):
                 title='UID選択', description='UIDが登録されていません。下のボタンから登録すると、UIDをいちいち入力する必要がないので便利です。\n下のボタンから、登録せずに確認できます。')
             await ctx.respond(content=None,
                               embed=embed,
-                              view=view,
-                              ephemeral=True)
+                              view=view, 
+                              ephemeral=SQL.Ephemeral.is_ephemeral(ctx.guild.id))
             log_output(ctx=ctx, cmd="/genshinstat get 未登録")
             return
 
@@ -171,7 +170,7 @@ class GenshinCog(commands.Cog):
             view.add_item(UidModalButton())
             embed = genshin_view.MyEmbed(
                 title='UID選択', description='UIDが登録されています。登録されているUIDを使うか、直接UIDを指定するか選んでください。')
-            await ctx.respond(content=None, embed=embed, view=view, ephemeral=True)
+            await ctx.respond(content=None, embed=embed, view=view, ephemeral=SQL.Ephemeral.is_ephemeral(ctx.guild.id))
             log_output(ctx=ctx, cmd="/genshinstat get 登録済")
             return
 
@@ -183,7 +182,7 @@ class GenshinCog(commands.Cog):
         view.add_item(UidModalButton())
         embed = genshin_view.MyEmbed(
             title='UID選択', description='UIDが複数登録されています。表示するUIDを選ぶか、ボタンから指定してください。')
-        await ctx.respond(content=None, embed=embed, view=view, ephemeral=True)
+        await ctx.respond(content=None, embed=embed, view=view, ephemeral=SQL.Ephemeral.is_ephemeral(ctx.guild.id))
         log_output(ctx=ctx, cmd="/genshinstat get 複数登録済")
         return
 
