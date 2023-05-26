@@ -28,6 +28,7 @@ async def on_application_command_error(ctx: discord.ApplicationContext, error):
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
+    print(f"新規導入サーバー: {guild.name}")
     sql.Ephemeral.init_ephemeral(guild.id)
 
 @bot.event
