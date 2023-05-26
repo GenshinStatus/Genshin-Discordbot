@@ -1224,6 +1224,30 @@
       'SideIconName': 'UI_AvatarIcon_Side_Yelan',
       'QualityType': 'QUALITY_ORANGE',
     },
+  '10000061':
+    {
+      'Element': 'Grass',
+      'Consts':
+        [
+          'UI_Talent_S_Momoka_01',
+          'UI_Talent_S_Momoka_02',
+          'UI_Talent_U_Momoka_01',
+          'UI_Talent_S_Momoka_04',
+          'UI_Talent_U_Momoka_02',
+          'UI_Talent_S_Momoka_03',
+        ],
+      'SkillOrder': [10611, 10612, 10615],
+      'Skills':
+        {
+          '10611': 'Skill_A_01',
+          '10612': 'Skill_S_Momoka_01',
+          '10615': 'Skill_E_Momoka_01',
+        },
+      'ProudMap': { '10611': 6131, '10612': 6132, '10615': 6139 },
+      'NameTextMapHash': 1456643042,
+      'SideIconName': 'UI_AvatarIcon_Side_Momoka',
+      'QualityType': 'QUALITY_PURPLE',
+    },
   '10000062':
     {
       'Element': 'Ice',

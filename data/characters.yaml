@@ -283,6 +283,11 @@
   IconName: UI_AvatarIcon_Yelan
   NameId: '2848374378'
   sideIconName: UI_AvatarIcon_Side_Yelan
+'10000061':
+  Element: Grass
+  IconName: UI_AvatarIcon_Momoka
+  NameId: '1456643042'
+  sideIconName: UI_AvatarIcon_Side_Momoka
 '10000062':
   Element: Ice
   IconName: UI_AvatarIcon_Aloy
