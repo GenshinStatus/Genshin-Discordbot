@@ -244,6 +244,19 @@ class Ephemeral:
             where serverid = %s
             """,
             data=(ephemeral, guild_id))
+        
+    def init_ephemeral(guild_id: int):
+        """
+        guild_idのデータを初期化します。
+        """
+        database.table_update_sql(
+            sql="""
+            insert into public_server_config(serverid)
+            values(%s)
+            """,
+            data=(guild_id,),
+        )
+
 
 class channel:
     def __init__(self, guilt_id: int, channel_id: int):

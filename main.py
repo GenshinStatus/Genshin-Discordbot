@@ -1,11 +1,14 @@
 import discord
 from discord.ext import commands
 import os
-from lib.sql import Guild
+from lib import sql
 import asyncio
 import yaml_trans
 
-bot = commands.AutoShardedBot()
+
+intents = discord.Intents.default()
+intents.guilds = True
+bot = commands.AutoShardedBot(intents=intents)
 # debug_guilds=[879288794560471050]
 TOKEN = os.getenv(f"TOKEN")
 
@@ -23,6 +26,9 @@ async def on_application_command_error(ctx: discord.ApplicationContext, error):
     else:
         raise error
 
+@bot.event
+async def on_guild_join(guild: discord.Guild):
+    sql.Ephemeral.init_ephemeral(guild.id)
 
 @bot.event
 async def on_ready():
@@ -37,9 +43,9 @@ async def sendChannel(id) -> discord.PartialMessageable:
 
 
 async def guildsCount():
-    Guild.set_guilds(bot.guilds)
+    sql.Guild.set_guilds(bot.guilds)
     await asyncio.sleep(10)  # 複数のBOTを同時に再起動するときにちょっとあけとく
-    count = Guild.get_count()
+    count = sql.Guild.get_count()
     await bot.change_presence(activity=discord.Game(name=f"厳選 Impactをプレイ中 / {count}サーバーで稼働中(累計)",))
 
 bot.load_extensions(
