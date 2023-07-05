@@ -6,8 +6,15 @@ import json
 pool = redis.ConnectionPool(host="redis")
 redis_obj = redis.StrictRedis(connection_pool=pool)
 
+async def get_data(uid: str) -> dict:
+    """APIからデータを取得しdictとして返却します
 
-async def get_data(uid) -> dict:
+    Args:
+        uid (str): UID
+
+    Returns:
+        dict: APIから取得したjsonをdictに変換したもの
+    """
     if redis_obj.keys(uid):
         resp = json.loads(redis_obj.get(uid))
     else:

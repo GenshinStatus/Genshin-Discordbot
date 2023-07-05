@@ -458,7 +458,7 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
     # 聖遺物の背景を合成
     base_img.add_rotate_image(
         image_path=f"Image/artifact/{artifact.ster}.png",
-        box=(66, 70),
+        box=(81, 68),
         size=(220, 220),
         angle=angle,
     )
@@ -469,8 +469,8 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
             type="artifacts",
             filename=artifact.image.split("/")[-1][:-4]
         ),
-        size=(66, 70),
-        box=(70, 70),
+        box=(81, 68),
+        size=(70, 70),
         image_anchor=ImageAnchors.MIDDLE_MIDDLE
     )
     img = GImage(
@@ -483,14 +483,14 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
     # 聖遺物のメインステータス名を合成
     img.draw_text(
         text=artifact.main_name,
-        position=(134, 30),
+        position=(124, 30),
         font_size=artifact_main_name_size,
         anchor=Anchors.RIGHT_DESCENDER
     )
     # 聖遺物のメインのステータスを合成
     img.draw_text(
         text=add_persent((artifact.main_name, artifact.main_value)),
-        position=(134, 70),
+        position=(124, 70),
         font_size=30,
         anchor=Anchors.RIGHT_DESCENDER
     )
@@ -498,13 +498,13 @@ def __create_artifact(artifact: artifact, angle: int, element_color: tuple[int, 
     for i in range(len(artifact.status)):
         img.draw_text(
             text=artifact.status[i][0],
-            position=(150+150*(i//2), 30*(i % 2)),
+            position=(140+155*(i//2), 30*(i % 2)),
             anchor=Anchors.LEFT_ASCENDER
         )
         img.draw_text(
             text=str(add_persent(artifact.status[i])),
-            position=(275+150*(i//2), 30*(i % 2)),
-            anchor=Anchors.RIGHT_ASCENDER
+            position=(230+155*(i//2), 30*(i % 2)),
+            anchor=Anchors.LEFT_ASCENDER
         )
     # 聖遺物スコアなどの背景合成
     bg = Image.new(mode="RGBA", size=(187, 30), color=element_color)
