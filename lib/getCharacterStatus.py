@@ -183,7 +183,11 @@ class CharacterStatus():
         name = genshinTextHash[characters[id]["NameId"]]
         image = getCharacterPicture(name)
         element = config[str(id)]['Element']
-        ster = int(words[name]["ster"])
+        # アーロイのようなレア度が存在しないキャラを5に固定
+        try:
+            ster = int(words[name]["ster"])
+        except:
+            ster = 5
 
         # 凸情報。もし6凸、または0凸だった場合は、それに対応する日本語に変換する。
         try:
