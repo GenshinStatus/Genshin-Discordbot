@@ -2,5 +2,5 @@ from enum import Enum
 
 
 class ImageTypeEnums(Enum):
-    DEFAULT = "デフォルト"
-    ARTIFACTER = "原神アーティファクター"
+    DEFAULT = (0, "オリジナル")
+    ARTIFACTER = (1, "Artifacter")
