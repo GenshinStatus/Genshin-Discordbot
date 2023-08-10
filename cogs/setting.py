@@ -67,7 +67,12 @@ class SettingCog(commands.Cog):
                                   description=f"何らかのエラーで失敗しました。")
             await ctx.respond(embed=embed, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild_id))
             return
-        await ctx.respond(content="設定しました。", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild_id))
+        try:
+            await ctx.respond(content="設定しました。", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild_id))
+        except:
+            sql.Ephemeral.init_ephemeral(ctx.guild_id)
+            sql.Ephemeral.set_ephemeral(ctx.guild_id, False)
+            await ctx.respond(content="設定しました。", ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild_id))
         print(
             f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nsetting_channel - set")
 
