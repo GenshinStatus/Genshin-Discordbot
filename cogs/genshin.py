@@ -11,7 +11,7 @@ from model.user_data_model import GenshinStatusModel
 
 async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Interaction) -> GenshinStatusModel:
     try:
-        status.get_user(uid=int(uid))
+        await status.get_user(uid=int(uid))
     except client_exceptions.ClientResponseError as e:
         status_code = e.status
 
@@ -25,16 +25,12 @@ async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Inte
         }
         embed = genshin_view.ErrorEmbed(
             description=messages[status_code])
-        await interaction.edit_original_message(content=None, embed=embed)
-        log_output_interaction(interaction=interaction,
-                               cmd=f"/genshinstat get プロフィール HTTP Error code: {status_code}")
-        return
+        await interaction.edit_original_message(content=None, embed=embed, view=None)
+        raise e
     except Exception as e:
         embed = genshin_view.ErrorEmbed(
             description='原因不明なエラーが発生しています。\n開発者に問い合わせください。')
         await interaction.edit_original_message(content=None, embed=embed)
-        log_output_interaction(interaction=interaction,
-                               cmd="/genshinstat get プロフィール 不明なエラー")
         raise e
     return status
 
@@ -69,7 +65,10 @@ async def get_profile(uid, interaction: discord.Interaction):
     embed = genshin_view.LoadingEmbed(description='プロフィールをロード中...')
     await interaction.response.edit_message(content=None, embed=embed, view=None)
     status = GenshinStatusModel()
-    status = await load_profile(status=status, uid=uid, interaction=interaction)
+    try:
+        status = await load_profile(status=status, uid=uid, interaction=interaction)
+    except:
+        return
 
     embed = genshin_view.LoadingEmbed(description='キャラクターラインナップをロード中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
@@ -77,7 +76,7 @@ async def get_profile(uid, interaction: discord.Interaction):
 
     embed = genshin_view.LoadingEmbed(description='画像を生成中...')
     await interaction.edit_original_message(content=None, embed=embed, view=None)
-    status = status.get_profile_image()
+    status = await status.get_profile_image()
     data = status.profile_to_discord()
     view = View(timeout=300, disable_on_timeout=True)
     view = status.get_character_button(view=view)

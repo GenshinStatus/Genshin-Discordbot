@@ -50,7 +50,7 @@ class ScoreTypeSelecter(discord.ui.Select):
         embed = LoadingEmbed(description="画像を生成中")
         embed.set_image(url="attachment://Loading.gif")
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=discord.File("Image/Loading.gif", filename='Loading.gif'))
-        data = self.status.get_generate_image(chacacter_index=self.status.character_index)
+        data = await self.status.get_generate_image(chacacter_index=self.status.character_index)
         data = data.image_to_discord(character_index=self.status.character_index)
         await interaction.edit_original_message(
             content=None,
@@ -76,7 +76,7 @@ class ImageTypeSelecter(discord.ui.Select):
         embed = LoadingEmbed(description="画像を生成中")
         embed.set_image(url="attachment://Loading.gif")
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=discord.File("Image/Loading.gif", filename='Loading.gif'))
-        data = self.status.get_generate_image(chacacter_index=self.status.character_index)
+        data = await self.status.get_generate_image(chacacter_index=self.status.character_index)
         data = data.image_to_discord(character_index=self.status.character_index)
         await interaction.edit_original_message(
             content=None,
@@ -95,7 +95,7 @@ class CharacterSelectButton(discord.ui.Button):
         embed = LoadingEmbed(description="画像を生成中")
         embed.set_image(url="attachment://Loading.gif")
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=discord.File("Image/Loading.gif", filename='Loading.gif'))
-        data = self.status.get_generate_image(chacacter_index=int(self.button_data[self.label]))
+        data = await self.status.get_generate_image(chacacter_index=int(self.button_data[self.label]))
         data = data.image_to_discord(int(self.button_data[self.label]))
         await interaction.edit_original_message(
             content=None,

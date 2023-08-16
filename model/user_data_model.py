@@ -26,15 +26,15 @@ class GenshinStatusModel():
         self.profile_file = profile_file
         self.character_index:int = character_index
 
-    def get_user(self, uid:int):
-        response = get_user_data(uid=uid)
+    async def get_user(self, uid:int):
+        response = await get_user_data(uid=uid)
         self.uid = int(response["uid"])
         self.nickname = str(response["nickname"])
         self.character_map = response["char_name_map"]
         self.user_data = response
         return self
 
-    def get_generate_image(self, chacacter_index:int):
+    async def get_generate_image(self, chacacter_index:int):
         self.character_index = chacacter_index
         image_type = self.image_type
         data = self.user_data["characters"][chacacter_index]
@@ -42,7 +42,7 @@ class GenshinStatusModel():
         self.image_file = api_connect_generate_image(data, image_type)
         return self
     
-    def get_profile_image(self):
+    async def get_profile_image(self):
         self.profile_file = api_connect_profile_image(self.user_data)
         return self
 

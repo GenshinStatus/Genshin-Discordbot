@@ -1,25 +1,25 @@
 import requests
 from io import BytesIO
 import json
+import aiohttp
 
-API_URL_BASE = "http://172.25.0.3/"
+API_URL_BASE = "http://genshin-status-image-builder-api-1/"
 
-def get_user_data(uid:int):
-    endpoint_url = f"{API_URL_BASE}status/uid/{uid}/"
-    return json.loads(requests.get(endpoint_url).content.decode())
+async def get_user_data(uid:int):
+    endpoint_url = f"{API_URL_BASE}status/uid/{uid}"
+    async with aiohttp.ClientSession(raise_for_status=True) as session:
+        async with session.get(endpoint_url) as response:
+            resp = await response.json()
+    return resp
 
-def api_connect_generate_image(data, image_type:int):
+async def api_connect_generate_image(data, image_type:int):
     endpoint_url = f"{API_URL_BASE}buildimage/genshinstat/{image_type}/"
-    response = requests.post(endpoint_url, json=data)
-    if response:
-        return BytesIO(response.content)
-    else:
-        print("No image data found in the response.")
+    async with aiohttp.ClientSession() as session:
+        async with session.post(endpoint_url, data=data) as response:
+            return BytesIO(await response.content())
 
-def api_connect_profile_image(data):
+async def api_connect_profile_image(data):
     endpoint_url = f"{API_URL_BASE}buildimage/profile/"
-    response = requests.post(endpoint_url, json=data)
-    if response:
-        return BytesIO(response.content)
-    else:
-        print("No image data found in the response.")
+    async with aiohttp.ClientSession() as session:
+        async with session.post(endpoint_url, data=data) as response:
+            return BytesIO(await response.content())
