@@ -39,11 +39,11 @@ class GenshinStatusModel():
         image_type = self.image_type
         data = self.user_data["characters"][chacacter_index]
         data["build_type"] = self.score_type
-        self.image_file = api_connect_generate_image(data, image_type)
+        self.image_file = await api_connect_generate_image(data, image_type)
         return self
     
     async def get_profile_image(self):
-        self.profile_file = api_connect_profile_image(self.user_data)
+        self.profile_file = await api_connect_profile_image(self.user_data)
         return self
 
     def profile_to_discord(self):
