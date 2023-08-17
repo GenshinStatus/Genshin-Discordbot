@@ -187,6 +187,13 @@ class Wish_bataCog(commands.Cog):
 
         await ctx.respond(content="祈願バナーを選択してください。", view=wish_banner_select_View(), ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
+    @wish.command(name="get_original", description="原神ガチャシミュレーター・オリジナル（アーロイガチャなど）")
+    async def get(
+            self,
+            ctx: discord.ApplicationContext):
+
+        await ctx.respond(content="祈願バナーを選択してください。", view=wish_original_banner_select_View(), ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
+
     @wish.command(name="get_image", description="ガチャイラスト取得")
     async def character(
         self,
