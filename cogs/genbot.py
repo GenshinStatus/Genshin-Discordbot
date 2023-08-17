@@ -58,13 +58,14 @@ class helpselectView(View):
             embed.add_field(
                 name=f"このbotのメインとなるコマンドです。",
                 value=f"\
-                    \n**・/genshinstat get**\n自分以外が見ることができない状態で原神のステータスを取得します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
+                    \n**・/genshinstat get**\nプロフィール画像とキャラのビルド画像を作成します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。\
+                    \n**・/status**\n/genshinstat getのコマンド名を短縮したものです。機能は全く同じです。\
                 ")
         elif select.values[0] == "UIDリストコマンド":
             print(
                 f"help - UIDリストコマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
-                name=f"いちいち確認するのが面倒なUIDを管理するコマンドです。",
+                name=f"UIDを管理するコマンドです。",
                 value=f"\
                     \n**・/uidlist get**\n登録され、公開設定が「公開」になっているUIDがここに表示されます。\
                     \n**・/uidlist control**\n登録したUIDを管理するパネルを表示します。UIDの登録や削除、公開設定の切り替えもここからできます。\
@@ -112,9 +113,10 @@ class helpselectView(View):
             print(
                 f"help - 設定コマンド\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}")
             embed.add_field(
-                name=f"通知チャンネルなどを設定するコマンドです。",
+                name=f"各種設定するコマンドです。サーバー管理者限定です。",
                 value=f"\
                     \n**・/setting channel**\n樹脂通知をするチャンネルを設定します。\
+                    \n**・/setting ephemeral**\nコマンドの実行履歴が他人に表示させるか選択します。ビルド画像などを共有したい場合はオンにしてください。\
                 ")
         await interaction.response.edit_message(content=None, embed=embed, view=self)
 
@@ -254,7 +256,7 @@ class bugselectView(View):
                 label="/uidlist",
                 description="get、controle等",),
             discord.SelectOption(
-                label="/genshinstat",
+                label="/genshinstat & /status",
                 description="get等"),
             discord.SelectOption(
                 label="/wish",
@@ -296,7 +298,8 @@ class GenbotCog(commands.Cog):
         embed.add_field(
             name=f"このbotのメインとなるコマンドです。",
             value=f"\
-                \n**・/genshinstat get**\n自分以外が見ることができない状態で原神のステータスを取得します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。原神の設定でキャラ詳細を公開にすると、キャラステータスも確認できます。\
+                    \n**・/genshinstat get**\nプロフィール画像とキャラのビルド画像を作成します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。\
+                    \n**・/status**\n/genshinstat getのコマンド名を短縮したものです。機能は全く同じです。\
         ")
         view = helpselectView(timeout=300, disable_on_timeout=True)
         # レスポンスで定義したボタンを返す
