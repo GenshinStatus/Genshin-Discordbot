@@ -31,6 +31,7 @@ async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Inte
         embed = genshin_view.ErrorEmbed(
             description='原因不明なエラーが発生しています。\n開発者に問い合わせください。')
         await interaction.edit_original_message(content=None, embed=embed)
+        print(e)
         raise e
     return status
 
@@ -45,7 +46,7 @@ async def load_characters(status:GenshinStatusModel, interaction: discord.Intera
         await interaction.edit_original_message(content=None, embed=embed, view=None)
         log_output_interaction(
             interaction=interaction, cmd="/genshinstat get 画像生成 未掲載エラー")
-        return
+        raise
     if status.is_character_list():
         pass
     else:
@@ -57,7 +58,7 @@ async def load_characters(status:GenshinStatusModel, interaction: discord.Intera
         await interaction.edit_original_message(content=None, embed=embed, view=None, file=file)
         log_output_interaction(
             interaction=interaction, cmd="/genshinstat get 画像生成 非公開エラー")
-        return
+        raise
     return status
     
 async def get_profile(uid, interaction: discord.Interaction):

@@ -3,7 +3,7 @@ from io import BytesIO
 import json
 import aiohttp
 
-API_URL_BASE = "http://genshin-status-image-builder-api-1/"
+API_URL_BASE = "http://genshin.api/"
 
 async def get_user_data(uid:int):
     endpoint_url = f"{API_URL_BASE}status/uid/{uid}"
@@ -20,8 +20,6 @@ async def api_connect_generate_image(data, image_type:int):
             return file
         
 async def api_connect_profile_image(data):
-    print(json.dumps(data))
-    print(type(data))
     endpoint_url = f"{API_URL_BASE}buildimage/profile/" 
     async with aiohttp.ClientSession() as session:
         async with session.post(endpoint_url, json=data) as response:
