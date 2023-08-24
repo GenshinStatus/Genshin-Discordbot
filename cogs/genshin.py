@@ -31,6 +31,7 @@ async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Inte
         embed = genshin_view.ErrorEmbed(
             description='原因不明なエラーが発生しています。\n開発者に問い合わせください。')
         await interaction.edit_original_message(content=None, embed=embed)
+        print(e)
         raise e
     return status
 

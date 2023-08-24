@@ -3,7 +3,7 @@ from io import BytesIO
 import json
 import aiohttp
 
-API_URL_BASE = "http://genshin-status-image-builder-api-1/"
+API_URL_BASE = "http://genshin.api/"
 
 async def get_user_data(uid:int):
     endpoint_url = f"{API_URL_BASE}status/uid/{uid}"
