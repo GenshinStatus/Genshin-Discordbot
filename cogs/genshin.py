@@ -14,17 +14,13 @@ async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Inte
         await status.get_user(uid=int(uid))
     except client_exceptions.ClientResponseError as e:
         status_code = e.status
-
-        messages ={
-            400: "UIDのフォーマットが間違っています。\n半角数字で入力してください",
-            404: "入力されたものが存在するUIDではありません\nもう一度確認してやり直してください。",
-            424: "ゲームメンテナンスやアップデートの影響により\nEnka.network（ビルドデータを取得するサービス）が停止している状態です。\nこのエラーはしばらく時間をおいてから試すと回復している可能性が高いです。",
-            429: "処理が追いついていません。\nしばらくしても解決しない場合は、開発者に対してコンタクトをとってください。",
-            500: "Enka.network（ビルドデータを取得するサービス）のサーバーにエラーが発生しています。\n詳しくはEnkaのTwitterを確認してください。https://twitter.com/EnkaNetwork",
-            503: "Enka.network（ビルドデータを取得するサービス）サーバーの一時停止中です。\nしばらくお待ちください。※開発者はこれについて確認ぐらいしか取れないです。\n詳しくはEnkaのTwitterを確認してください"
-        }
-        embed = genshin_view.ErrorEmbed(
-            description=messages[status_code])
+        message = f"原因不明なエラーが発生しています。\n\
+            しばらく時間をおいてからもう一度お試しください。\n\
+            原因が解決しない場合は、開発者に問い合わせください。\n\
+            code: {status_code}"
+        if status_code == 451:
+            message = e.message
+        embed = genshin_view.ErrorEmbed(description=message)
         await interaction.edit_original_message(content=None, embed=embed, view=None)
         raise e
     except Exception as e:
