@@ -294,16 +294,9 @@ class GenbotCog(commands.Cog):
 
     @genbot.command(name='help', description='原神ステータスbotに困ったらまずはこれ！')
     async def chelp(self, ctx):
-        embed = discord.Embed(title=f"helpコマンド：メインコマンド", color=0x1e90ff)
-        embed.add_field(
-            name=f"このbotのメインとなるコマンドです。",
-            value=f"\
-                    \n**・/genshinstat get**\nプロフィール画像とキャラのビルド画像を作成します。UIDリスト機能で、自分のUIDを登録しておくと簡単に使えます。\
-                    \n**・/status**\n/genshinstat getのコマンド名を短縮したものです。機能は全く同じです。\
-        ")
         view = helpselectView(timeout=300, disable_on_timeout=True)
         # レスポンスで定義したボタンを返す
-        await ctx.respond("確認したいコマンドのジャンルを選択してね", embed=embed, view=view, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
+        await ctx.respond("**確認したいコマンドのジャンルを選択してね**\n詳しい情報はサポートサーバーから！\nhttps://discord.gg/MxZNQY9CyW", view=view, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
     @genbot.command(name='today', description='今日の日替わり秘境などをまとめて確認！')
     async def today(self, ctx):
@@ -319,7 +312,7 @@ class GenbotCog(commands.Cog):
     async def report(self, ctx):
 
         view = bugselectView()
-        await ctx.respond(view=view, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
+        await ctx.respond(content="報告前にサポートサーバーで最新情報を確認することをおすすめします。\nhttps://discord.gg/MxZNQY9CyW", view=view, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nreport - 不具合報告")
 
     @genbot.command(name='event', description='開催中のイベントなどをまとめて確認！')

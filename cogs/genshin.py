@@ -36,7 +36,7 @@ async def load_characters(status:GenshinStatusModel, interaction: discord.Intera
         pass
     else:
         embed = genshin_view.ErrorEmbed(
-            description="キャラクターのリストを取得できませんでした。\n原神の設定でプロフィールにキャラクターを掲載していないことが原因です。\nプロフィールにキャラクターを掲載してからもう一度お試しください。")
+            description="キャラクターのリストを取得できませんでした。\n原神の設定でプロフィールにキャラクターを掲載していないことが原因です。\nプロフィールにキャラクターを掲載してからもう一度お試しください。\n**データ更新にはしばらく時間がかかります。**")
         embed.set_image(
             url="https://cdn.discordapp.com/attachments/1069630896367480962/1069631267873751051/image.png")
         await interaction.edit_original_message(content=None, embed=embed, view=None)
@@ -47,7 +47,7 @@ async def load_characters(status:GenshinStatusModel, interaction: discord.Intera
         pass
     else:
         embed = genshin_view.ErrorEmbed(
-            description="キャラクターのステータスを取得できませんでした。\n原神の設定でキャラクター詳細を非公開にしていることが原因です。\nキャラクター詳細を公開設定に変更してからもう一度お試しください。")
+            description="キャラクターのステータスを取得できませんでした。\n原神の設定でキャラクター詳細を非公開にしていることが原因です。\nキャラクター詳細を公開設定に変更してからもう一度お試しください。\n**データ更新にはしばらく時間がかかります。**")
         embed.set_image(url="attachment://character_status_error.png")
         file = discord.File("Image/character_status_error.png",
                             filename="character_status_error.png")
