@@ -9,17 +9,28 @@ import view.genshin_view as genshin_view
 from aiohttp import client_exceptions
 from model.user_data_model import GenshinStatusModel
 
+MESSAGES = {
+    500: "サーバーで未知のエラーが発生しました。",
+    435: "UIDのフォーマットが間違っています。\n半角数字で入力してください。",
+    436: "入力されたものが存在するUIDではありません。\nもう一度確認してやり直してください。",
+    437: "ゲームメンテナンスやアップデートの影響により\nEnka.network（ビルドデータを取得するサービス）が停止している状態です。\nしばらくお待ちください。\n※Bot運営チームはこれについて確認ぐらいしか取れないです。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork",
+    438: "処理が追いついていません。\nしばらくしても解決しない場合は、開発者に対してコンタクトをとってください。",
+    439: "Enka.network（ビルドデータを取得するサービス）のサーバーにエラーが発生しています。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork",
+    440: "Enka.network（ビルドデータを取得するサービス）サーバーの一時停止中です。\nしばらくお待ちください。\n※開発者はこれについて確認ぐらいしか取れないです。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork"
+}
+
 async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Interaction) -> GenshinStatusModel:
     try:
         await status.get_user(uid=int(uid))
     except client_exceptions.ClientResponseError as e:
-        status_code = e.status
-        message = f"原因不明なエラーが発生しています。\n\
+        message = f"エラーが発生しました。\n\
             しばらく時間をおいてからもう一度お試しください。\n\
-            原因が解決しない場合は、開発者に問い合わせください。\n\
-            code: {status_code}"
-        if status_code == 451:
-            message = e.message
+            原因が解決しない場合は、開発者に問い合わせください。\n\n\
+            **エラー詳細：**\
+            ```{MESSAGES[e.status]}```\n\n\
+            **問い合わせる前にサポートサーバーで最新情報を確認してください。**\n\
+            https://discord.gg/MxZNQY9CyW\
+        "
         embed = genshin_view.ErrorEmbed(description=message)
         await interaction.edit_original_message(content=None, embed=embed, view=None)
         raise e
