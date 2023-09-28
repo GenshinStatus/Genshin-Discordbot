@@ -10,7 +10,7 @@ from aiohttp import client_exceptions
 from model.user_data_model import GenshinStatusModel
 
 MESSAGES = {
-    500: "サーバーで未知のエラーが発生しました。",
+    500: "サーバーで未知のエラーが発生しました。\nアップデートの影響により、新キャラクターや新武器等にまだ対応していないものが含まれている可能性があります。\nサポートサーバーをご確認ください。",
     435: "UIDのフォーマットが間違っています。\n半角数字で入力してください。",
     436: "入力されたものが存在するUIDではありません。\nもう一度確認してやり直してください。",
     437: "ゲームメンテナンスやアップデートの影響により\nEnka.network（ビルドデータを取得するサービス）が停止している状態です。\nしばらくお待ちください。\n※Bot運営チームはこれについて確認ぐらいしか取れないです。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork",
