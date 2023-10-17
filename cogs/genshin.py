@@ -16,7 +16,8 @@ MESSAGES = {
     437: "ゲームメンテナンスやアップデートの影響により\nEnka.network（ビルドデータを取得するサービス）が停止している状態です。\nしばらくお待ちください。\n※Bot運営チームはこれについて確認ぐらいしか取れないです。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork",
     438: "処理が追いついていません。\nしばらくしても解決しない場合は、開発者に対してコンタクトをとってください。",
     439: "Enka.network（ビルドデータを取得するサービス）のサーバーにエラーが発生しています。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork",
-    440: "Enka.network（ビルドデータを取得するサービス）サーバーの一時停止中です。\nしばらくお待ちください。\n※開発者はこれについて確認ぐらいしか取れないです。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork"
+    440: "Enka.network（ビルドデータを取得するサービス）サーバーの一時停止中です。\nしばらくお待ちください。\n※開発者はこれについて確認ぐらいしか取れないです。\n詳しくはEnkaのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork",
+    441: "Enka.network（ビルドデータを取得するサービス）のサーバーに原因不明のエラーが発生しています。\nしばらくお待ちください。\n※原神ステータスBotの運営チームはこれについて確認ぐらいしか取れないです。\n詳しくはEnkaNetworkのTwitterを確認してください。\nhttps://twitter.com/EnkaNetwork"
 }
 
 async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Interaction) -> GenshinStatusModel:
