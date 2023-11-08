@@ -65,10 +65,10 @@ class ImageTypeSelecter(discord.ui.Select):
 
         self.add_option(label=ImageTypeEnums.DEFAULT.value[1],
                         value=str(ImageTypeEnums.DEFAULT.value[0]),
-                        description='オリジナルの画像生成。常に最新のデータが使用されます。')
+                        description='オリジナルデザインの画像生成です。キャラの見た目を重視しています。')
         self.add_option(label=ImageTypeEnums.ARTIFACTER.value[1],
                         value=str(ImageTypeEnums.ARTIFACTER.value[0]),
-                        description='旧Artifacterの画像生成。最新のキャラは生成できません。')
+                        description='旧Artifacterデザインの画像生成です。聖遺物の見やすさを重視しています。')
         self.status = status
 
     async def callback(self, interaction: discord.Interaction):
