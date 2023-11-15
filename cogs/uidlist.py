@@ -35,14 +35,14 @@ class UidModal(discord.ui.Modal):
             await uid_set(self.ctx, self.uid)
         except Exception as e:
             print(e)
-            # await interaction.edit_original_message(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
-            await interaction.edit_original_message(content=f"UIDが無効か、EnkaNetworkがメンテナンス中です。", embed=None, view=None)
+            # await interaction.edit_original_response(content=f"{self.uid}はUIDではありません。", embed=None, view=None)
+            await interaction.edit_original_response(content=f"UIDが無効か、EnkaNetworkがメンテナンス中です。", embed=None, view=None)
             return
         if is_first_registration == []:
-            await interaction.edit_original_message(content=f"{self.uid}を登録します。\nUIDを公開すると、UIDリストに表示されるようになります\n※UIDを複数登録している場合は個別で設定することはできません。", view=view)
+            await interaction.edit_original_response(content=f"{self.uid}を登録します。\nUIDを公開すると、UIDリストに表示されるようになります\n※UIDを複数登録している場合は個別で設定することはできません。", view=view)
         else:
             embed = await getEmbed(self.ctx)
-            await interaction.edit_original_message(content="登録しました！", embed=embed, view=None)
+            await interaction.edit_original_response(content="登録しました！", embed=embed, view=None)
             print(
                 f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
         return
@@ -60,7 +60,7 @@ class isPablicButton(View):
         await interaction.response.edit_message(content="処理中です...", view=None)
         SQL.PermitID.add_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content="公開しました！\nUIDは`/uidlist controle`から管理できます。", embed=embed, view=None)
+        await interaction.edit_original_response(content="公開しました！\nUIDは`/uidlist controle`から管理できます。", embed=embed, view=None)
         print(
             f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 公開")
 
@@ -69,7 +69,7 @@ class isPablicButton(View):
         await interaction.response.edit_message(content="処理中です...", view=None)
         SQL.PermitID.remove_permit_id(self.ctx.guild.id, self.ctx.author.id)
         embed = await getEmbed(self.ctx)
-        await interaction.edit_original_message(content="非公開にしました！\nUIDは`/uidlist controle`から管理できます。", embed=embed, view=None)
+        await interaction.edit_original_response(content="非公開にしました！\nUIDは`/uidlist controle`から管理できます。", embed=embed, view=None)
         print(
             f"==========\n実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\ncontrole - 非公開")
 

@@ -392,7 +392,7 @@ class select_wish_modal(discord.ui.Modal):
                 raise
             await get_wish_resalt(self.interaction, hoge, self.banner_id)
         except:
-            await interaction.edit_original_message(content="入力された数値が無効です。", view=None)
+            await interaction.edit_original_response(content="入力された数値が無効です。", view=None)
 
 
 async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
@@ -401,7 +401,7 @@ async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     roof = roofGet(id, 0)
 
     # とりあえず天井から結果num回を排出
-    await interaction.edit_original_message(content="ガチャ結果読み込み中...")
+    await interaction.edit_original_response(content="ガチャ結果読み込み中...")
     resalt = []
     for n in range(num):
         resalt.append(wish_list(roof=roof, id=id))
@@ -409,7 +409,7 @@ async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     # random.shuffle(resalt)
 
     # 結果からキャラ名に変換
-    await interaction.edit_original_message(content="ガチャ画面読み込み中...")
+    await interaction.edit_original_response(content="ガチャ画面読み込み中...")
     final_resalt = []
     for ster in resalt:
         final_resalt.append(number_to_character(ster, banner_id))
@@ -418,7 +418,7 @@ async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     DATA = wish_main_system_value(
         id=id, banner_id=banner_id, roof=roof, resalt=resalt, final_resalt=final_resalt)
 
-    await interaction.edit_original_message(content="演出画面読み込み中...")
+    await interaction.edit_original_response(content="演出画面読み込み中...")
     global is_skip_button_pressed
     is_skip_button_pressed = False
     # 条件分岐で画像変化
@@ -427,18 +427,18 @@ async def get_wish_resalt(interaction: discord.Interaction, num, banner_id):
     if "5" in resalt or "6" in resalt:
         direction_embed = Wish_bataCog.embeded(
             None, None, "https://c.tenor.com/rOuL0G1uRpMAAAAC/genshin-impact-pull.gif")
-        await interaction.edit_original_message(content=None, embed=direction_embed, view=view)
+        await interaction.edit_original_response(content=None, embed=direction_embed, view=view)
     else:
         direction_embed = Wish_bataCog.embeded(
             None, None, "https://c.tenor.com/pVzBgcp1RPQAAAAC/genshin-impact-animation.gif")
-        await interaction.edit_original_message(content=None, embed=direction_embed, view=view)
+        await interaction.edit_original_response(content=None, embed=direction_embed, view=view)
     await asyncio.sleep(5.5)
 
     if is_skip_button_pressed == False:
         view = View()
         view.add_item(GotoNextButton(interaction, DATA, 1))
         view.add_item(GotoResultButton(interaction, DATA))
-        await interaction.edit_original_message(content=None, embed=get_wish_display_embed(DATA.final_resalt[0], DATA.resalt[0]), view=view)
+        await interaction.edit_original_response(content=None, embed=get_wish_display_embed(DATA.final_resalt[0], DATA.resalt[0]), view=view)
 
 
 def number_to_character(num, banner__id: int):
@@ -500,7 +500,7 @@ class GotoNextButton(discord.ui.Button):
             view.add_item(Wish_again_Button(
                 self.interaction, self.DATA))
             view.add_item(Wish_resetting_Button(self.interaction, self.DATA))
-            await interaction.edit_original_message(content=None, embed=get_wish_resalt_display_embed(self.DATA), view=view)
+            await interaction.edit_original_response(content=None, embed=get_wish_resalt_display_embed(self.DATA), view=view)
 
 # 全部飛ばすボタン
 
@@ -517,7 +517,7 @@ class GotoResultButton(discord.ui.Button):
         view.add_item(Wish_again_Button(
             self.interaction, self.DATA))
         view.add_item(Wish_resetting_Button(self.interaction, self.DATA))
-        await interaction.edit_original_message(content=None, embed=get_wish_resalt_display_embed(self.DATA), view=view)
+        await interaction.edit_original_response(content=None, embed=get_wish_resalt_display_embed(self.DATA), view=view)
 
 # もう一回遊べるどん
 

@@ -237,11 +237,11 @@ class ReportModal(discord.ui.Modal):
 
             channel = await main.sendChannel(1021082211618930801)
             await channel.send(embed=embed)
-            await interaction.edit_original_message(content=f"不具合を送信しました！ご協力ありがとうございます！\nbugTrackName:{self.content}", view=None)
+            await interaction.edit_original_response(content=f"不具合を送信しました！ご協力ありがとうございます！\nbugTrackName:{self.content}", view=None)
             return
         except:
             print("おい管理者！エラーでてんぞこの野郎！！！！")
-            await interaction.edit_original_message(content=f"送信できませんでしたが、管理者にログを表示しました。修正までしばらくお待ちください", view=None)
+            await interaction.edit_original_response(content=f"送信できませんでしたが、管理者にログを表示しました。修正までしばらくお待ちください", view=None)
             raise
 
 
@@ -345,7 +345,7 @@ class GenbotCog(commands.Cog):
                 now += (f"**イベント名：{i['name']}**\n```css\n{i['description']}\n\n終了日:{i['end'].strftime('%m月%d日')}\n残り時間:{resalt}```\n")
         embed.add_field(inline=True, name="開催中のイベント\n", value=now)
         embed.add_field(inline=True, name="開催予定のイベント\n", value=before)
-        await hoge.edit_original_message(content=None, embed=embed)
+        await hoge.edit_original_response(content=None, embed=embed)
         print(f"\n実行者:{ctx.author.name}\n鯖名:{ctx.guild.name}\nevent - イベント確認")
 
     @genbot.command(name='code', description='報酬コードがすでに入力された状態のURLを作成します')

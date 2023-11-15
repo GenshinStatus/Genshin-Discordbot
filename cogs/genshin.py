@@ -33,12 +33,12 @@ async def load_profile(status:GenshinStatusModel, uid, interaction: discord.Inte
             https://discord.gg/MxZNQY9CyW\
         "
         embed = genshin_view.ErrorEmbed(description=message)
-        await interaction.edit_original_message(content=None, embed=embed, view=None)
+        await interaction.edit_original_response(content=None, embed=embed, view=None)
         raise e
     except Exception as e:
         embed = genshin_view.ErrorEmbed(
             description='原因不明なエラーが発生しています。\n開発者に問い合わせください。')
-        await interaction.edit_original_message(content=None, embed=embed)
+        await interaction.edit_original_response(content=None, embed=embed)
         print(e)
         raise e
     return status
@@ -51,7 +51,7 @@ async def load_characters(status:GenshinStatusModel, interaction: discord.Intera
             description="キャラクターのリストを取得できませんでした。\n原神の設定でプロフィールにキャラクターを掲載していないことが原因です。\nプロフィールにキャラクターを掲載してからもう一度お試しください。\n**データ更新にはしばらく時間がかかります。**")
         embed.set_image(
             url="https://cdn.discordapp.com/attachments/1069630896367480962/1069631267873751051/image.png")
-        await interaction.edit_original_message(content=None, embed=embed, view=None)
+        await interaction.edit_original_response(content=None, embed=embed, view=None)
         log_output_interaction(
             interaction=interaction, cmd="/genshinstat get 画像生成 未掲載エラー")
         raise
@@ -63,7 +63,7 @@ async def load_characters(status:GenshinStatusModel, interaction: discord.Intera
         embed.set_image(url="attachment://character_status_error.png")
         file = discord.File("Image/character_status_error.png",
                             filename="character_status_error.png")
-        await interaction.edit_original_message(content=None, embed=embed, view=None, file=file)
+        await interaction.edit_original_response(content=None, embed=embed, view=None, file=file)
         log_output_interaction(
             interaction=interaction, cmd="/genshinstat get 画像生成 非公開エラー")
         raise
@@ -80,16 +80,16 @@ async def get_profile(uid, interaction: discord.Interaction):
         return
 
     embed = genshin_view.LoadingEmbed(description='キャラクターラインナップをロード中...')
-    await interaction.edit_original_message(content=None, embed=embed, view=None)
+    await interaction.edit_original_response(content=None, embed=embed, view=None)
     status = await load_characters(status=status, interaction=interaction)
 
     embed = genshin_view.LoadingEmbed(description='画像を生成中...')
-    await interaction.edit_original_message(content=None, embed=embed, view=None)
+    await interaction.edit_original_response(content=None, embed=embed, view=None)
     status = await status.get_profile_image()
     data = status.profile_to_discord()
     view = View(timeout=300, disable_on_timeout=True)
     view = status.get_character_button(view=view)
-    await interaction.edit_original_message(content=None, view=view, embed=data[1], file=data[0])
+    await interaction.edit_original_response(content=None, view=view, embed=data[1], file=data[0])
     log_output_interaction(interaction=interaction,
                            cmd="/genshinstat get プロフィールロード完了")
 
