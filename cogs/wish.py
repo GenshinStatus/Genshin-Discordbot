@@ -15,14 +15,12 @@ genshinYaml = yaml('genshin.yaml')
 genshinHYaml = yaml('genshinH.yaml')
 bannerIDYaml = yaml('wish_bannerID.yaml')
 wish_configYaml = yaml('wish_config.yaml')
-name_to_urlYaml = yaml('name_to_url.yaml')
 
 # ファイル初期化
 characterName = genshinYaml.load_yaml()
 characterTrans = genshinHYaml.load_yaml()
 banner_id = bannerIDYaml.load_yaml()
 wish_config = wish_configYaml.load_yaml()
-name_to_url = name_to_urlYaml.load_yaml()
 
 
 def genshingen(name):
@@ -229,7 +227,7 @@ def get_wish_display_embed(character_name: str, ster):
     elif "5" or "6" == ster:
         color = 0xff8c00
     embed = discord.Embed(title=character_name, color=color)
-    embed.set_image(url=name_to_url[character_name])
+    embed.set_image(url="https://genshin-cdn.cinnamon.works/wish/screen/"+urllib.parse.quote(character_name)+".jpg")
     return embed
 
 
@@ -276,7 +274,7 @@ def get_banner_embed(banner__id: int):
                           description=f"{banner_data['ver']} {''.join(banner_data['pickup_5'])}",
                           color=0x1e90ff,)
     embed.set_image(
-        url=f"https://cdn.discordapp.com/attachments/1034136716862296114/{banner_data['image']}/unknown.png")
+        url=f"https://genshin-cdn.cinnamon.works/wish/banner/character/{banner__id+1}.jpg")
     return embed
 
 class wish_original_banner_select_View(View):
