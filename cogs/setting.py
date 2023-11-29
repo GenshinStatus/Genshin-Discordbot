@@ -41,7 +41,7 @@ class SettingCog(commands.Cog):
             embed.add_field(name="必要な権限", value="チャンネルを見る、メッセージを送信")
             embed.add_field(name="権限不足のチャンネル", value=f"<#{channel.id}>")
             embed.set_image(
-                url="https://cdn.discordapp.com/attachments/1021082211618930801/1053331845724516402/image.png")
+                url="https://genshin-cdn.cinnamon.works/notify/no_permission.jpg")
             await ctx.respond(embed=embed, ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild_id))
             print(
                 f"\n実行者:{ctx.user.name}\n鯖名:{ctx.guild.name}\nsetting_channel - Fordidden_set")
