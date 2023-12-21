@@ -158,7 +158,7 @@ class ScoreTypeSelecter(discord.ui.Select):
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=discord.File("Image/Loading.gif", filename='Loading.gif'))
         data = await self.status.get_generate_image(chacacter_index=self.status.character_index)
         data = data.image_to_discord(character_index=self.status.character_index)
-        await interaction.edit_original_message(
+        await interaction.edit_original_response(
             content=None,
             embed=data[1],
             file=data[0],
@@ -184,7 +184,7 @@ class ImageTypeSelecter(discord.ui.Select):
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=discord.File("Image/Loading.gif", filename='Loading.gif'))
         data = await self.status.get_generate_image(chacacter_index=self.status.character_index)
         data = data.image_to_discord(character_index=self.status.character_index)
-        await interaction.edit_original_message(
+        await interaction.edit_original_response(
             content=None,
             embed=data[1],
             file=data[0],
@@ -203,7 +203,7 @@ class CharacterSelectButton(discord.ui.Button):
         await interaction.response.edit_message(content=None, embed=embed, view=None, file=discord.File("Image/Loading.gif", filename='Loading.gif'))
         data = await self.status.get_generate_image(chacacter_index=int(self.button_data[self.label]))
         data = data.image_to_discord(int(self.button_data[self.label]))
-        await interaction.edit_original_message(
+        await interaction.edit_original_response(
             content=None,
             embed=data[1],
             file=data[0],
