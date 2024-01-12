@@ -12,10 +12,10 @@
   url: 'https://genshin-cdn.cinnamon.works/weekday/Monday.jpg'
 4:
   day_of_week: 金曜日
-  url: 'https://genshin-cdn.cinnamon.works/weekday/Wednesday.jpg'
+  url: 'https://genshin-cdn.cinnamon.works/weekday/Tuesday.jpg'
 5:
   day_of_week: 土曜日
-  url: 'https://genshin-cdn.cinnamon.works/weekday/Tuesday.jpg'
+  url: 'https://genshin-cdn.cinnamon.works/weekday/Wednesday.jpg'
 6:
   day_of_week: 日曜日
   url: 'https://genshin-cdn.cinnamon.works/weekday/Sunday.jpg'
