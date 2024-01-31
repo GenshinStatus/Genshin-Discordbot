@@ -100,7 +100,7 @@ class UidModal(discord.ui.Modal):  # UIDを聞くモーダル
             label="UID",
             style=discord.InputTextStyle.short,
             min_length=9,
-            max_length=9,
+            max_length=10,
             placeholder="000000000",
             required=True,
         )

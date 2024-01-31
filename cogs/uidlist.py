@@ -20,7 +20,7 @@ class UidModal(discord.ui.Modal):
             label="UIDを半角数字で入力してください。",
             style=discord.InputTextStyle.short,
             min_length=9,
-            max_length=9,
+            max_length=10,
             placeholder="000000000",
             required=True,
         )
