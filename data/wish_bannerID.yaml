@@ -908,6 +908,46 @@
     - ノエル
     - ファルザン
     - 嘉明
+91:
+  name: 灯宴の招き
+  ver: ver4.4 後半
+  image: ''
+  pickup_5:
+    - 魈
+  pickup_4:
+    - 辛炎
+    - 凝光
+    - ヨォーヨ
+92:
+  name: 華紫櫻緋
+  ver: ver4.4 後半
+  image: ''
+  pickup_5:
+    - 八重神子
+  pickup_4:
+    - 辛炎
+    - 凝光
+    - ヨォーヨ
+93:
+  name: 千の雲で彩なす羽織
+  ver: ver4.5 前半
+  image: ''
+  pickup_5:
+    - 千織
+  pickup_4:
+    - 雲菫
+    - ゴロー
+    - ドリー
+94:
+  name: 鬼門闘宴
+  ver: ver4.5 前半
+  image: ''
+  pickup_5:
+    - 荒瀧一斗
+  pickup_4:
+    - 雲菫
+    - ゴロー
+    - ドリー
 100:
   name: オリジナル祈願「アーロイ」
   ver: Verオリジナル
