@@ -10,6 +10,87 @@ import asyncio
 
 is_skip_button_pressed = False
 
+MAJOR_VERSION_LIST = ["1","2","3","4"]
+VERSION_RANGE_ENUM = {
+    "0.0" : [200],
+    "1.0" : [0],
+    "1.1" : [1, 2],
+    "1.2" : [3, 4],
+    "1.3" : [5, 7],
+    "1.4" : [8, 9],
+    "1.5" : [10, 11],
+    "1.6" : [12, 13],
+    "2.0" : [14, 15],
+    "2.1" : [16, 17],
+    "2.2" : [18, 19],
+    "2.3" : [20, 22],
+    "2.4" : [23, 26],
+    "2.5" : [27, 29],
+    "2.6" : [30, 32],
+    "2.7" : [33, 35],
+    "2.8" : [36, 38],
+    "3.0" : [39, 42],
+    "3.1" : [43, 46],
+    "3.2" : [47, 50],
+    "3.3" : [51, 52],
+    "3.4" : [53, 56],
+    "3.5" : [57, 60],
+    "3.6" : [61, 64],
+    "3.7" : [65, 68],
+    "3.8" : [69, 73],
+    "4.0" : [73, 76],
+    "4.1" : [77, 80],
+    "4.2" : [81, 84],
+    "4.3" : [85, 88],
+    "4.4" : [89, 92],
+    "4.5" : [93, 96],
+    "4.6" : [97, 98]
+}
+MINOR_VERSION_RANGE_ENUM = {
+    "0" : {
+        "0.0" : [200]
+    },
+    "1" : {
+        "1.0" : [0],
+        "1.1" : [1, 2],
+        "1.2" : [3, 4],
+        "1.3" : [5, 7],
+        "1.4" : [8, 9],
+        "1.5" : [10, 11],
+        "1.6" : [12, 13]
+    },
+    "2" : {
+        "2.0" : [14, 15],
+        "2.1" : [16, 17],
+        "2.2" : [18, 19],
+        "2.3" : [20, 22],
+        "2.4" : [23, 26],
+        "2.5" : [27, 29],
+        "2.6" : [30, 32],
+        "2.7" : [33, 35],
+        "2.8" : [36, 38]
+    },
+    "3" : {
+        "3.0" : [39, 42],
+        "3.1" : [43, 46],
+        "3.2" : [47, 50],
+        "3.3" : [51, 52],
+        "3.4" : [53, 56],
+        "3.5" : [57, 60],
+        "3.6" : [61, 64],
+        "3.7" : [65, 68],
+        "3.8" : [69, 73]
+    },
+    "4" : {
+        "4.0" : [73, 76],
+        "4.1" : [77, 80],
+        "4.2" : [81, 84],
+        "4.3" : [85, 88],
+        "4.4" : [89, 92],
+        "4.5" : [93, 96],
+        "4.6" : [97, 98]
+    }
+}
 # ファイル指定
 genshinYaml = yaml('genshin.yaml')
 genshinHYaml = yaml('genshinH.yaml')
@@ -42,39 +123,8 @@ def genshingen(name):
     return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{result}/avatar.png"
 
 
-def get_wish_select_options():
-    wish_select_options_0: list[discord.SelectOption] = []
-    wish_select_options_1: list[discord.SelectOption] = []
-    wish_select_options_2: list[discord.SelectOption] = []
-    wish_select_options_3: list[discord.SelectOption] = []
-    wish_select_options_4: list[discord.SelectOption] = []
-    wish_select_options_5: list[discord.SelectOption] = []
-
-    for v, n in banner_id.items():
-        if v <= 13:
-            wish_select_options_1.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v <= 38:
-            wish_select_options_2.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 61:
-            wish_select_options_3.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 72:
-            wish_select_options_4.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 100:
-            wish_select_options_5.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v >= 100:
-            wish_select_options_0.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-    return wish_select_options_0, wish_select_options_1, wish_select_options_2, wish_select_options_3,wish_select_options_4, wish_select_options_5
-
-
 changed_per = [20.627, 13.946, 9.429, 6.375, 4.306, 2.914,
                1.970, 1.332, 0.901, 0.608, 0.411, 0.278, 0.187, 0.126, 0.265]
-
 
 def getPer(roof: int):
     '''
@@ -183,10 +233,10 @@ class Wish_bataCog(commands.Cog):
             self,
             ctx: discord.ApplicationContext):
 
-        await ctx.respond(content="祈願バナーを選択してください。", view=wish_banner_select_View(resolution="low"), ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
+        await ctx.respond(content="祈願バナーを選択してください。", view=SelectModeBannerButton(resolution="low"), ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
     @wish.command(name="get_original", description="原神ガチャシミュレーター・オリジナル（アーロイガチャなど）")
-    async def get(
+    async def get_original(
             self,
             ctx: discord.ApplicationContext):
 
@@ -196,7 +246,7 @@ class Wish_bataCog(commands.Cog):
     async def character(
         self,
         ctx: discord.ApplicationContext,
-        content: Option(str, required=True, description="キャラ名（ひらかなでもOK）", )
+        content: Option(str, required=True, description="キャラ名 (ひらかなでもOK)")
     ):
         try:
             picture = genshingen(content)
@@ -279,15 +329,34 @@ def get_banner_embed(banner__id: int):
         url=f"https://genshin-cdn.cinnamon.works/wish/banner/character/{banner__id}.jpg")
     return embed
 
+def version_to_banner_id(version: str):
+        wish_select_options: list[discord.SelectOption] = []
+        if VERSION_RANGE_ENUM[version][0] == 0:
+            wish_select_options.append(
+                discord.SelectOption(label=f'{banner_id[0]["ver"]} {"".join(banner_id[0]["pickup_5"])}', description=", ".join(banner_id[0]["pickup_4"]), value=str(0)))
+        elif VERSION_RANGE_ENUM[version][0] == 200:
+            wish_select_options.append(
+                discord.SelectOption(label=f'{banner_id[200]["ver"]} {"".join(banner_id[200]["pickup_5"])}', description=", ".join(banner_id[200]["pickup_4"]), value=str(200)))
+        else:
+            for n in range(VERSION_RANGE_ENUM[version][0], VERSION_RANGE_ENUM[version][1]+1):
+                wish_select_options.append(
+                    discord.SelectOption(label=f'{banner_id[n]["ver"]} {"".join(banner_id[n]["pickup_5"])}', description=", ".join(banner_id[n]["pickup_4"]), value=str(n)))
+        return wish_select_options
+
+def major_version_to_minor_version(major_version: str):
+    minor_select_options: list[discord.SelectOption] = []
+    for n in MINOR_VERSION_RANGE_ENUM[major_version].keys():
+        minor_select_options.append(discord.SelectOption(label=n, value=n))
+    return minor_select_options
+
 class wish_original_banner_select_View(View):
     def __init__(self, resolution):
         super().__init__(timeout=300, disable_on_timeout=True)
         self.resolution = resolution
-
     
     @discord.ui.select(
         placeholder="ガチャを指定（オリジナル祈願）",
-        options=get_wish_select_options()[0]
+        options=version_to_banner_id("0.0")
     )
     async def select_callback_0(self, select: discord.ui.Select, interaction: discord.Interaction):
         view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
@@ -296,61 +365,67 @@ class wish_original_banner_select_View(View):
         await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
 
 
-class wish_banner_select_View(View):
-    def __init__(self, resolution):
+# バージョンを受け取り、MINOR_VERSION_RANGE_ENUMにある範囲のbanner_idを取得し、セレクトメニューを表示する
+class BannerSelect(discord.ui.Select):
+    def __init__(self, version: str, resolution: str):
+        super().__init__(
+            placeholder="ガチャを指定",
+            options=version_to_banner_id(version)
+        )
+        self.resolution = resolution
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(self.values[0])), view=wish_select_View(banner_id=int(self.values[0]), resolution=self.resolution))
+
+# MINOR_VERSION_RANGE_ENUMの最後のバージョンを取得し、BannerSelectクラスに渡す
+class SelectModeBannerButton(View):
+    def __init__(self, resolution: str = "low"):
         super().__init__(timeout=300, disable_on_timeout=True)
         self.resolution = resolution
 
-    
-    @discord.ui.select(
-        placeholder="ガチャを指定（ver1.0~）",
-        options=get_wish_select_options()[1]
-    )
-    async def select_callback_1(self, select: discord.ui.Select, interaction: discord.Interaction):
-        view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
-        print(
-            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nver1.6")
-        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
+    @discord.ui.button(label="最新バージョンから選択する", style=discord.ButtonStyle.green)
+    async def callback1(self, _: discord.ui.Button, interaction: discord.Interaction):
+        view = View()
+        view.add_item(BannerSelect(version="".join([i for i in VERSION_RANGE_ENUM.keys()][-1]), resolution=self.resolution))
+        view.add_item(ReSelectButton(resolution=self.resolution))
+        await interaction.response.edit_message(content="祈願バナーを選択してください。", embed=None, view=view)
 
-    @discord.ui.select(
-        placeholder="ガチャを指定（ver2.0~）",
-        options=get_wish_select_options()[2]
-    )
-    async def select_callback_2(self, select: discord.ui.Select, interaction: discord.Interaction):
-        view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
-        print(
-            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nver2.8")
-        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
+    @discord.ui.button(label="過去のバージョンから選択する", style=discord.ButtonStyle.green)
+    async def callback2(self, _: discord.ui.Button, interaction: discord.Interaction):
+        view = View()
+        view.add_item(MajorVersionSelect(resolution=self.resolution))
+        view.add_item(ReSelectButton(resolution=self.resolution))
+        await interaction.response.edit_message(content="バージョンを選択してください。", embed=None, view=view)
 
-    @discord.ui.select(
-        placeholder="ガチャを指定（ver3.0~）",
-        options=get_wish_select_options()[3]
-    )
-    async def select_callback_3(self, select: discord.ui.Select, interaction: discord.Interaction):
-        view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
-        print(
-            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nver3.0")
-        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
-    
-    @discord.ui.select(
-        placeholder="ガチャを指定（ver3.6~）",
-        options=get_wish_select_options()[4]
-    )
-    async def select_callback_4(self, select: discord.ui.Select, interaction: discord.Interaction):
-        view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
-        print(
-            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nver3.6")
-        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
+# メジャーバージョンを受け取り、マイナーバージョンを選択するセレクトメニューを表示する
+class MinorVersionSelect(discord.ui.Select):
+    def __init__(self, version: str, resolution: str):
+        super().__init__(
+            placeholder="バージョンを指定",
+            options=major_version_to_minor_version(version)
+        )
+        self.resolution = resolution
 
-    @discord.ui.select(
-        placeholder="ガチャを指定（ver4.0~）",
-        options=get_wish_select_options()[5]
-    )
-    async def select_callback_5(self, select: discord.ui.Select, interaction: discord.Interaction):
-        view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
-        print(
-            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nver4.0")
-        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
+    async def callback(self, interaction: discord.Interaction):
+        view = View()
+        view.add_item(BannerSelect(version=self.values[0], resolution=self.resolution))
+        view.add_item(ReSelectButton(resolution=self.resolution))
+        await interaction.response.edit_message(content="バージョンを選択してください。", embed=None, view=view)
+
+# メジャーバージョンを選択するセレクトメニューを表示する
+class MajorVersionSelect(discord.ui.Select):
+    def __init__(self, resolution: str):
+        super().__init__(
+            placeholder="バージョンを指定",
+            options=[discord.SelectOption(label=f"{i}.0", value=i) for i in MAJOR_VERSION_LIST]
+        )
+        self.resolution = resolution
+
+    async def callback(self, interaction: discord.Interaction):
+        view = View()
+        view.add_item(MinorVersionSelect(version=self.values[0], resolution=self.resolution))
+        view.add_item(ReSelectButton(resolution=self.resolution))
+        await interaction.response.edit_message(content="バージョンを選択してください。", embed=None, view=view)
 
 class wish_select_View(View):
     def __init__(self, banner_id: int, resolution):
@@ -375,7 +450,7 @@ class wish_select_View(View):
 
 class select_wish_modal(discord.ui.Modal):
     def __init__(self, interaction, banner_id, resolution):
-        super().__init__(title="あなたのUIDを入力してください。", timeout=300,)
+        super().__init__(title="祈願回数を入力してください。", timeout=300,)
         self.interaction = interaction
         self.banner_id = banner_id
         self.resolution = resolution
@@ -549,7 +624,15 @@ class Wish_resetting_Button(discord.ui.Button):
         self.DATA = DATA
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content="祈願バナーを選択してください。", embed=None, view=wish_banner_select_View(resolution=self.DATA.resolution))
+        await interaction.response.edit_message(content="祈願バナーを選択してください。", embed=None, view=SelectModeBannerButton(resolution=self.DATA.resolution))
+
+class ReSelectButton(discord.ui.Button):
+    def __init__(self, resolution):
+        super().__init__(label="選びなおす", style=discord.ButtonStyle.gray)
+        self.resolution = resolution
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(content="祈願バナーを選択してください。", embed=None, view=SelectModeBannerButton(resolution=self.resolution))
 
 # 表示される画像を低画質と高画質で切り替えるボタン。フリップフロップのように切り替える。ラベルも切り替える。
 
