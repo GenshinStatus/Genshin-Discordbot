@@ -12,6 +12,7 @@ is_skip_button_pressed = False
 
 MAJOR_VERSION_LIST = ["1","2","3","4"]
 VERSION_RANGE_ENUM = {
+    "0.0" : [200],
     "1.0" : [0],
     "1.1" : [1, 2],
     "1.2" : [3, 4],
@@ -46,6 +47,9 @@ VERSION_RANGE_ENUM = {
     "4.6" : [97, 98]
 }
 MINOR_VERSION_RANGE_ENUM = {
+    "0" : {
+        "0.0" : [200]
+    },
     "1" : {
         "1.0" : [0],
         "1.1" : [1, 2],
@@ -119,43 +123,8 @@ def genshingen(name):
     return f"https://bbs.hoyolab.com/hoyowiki/picture/character/{result}/avatar.png"
 
 
-def get_wish_select_options():
-    wish_select_options_0: list[discord.SelectOption] = []
-    wish_select_options_1: list[discord.SelectOption] = []
-    wish_select_options_2: list[discord.SelectOption] = []
-    wish_select_options_3: list[discord.SelectOption] = []
-    wish_select_options_4: list[discord.SelectOption] = []
-    wish_select_options_5: list[discord.SelectOption] = []
-    wish_select_options_6: list[discord.SelectOption] = []
-
-    for v, n in banner_id.items():
-        if v <= 13:
-            wish_select_options_1.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v <= 38:
-            wish_select_options_2.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 61:
-            wish_select_options_3.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 72:
-            wish_select_options_4.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 97:
-            wish_select_options_5.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v < 100:
-            wish_select_options_6.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-        elif v >= 200:
-            wish_select_options_0.append(
-                discord.SelectOption(label=f'{n["ver"]} {"".join(n["pickup_5"])}', description=", ".join(n["pickup_4"]), value=str(v)))
-    return wish_select_options_0, wish_select_options_1, wish_select_options_2, wish_select_options_3,wish_select_options_4, wish_select_options_5, wish_select_options_6
-
-
 changed_per = [20.627, 13.946, 9.429, 6.375, 4.306, 2.914,
                1.970, 1.332, 0.901, 0.608, 0.411, 0.278, 0.187, 0.126, 0.265]
-
 
 def getPer(roof: int):
     '''
@@ -267,7 +236,7 @@ class Wish_bataCog(commands.Cog):
         await ctx.respond(content="祈願バナーを選択してください。", view=SelectModeBannerButton(resolution="low"), ephemeral=sql.Ephemeral.is_ephemeral(ctx.guild.id))
 
     @wish.command(name="get_original", description="原神ガチャシミュレーター・オリジナル（アーロイガチャなど）")
-    async def get(
+    async def get_original(
             self,
             ctx: discord.ApplicationContext):
 
@@ -360,30 +329,18 @@ def get_banner_embed(banner__id: int):
         url=f"https://genshin-cdn.cinnamon.works/wish/banner/character/{banner__id}.jpg")
     return embed
 
-class wish_original_banner_select_View(View):
-    def __init__(self, resolution):
-        super().__init__(timeout=300, disable_on_timeout=True)
-        self.resolution = resolution
-
-    
-    @discord.ui.select(
-        placeholder="ガチャを指定（オリジナル祈願）",
-        options=get_wish_select_options()[0]
-    )
-    async def select_callback_0(self, select: discord.ui.Select, interaction: discord.Interaction):
-        view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
-        print(
-            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nオリジナル")
-        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
-
 def version_to_banner_id(version: str):
         wish_select_options: list[discord.SelectOption] = []
         if VERSION_RANGE_ENUM[version][0] == 0:
             wish_select_options.append(
                 discord.SelectOption(label=f'{banner_id[0]["ver"]} {"".join(banner_id[0]["pickup_5"])}', description=", ".join(banner_id[0]["pickup_4"]), value=str(0)))
-        for n in range(VERSION_RANGE_ENUM[version][0], VERSION_RANGE_ENUM[version][1]+1):
+        elif VERSION_RANGE_ENUM[version][0] == 200:
             wish_select_options.append(
-                discord.SelectOption(label=f'{banner_id[n]["ver"]} {"".join(banner_id[n]["pickup_5"])}', description=", ".join(banner_id[n]["pickup_4"]), value=str(n)))
+                discord.SelectOption(label=f'{banner_id[200]["ver"]} {"".join(banner_id[200]["pickup_5"])}', description=", ".join(banner_id[200]["pickup_4"]), value=str(200)))
+        else:
+            for n in range(VERSION_RANGE_ENUM[version][0], VERSION_RANGE_ENUM[version][1]+1):
+                wish_select_options.append(
+                    discord.SelectOption(label=f'{banner_id[n]["ver"]} {"".join(banner_id[n]["pickup_5"])}', description=", ".join(banner_id[n]["pickup_4"]), value=str(n)))
         return wish_select_options
 
 def major_version_to_minor_version(major_version: str):
@@ -391,6 +348,22 @@ def major_version_to_minor_version(major_version: str):
     for n in MINOR_VERSION_RANGE_ENUM[major_version].keys():
         minor_select_options.append(discord.SelectOption(label=n, value=n))
     return minor_select_options
+
+class wish_original_banner_select_View(View):
+    def __init__(self, resolution):
+        super().__init__(timeout=300, disable_on_timeout=True)
+        self.resolution = resolution
+    
+    @discord.ui.select(
+        placeholder="ガチャを指定（オリジナル祈願）",
+        options=version_to_banner_id("0.0")
+    )
+    async def select_callback_0(self, select: discord.ui.Select, interaction: discord.Interaction):
+        view = wish_select_View(banner_id=int(select.values[0]), resolution=self.resolution)
+        print(
+            f"実行者:{interaction.user.name}\n鯖名:{interaction.guild.name}\nオリジナル")
+        await interaction.response.edit_message(content=f"祈願回数を指定してください。", embed=get_banner_embed(int(select.values[0])), view=view)
+
 
 # バージョンを受け取り、MINOR_VERSION_RANGE_ENUMにある範囲のbanner_idを取得し、セレクトメニューを表示する
 class BannerSelect(discord.ui.Select):
