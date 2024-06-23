@@ -828,7 +828,207 @@
     - 北斗
     - コレイ
     - シャルロット
+83:
+  name: 冥昼の裁定
+  ver: ver4.2 後半
+  image: ''
+  pickup_5:
+    - セノ
+  pickup_4:
+    - 綺良々
+    - 久岐忍
+    - 香菱
+84:
+  name: 花踏み歩む蒼流
+  ver: ver4.2 後半
+  image: ''
+  pickup_5:
+    - 神里綾人
+  pickup_4:
+    - 綺良々
+    - 久岐忍
+    - 香菱
+85:
+  name: 棘薔薇の誓い
+  ver: ver4.3 前半
+  image: ''
+  pickup_5:
+    - ナヴィア
+  pickup_4:
+    - キャンディス
+    - ロサリア
+    - スクロース
+86:
+  name: 白鷺の庭
+  ver: ver4.3 前半
+  image: ''
+  pickup_5:
+    - 神里綾華
+  pickup_4:
+    - キャンディス
+    - ロサリア
+    - スクロース
+87:
+  name: 影寂の天下人
+  ver: ver4.3 後半
+  image: ''
+  pickup_5:
+    - 雷電将軍
+  pickup_4:
+    - ベネット
+    - 九条裟羅
+    - シュヴルーズ
+88:
+  name: 天の川に咲きし大輪
+  ver: ver4.3 後半
+  image: ''
+  pickup_5:
+    - 宵宮
+  pickup_4:
+    - ベネット
+    - 九条裟羅
+    - シュヴルーズ
+89:
+  name: 雲府飛鶴
+  ver: ver4.4 前半
+  image: ''
+  pickup_5:
+    - 閑雲
+  pickup_4:
+    - ノエル
+    - ファルザン
+    - 嘉明
+90:
+  name: 叡智を恵む月見草
+  ver: ver4.4 前半
+  image: ''
+  pickup_5:
+    - ナヒーダ
+  pickup_4:
+    - ノエル
+    - ファルザン
+    - 嘉明
+91:
+  name: 灯宴の招き
+  ver: ver4.4 後半
+  image: ''
+  pickup_5:
+    - 魈
+  pickup_4:
+    - 辛炎
+    - 凝光
+    - ヨォーヨ
+92:
+  name: 華紫櫻緋
+  ver: ver4.4 後半
+  image: ''
+  pickup_5:
+    - 八重神子
+  pickup_4:
+    - 辛炎
+    - 凝光
+    - ヨォーヨ
+93:
+  name: 千の雲で彩なす羽織
+  ver: ver4.5 前半
+  image: ''
+  pickup_5:
+    - 千織
+  pickup_4:
+    - 雲菫
+    - ゴロー
+    - ドリー
+94:
+  name: 鬼門闘宴
+  ver: ver4.5 前半
+  image: ''
+  pickup_5:
+    - 荒瀧一斗
+  pickup_4:
+    - 雲菫
+    - ゴロー
+    - ドリー
+95:
+  name: 淵海に令する者
+  ver: ver4.5 後半
+  image: ''
+  pickup_5:
+    - ヌヴィレット
+  pickup_4:
+    - 煙緋
+    - 行秋
+    - バーバラ
+96:
+  name: 辻風に舞う落葉
+  ver: ver4.5 後半
+  image: ''
+  pickup_5:
+    - 楓原万葉
+  pickup_4:
+    - 煙緋
+    - 行秋
+    - バーバラ
+97:
+  name: 炉傍の残影
+  ver: ver4.6 前半
+  image: ''
+  pickup_5:
+    - アルレッキーノ
+  pickup_4:
+    - 香菱
+    - フレミネ
+    - リネット
+98:
+  name: 光と影のトリック
+  ver: ver4.6 前半
+  image: ''
+  pickup_5:
+    - リネ
+  pickup_4:
+    - 香菱
+    - フレミネ
+    - リネット
+99:
+  name: 夜を穿つ流霆
+  ver: ver4.7 前半
+  image: ''
+  pickup_5:
+    - クロリンデ
+  pickup_4:
+    - ベネット
+    - トーマ
+    - セトス
 100:
+  name: 戒勅枢策
+  ver: ver4.7 前半
+  image: ''
+  pickup_5:
+    - アルハイゼン
+  pickup_4:
+    - ベネット
+    - トーマ
+    - セトス
+101:
+  name: ロマリタイムハート
+  ver: ver4.7 後半
+  image: ''
+  pickup_5:
+    - シグウィン
+  pickup_4:
+    - ノエル
+    - ロサリア
+    - 嘉明
+102:
+  name: 衆の水の頌歌
+  ver: ver4.7 後半
+  image: ''
+  pickup_5:
+    - フリーナ
+  pickup_4:
+    - ノエル
+    - ロサリア
+    - 嘉明
+200:
   name: オリジナル祈願「アーロイ」
   ver: Verオリジナル
   image: '1065274270156075140'

@@ -92,9 +92,11 @@ class GenshinStatusModel():
                 genshin_view.CharacterSelectButton(k, button_data, self))
         return view
     
-    def get_status_image_view(self):
+    def get_status_image_view(self, user_id:int):
         view = discord.ui.View(timeout=300, disable_on_timeout=True)
         view.add_item(genshin_view.ScoreTypeSelecter(self))
         view.add_item(genshin_view.ImageTypeSelecter(self))
+        view.add_item(genshin_view.GetProfileButton(uid=self.uid))
+        view.add_item(genshin_view.DeleteButton(user_id=user_id))
         view = self.get_character_button(view=view)
         return view

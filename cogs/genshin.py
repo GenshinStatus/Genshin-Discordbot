@@ -6,7 +6,6 @@ import lib.sql as SQL
 import cogs.uidlist as uidlist
 from lib.log_output import log_output, log_output_interaction
 import view.genshin_view as genshin_view
-from aiohttp import client_exceptions
 from model.user_data_model import GenshinStatusModel
 
 MESSAGES = {
@@ -93,7 +92,6 @@ async def get_profile(uid, interaction: discord.Interaction):
     log_output_interaction(interaction=interaction,
                            cmd="/genshinstat get プロフィールロード完了")
 
-
 class UidModal(discord.ui.Modal):  # UIDを聞くモーダル
     def __init__(self):
         super().__init__(title="UIDを入力してください。", timeout=300,)
@@ -102,14 +100,14 @@ class UidModal(discord.ui.Modal):  # UIDを聞くモーダル
             label="UID",
             style=discord.InputTextStyle.short,
             min_length=9,
-            max_length=9,
+            max_length=10,
             placeholder="000000000",
             required=True,
         )
         self.add_item(self.uid)
 
     async def callback(self, interaction: discord.Interaction) -> None:
-        await get_profile(self.uid.value, interaction)
+        await genshin_view.get_profile(self.uid.value, interaction)
 
 
 class UidModalButton(discord.ui.Button):
@@ -126,7 +124,7 @@ class UidButton(discord.ui.Button):
         self.uid = uid
 
     async def callback(self, interaction: discord.Interaction):
-        await get_profile(self.uid, interaction)
+        await genshin_view.get_profile(self.uid, interaction)
 
 
 class select_uid_pulldown(discord.ui.Select):
@@ -135,7 +133,7 @@ class select_uid_pulldown(discord.ui.Select):
         self.game_name = game_name
 
     async def callback(self, interaction: discord.Interaction):
-        await get_profile(self.values[0], interaction)
+        await genshin_view.get_profile(self.values[0], interaction)
 
 
 class GenshinCog(commands.Cog):

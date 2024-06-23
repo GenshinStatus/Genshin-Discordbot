@@ -416,22 +416,22 @@
   element: Grass
 ディシア:
   jh: でぃしあ
-  url: https://wiki.hoyolab.com/_ipx/f_webp/https://upload-static.hoyoverse.com/hoyolab-wiki/2023/02/24/35428890/dbba9ee7329ca34cc3a5e0449cc4c4c0_4230913074991172247.png
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Dehya.png
   ster: 5
   element: Fire
 ミカ:
   jh: みか
-  url: https://cdn.discordapp.com/attachments/1040527669420380160/1087722395151900732/623b0467b3b635c0.png
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Mika.png
   ster: 4
   element: Ice
 カーヴェ:
   jh: カーヴェ
-  url: https://cdn.discordapp.com/attachments/1040527669420380160/1103321546124185620/05c17ddb7889a796.png
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Kaveh.png
   ster: 4
   element: Grass
 白朮:
   jh: びゃくじゅつ
-  url: https://cdn.discordapp.com/attachments/1040527669420380160/1103321514222297118/c28760d00dd03398.png
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Baizhuer.png
   ster: 5
   element: Grass
 綺良々:
@@ -474,3 +474,48 @@
   url: https://enka.network/ui/UI_Gacha_AvatarImg_Furina.png
   ster: 5
   element: Water
+ナヴィア:
+  jh: なヴぃあ
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Navia.png
+  ster: 5
+  element: Rock
+シュヴルーズ:
+  jh: しゅヴるーず
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Chevreuse.png
+  ster: 4
+  element: Fire
+嘉明:
+  jh: がみん
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Gaming.png
+  ster: 4
+  element: Fire
+閑雲:
+  jh: かんうん
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Liuyun.png
+  ster: 5
+  element: Wind
+千織:
+  jh: ちおり
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Chiori.png
+  ster: 5
+  element: Rock
+アルレッキーノ:
+  jh: あるれっきーの
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Arlecchino.png
+  ster: 5
+  element: Fire
+シグウィン:
+  jh: しぐうぃん
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Sigewinne.png
+  ster: 5
+  element: Water
+セトス:
+  jh: せとす
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Sethos.png
+  ster: 4
+  element: Electric
+クロリンデ:
+  jh: くろりんで
+  url: https://enka.network/ui/UI_Gacha_AvatarImg_Clorinde.png
+  ster: 5
+  element: Electric
